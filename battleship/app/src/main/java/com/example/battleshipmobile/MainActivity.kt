@@ -1,18 +1,16 @@
 package com.example.battleshipmobile
 
+
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.TextFieldValue
-
-import androidx.compose.ui.unit.dp
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
+import com.example.battleshipmobile.views.screens.HomeScreen
+import com.example.battleshipmobile.views.screens.info.InfoActivity
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,62 +20,21 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background) {
-
-
+                    color = MaterialTheme.colors.background
+                ) {
+                    HomeScreen(onClick = {  }) {
+                        navigateToInfoScreen()
+                    }
                 }
             }
         }
     }
-}
 
-
-
-
-
-
-@Composable
-fun InputTextField(value: TextFieldValue,onValueChange: (TextFieldValue) -> Unit) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange
-    )
-}
-
-
-@Composable
-fun HomeScreen(){
-    Column(){
-
-        //imagem
-        //botao de play?
-
-        //por um scaffold com menubar em baixo
+    private fun navigateToInfoScreen() {
+        val intent = Intent(this, InfoActivity::class.java)
+        startActivity(intent)
     }
 }
 
-
-@Composable
-fun GameSetupScreen(onClick : () -> Unit ){
-    //info de quem esta a jogar
-    //grid
-    //botao de rotate
-    Button(
-        onClick = onClick,
-        modifier = Modifier.size(10.dp)
-    ) {
-        Image(
-            painter = painterResource(R.drawable.bs_icon),
-            modifier = Modifier
-                .size(10.dp)
-                ,
-            contentDescription = null
-        )
-
-    }
-    //ships
-
-    //botao de confirmar
-}
 
 
