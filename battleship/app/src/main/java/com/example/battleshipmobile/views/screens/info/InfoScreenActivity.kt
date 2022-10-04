@@ -13,7 +13,7 @@ import com.example.battleshipmobile.TAG
 
 
 
-class InfoActivity : ComponentActivity() {
+class InfoScreenActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

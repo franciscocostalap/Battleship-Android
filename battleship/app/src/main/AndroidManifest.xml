@@ -13,7 +13,7 @@
         android:theme="@style/Theme.BattleshipMobile"
         tools:targetApi="31">
         <activity
-            android:name="MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.BattleshipMobile">
@@ -27,7 +27,19 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity android:name=".views.screens.info.InfoActivity" />
+        <activity android:name=".views.screens.info.InfoScreenActivity" />
+        <activity
+            android:name=".views.screens.ConfigScreenActivity">
+        </activity>
+        <activity
+            android:name=".views.screens.LoginScreenActivity">
+        </activity>
+        <activity
+            android:name=".views.screens.HomeScreenActivity">
+        </activity>
+        <activity
+            android:name=".views.screens.PlayScreenActivity">
+        </activity>
     </application>
 
 </manifest>

@@ -6,8 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 
 
 import com.example.battleshipmobile.views.gameScreen
-import com.example.battleshipmobile.views.screens.HomeScreen
-
+import com.example.battleshipmobile.views.screens.HomeScreenContent
 
 
 @Preview(showBackground = true)
@@ -20,7 +19,7 @@ fun GameScreenPreview(){
 @Composable
 fun HomeScreenPreview(){
 
-    HomeScreen(
+    HomeScreenContent(
         onClick = {
 
         },

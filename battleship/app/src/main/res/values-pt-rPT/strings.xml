@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Batalha Naval</string>
+    <string name="register">Registar</string>
+    <string name="username">Nome</string>
+    <string name="password">Palavra-Chave</string>
+    <string name="login">Entrar</string>
+</resources>

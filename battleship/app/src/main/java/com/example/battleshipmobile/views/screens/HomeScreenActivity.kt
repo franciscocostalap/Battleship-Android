@@ -1,16 +1,15 @@
 package com.example.battleshipmobile.views.screens
 
-import android.graphics.ColorSpace.Rgb
+import android.os.Bundle
+import android.os.PersistableBundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -18,10 +17,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.material.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.example.battleshipmobile.R
+import com.example.battleshipmobile.navigateTo
+import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
+import com.example.battleshipmobile.views.screens.info.InfoScreenActivity
 
 private val ROUNDED_CORNER_RATIO = 30.dp
 private val PLAY_BUTTON_WIDTH = 350.dp
@@ -62,8 +64,71 @@ fun TextButton(
     }
 }
 
+
+class HomeScreenActivity : ComponentActivity(){
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            BattleshipMobileTheme {
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background
+                ) {
+
+                        Image(
+                            modifier = Modifier.fillMaxSize(),
+                            painter = painterResource(R.drawable.home_bg),
+                            contentDescription = "background_image",
+                            contentScale = ContentScale.FillBounds
+                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Bottom
+                        ) {
+                            Box(
+                                Modifier.background(Color.White.copy(alpha = 0.6f))
+                            ) {
+                                Text(
+                                    text = "BATTLESHIP",
+                                    color = HEADER_COLOR,
+                                    fontSize = HEADER_SIZE,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            Spacer(Modifier.size(200.dp))
+                            TextButton(
+                                onClick = {},
+                                buttonWidth = PLAY_BUTTON_WIDTH,
+                                text = "Play"
+                            )
+
+                            TextButton(
+                                onClick = {},
+                                buttonWidth = INFO_BUTTON_WIDTH,
+                                text = "Ranking"
+                            )
+
+                            TextButton(
+                                onClick = { navigateTo(InfoScreenActivity::class) },
+                                buttonWidth = INFO_BUTTON_WIDTH,
+                                text = "Credits"
+                            )
+
+                            Spacer(Modifier.size(100.dp))
+                        }
+                    }
+                }
+            }
+        }
+
+}
+
 @Composable
-fun HomeScreen(onClick: () -> Unit, creditsOnClick: () -> Unit) {
+fun HomeScreenContent(onClick: () -> Unit, creditsOnClick: () -> Unit) {
 
     Image(
         modifier = Modifier.fillMaxSize(),
