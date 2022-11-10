@@ -1,20 +1,11 @@
 package com.example.battleshipmobile.previews
 
-import Credits
+import com.example.battleshipmobile.battleship.info.InfoScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.battleshipmobile.battleship.home.HomeScreen
 
 
-import com.example.battleshipmobile.views.gameScreen
-import com.example.battleshipmobile.views.screens.HomeScreen
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun GameScreenPreview(){
-    gameScreen()
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -34,7 +25,7 @@ fun HomeScreenPreview(){
 @Preview
 @Composable
 fun CreditsPreview(){
-    Credits(
+    InfoScreen(
         onSendEmailRequested =  { },
         socials = emptyList()
     )

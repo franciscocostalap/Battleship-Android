@@ -1,7 +1,5 @@
-package com.example.battleshipmobile.views.screens.info
+package com.example.battleshipmobile.battleship.info
 
-import Credits
-import SocialInfo
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -18,7 +16,7 @@ class InfoActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            Credits(
+            InfoScreen(
                 onSendEmailRequested = { openSendEmail() },
                 socials = socialsPreview
             )

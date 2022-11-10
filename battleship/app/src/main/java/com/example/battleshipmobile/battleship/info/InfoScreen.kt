@@ -1,7 +1,6 @@
-import android.net.Uri
+package com.example.battleshipmobile.battleship.info
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -14,7 +13,7 @@ import androidx.compose.ui.Modifier
 data class SocialInfo(val name: String, val nr: Int, val email: String)
 
 @Composable
-fun Credits(
+fun InfoScreen(
     onSendEmailRequested: () -> Unit = { },
     socials: List<SocialInfo> = emptyList()
 ) {
