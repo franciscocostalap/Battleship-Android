@@ -8,19 +8,19 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.internal.http.HttpMethod
 import java.lang.reflect.Type
 import java.net.URI
 
-/**
- * For details regarding the Siren media type, see <a href="https://github.com/kevinswiber/siren">Siren</a>
- */
+
 
 private const val APPLICATION_TYPE = "application"
 private const val SIREN_SUBTYPE = "vnd.siren+json"
 
+/**
+ * For details regarding the Siren media type,
+ * @see <a href="https://github.com/kevinswiber/siren">Siren</a>
+ */
 val SirenMediaType = "$APPLICATION_TYPE/$SIREN_SUBTYPE".toMediaType()
 
 /**
