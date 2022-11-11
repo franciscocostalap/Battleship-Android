@@ -4,17 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.ui.Modifier
-import com.example.battleshipmobile.service.AuthInfo
-import com.example.battleshipmobile.service.AuthInfoDTO
-import com.example.battleshipmobile.service.toDTO
+import com.example.battleshipmobile.battleship.info.InfoScreenActivity
+import com.example.battleshipmobile.battleship.service.user.AuthInfo
+import com.example.battleshipmobile.battleship.service.user.AuthInfoDTO
+import com.example.battleshipmobile.battleship.service.user.toDTO
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 
 class HomeActivity: ComponentActivity() {
@@ -32,19 +27,14 @@ class HomeActivity: ComponentActivity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-        Log.v("HOME", "HomeActivity onCreate")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContent {
             BattleshipMobileTheme {
-                Surface(modifier=Modifier.fillMaxSize()) {
-                    val extra = authInfoExtra
-                    if(extra != null){
-                        Text(text = "Welcome to battleship, user no.${extra.uid}")
-                    }else{
-                        Text(text="Not Logged in")
-                    }
+                HomeScreen(onClick = {  }) {
+                    InfoScreenActivity.navigate(this)
                 }
+
             }
         }
 
@@ -57,6 +47,5 @@ class HomeActivity: ComponentActivity() {
                 intent.getParcelableExtra(AUTH_EXTRA, AuthInfoDTO::class.java)
             else
                 intent.getParcelableExtra(AUTH_EXTRA)
-
 
 }

@@ -1,5 +1,6 @@
 package com.example.battleshipmobile.battleship.info
 
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -11,7 +12,18 @@ import com.example.battleshipmobile.TAG
 
 
 
-class InfoActivity : ComponentActivity() {
+class InfoScreenActivity : ComponentActivity() {
+
+
+    companion object{
+        fun navigate(origin: Activity){
+            with(origin){
+                val intent = Intent(this, InfoScreenActivity::class.java)
+                startActivity(intent)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

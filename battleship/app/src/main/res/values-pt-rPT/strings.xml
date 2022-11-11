@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Batalha Naval</string>
+    <string name="register">Registar</string>
+    <string name="username">Nome</string>
+    <string name="password">Palavra-Chave</string>
+    <string name="login">Entrar</string>
+    <string name="general_error">Ocorreu um erro</string>
+    <string name="general_error_title">Erro</string>
+    <string name="error_username_blank">Username cannot be blank</string>
+</resources>

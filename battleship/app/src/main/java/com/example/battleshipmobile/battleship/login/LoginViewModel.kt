@@ -5,29 +5,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.battleshipmobile.service.*
-import com.example.battleshipmobile.utils.Problem
+import com.example.battleshipmobile.battleship.service.user.AuthInfo
+import com.example.battleshipmobile.battleship.service.user.User
+import com.example.battleshipmobile.battleship.service.user.UserService
 import kotlinx.coroutines.launch
 
 class LoginViewModel(private val userService: UserService): ViewModel() {
 
-    enum class LoadingState{ LOADING, IDLE}
+    enum class LoadingState{ LOADING, IDLE }
 
     var loadingState by mutableStateOf(LoadingState.IDLE)
     private set
 
-    var authInformation by mutableStateOf<AuthInfo?>(null)
+    var authInformation by mutableStateOf<Result<AuthInfo>?>(null)
     private set
 
-    fun login(authenticator: User){
+    fun login(username: String, password: String){
         viewModelScope.launch {
-            loadingState = LoadingState.LOADING
-            val result = userService.login(authenticator)
-            val authInfo = when(result){
-                is ValueResult -> result.value
-                is ProblemResult ->  throw Exception()// TODO
+            authInformation = try{
+                loadingState = LoadingState.LOADING
+                Result.success(userService.login(User(username, password)))
+            }catch (e: Exception){
+                Result.failure(e)
             }
-            authInformation = authInfo
             loadingState = LoadingState.IDLE
         }
     }

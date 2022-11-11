@@ -4,13 +4,8 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
-    <string name="title_activity_home2">Home2Activity</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="general_error">An error has occurred</string>
+    <string name="general_error_title">Error</string>
+    <string name="confirm" translatable="false">OK</string>
+    <string name="error_username_blank">Username cannot be blank</string>
 </resources>

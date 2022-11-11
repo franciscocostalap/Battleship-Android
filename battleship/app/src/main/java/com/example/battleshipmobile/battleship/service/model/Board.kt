@@ -1,4 +1,4 @@
-package com.example.battleshipmobile
+package com.example.battleshipmobile.battleship.service.model
 
 data class Board(
     val side: Int,

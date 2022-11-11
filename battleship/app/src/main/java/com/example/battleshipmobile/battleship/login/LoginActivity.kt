@@ -3,19 +3,16 @@ package com.example.battleshipmobile.battleship.login
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.example.battleshipmobile.DependenciesContainer
+import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.home.HomeActivity
-import com.example.battleshipmobile.service.User
+import com.example.battleshipmobile.ui.ErrorAlert
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
+import com.example.battleshipmobile.utils.viewModelInit
 
 class LoginActivity : ComponentActivity() {
 
@@ -30,29 +27,33 @@ class LoginActivity : ComponentActivity() {
 
     private val dependencies by lazy { application as DependenciesContainer }
     private val loginViewModel by viewModels<LoginViewModel> {
-        object: ViewModelProvider.Factory{
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return LoginViewModel(dependencies.userService) as T
-            }
-        }
+        viewModelInit{ LoginViewModel(dependencies.userService) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.v("LOGIN_ACTIVITY", "LoginActivity onCreate")
         setContent {
             BattleshipMobileTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    if (loginViewModel.authInformation == null) {
-                        LoginScreen { username, password ->
-                            loginViewModel.login(User(username, password))
-                        }
-                    } else {
-                        HomeActivity.navigate(this, loginViewModel.authInformation)
+
+                val authInfo = loginViewModel.authInformation
+
+                if (authInfo == null || loginViewModel.authInformation?.isFailure == true) {
+                    LoginScreen { username, password ->
+                        loginViewModel.login(username, password)
                     }
+                }
+
+                authInfo?.onSuccess {
+                    HomeActivity.navigate(this@LoginActivity, it)
+                    finish()
+                }?.onFailure {
+                    ErrorAlert(
+                        title = R.string.general_error_title,
+                        message = R.string.general_error,
+                        buttonText = R.string.confirm,
+                        onDismiss = { finishAndRemoveTask() }
+                    )
                 }
             }
         }

@@ -6,7 +6,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.battleshipmobile.battleship.home.HomeScreen
 
 
-
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview(){
@@ -29,5 +28,4 @@ fun CreditsPreview(){
         onSendEmailRequested =  { },
         socials = emptyList()
     )
-
 }

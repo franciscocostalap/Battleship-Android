@@ -1,4 +1,4 @@
-package com.example.battleshipmobile.views
+package com.example.battleshipmobile.ui.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,11 +9,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.battleshipmobile.*
+import com.example.battleshipmobile.battleship.service.model.*
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 
 
-const val SQUARE_BASE_SIDE = 80
+const val SQUARE_BASE_SIDE = 200
+const val SQUARE_SHRINK_FACTOR = 0.5
+const val SQUARE_BORDER_WIDTH = 1
 
 @Composable
 fun BoardView(board: Board){
@@ -39,17 +41,15 @@ fun SquareView(type: SquareType, boardSide: Int){
         SquareType.Hit -> Color.Red
     }
 
-    val side = (200 / (0.50 * boardSide)).dp
+    val side = (SQUARE_BASE_SIDE / (SQUARE_SHRINK_FACTOR * boardSide)).dp
 
     val boxModifier = Modifier
-        .border(1.dp, Color.Black)
+        .border(SQUARE_BORDER_WIDTH.dp, Color.Black)
         .width(side)
         .height(side)
         .background(bgColor)
 
-    Box(contentAlignment = Alignment.Center, modifier = boxModifier){
-
-    }
+    Box(contentAlignment = Alignment.Center, modifier = boxModifier){}
 }
 
 @Preview
