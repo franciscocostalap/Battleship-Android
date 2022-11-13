@@ -26,6 +26,9 @@ class LoginActivity : ComponentActivity() {
     }
 
     private val dependencies by lazy { application as DependenciesContainer }
+
+    private val repo by lazy { dependencies.authInfoRepository }
+
     private val loginViewModel by viewModels<LoginViewModel> {
         viewModelInit{ LoginViewModel(dependencies.userService) }
     }
@@ -35,28 +38,42 @@ class LoginActivity : ComponentActivity() {
         Log.v("LOGIN_ACTIVITY", "LoginActivity onCreate")
         setContent {
             BattleshipMobileTheme {
+                // Update the auth information in the repository before
+                // accessing it so it reflects the current state on the recomposition
+                //
+                // AuthInfo is updated in the ViewModel. Because it is a mutable state,
+                // it is recomposed when it changes.
 
-                val authInfo = loginViewModel.authInformation
-
-                if (authInfo == null || loginViewModel.authInformation?.isFailure == true) {
-                    LoginScreen { username, password ->
-                        loginViewModel.login(username, password)
-                    }
-                }
-
-                authInfo?.onSuccess {
-                    HomeActivity.navigate(this@LoginActivity, it)
-                    finish()
+                loginViewModel.authInformation?.onSuccess {
+                    repo.authInfo = it
                 }?.onFailure {
+                    Log.e("LOGIN_ERROR", it.stackTraceToString())
+
                     ErrorAlert(
                         title = R.string.general_error_title,
                         message = R.string.general_error,
-                        buttonText = R.string.confirm,
-                        onDismiss = { finishAndRemoveTask() }
+                        buttonText = R.string.ok,
+                        onDismiss = { loginViewModel.logout() }
                     )
+                }
+
+                val authInfo = repo.authInfo
+
+                if (authInfo == null)
+                    LoginScreen(
+                        usernameLabel = R.string.username_field_label,
+                        passwordLabel = R.string.password_field_label,
+                        onLoginRequested = { user ->
+                            loginViewModel.login(user)
+                        }
+                    )
+                else{
+                    HomeActivity.navigate(this)
+                    finish()
                 }
             }
         }
     }
-
 }
+
+

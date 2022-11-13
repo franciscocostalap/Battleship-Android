@@ -20,16 +20,20 @@ class LoginViewModel(private val userService: UserService): ViewModel() {
     var authInformation by mutableStateOf<Result<AuthInfo>?>(null)
     private set
 
-    fun login(username: String, password: String){
+    fun login(user: User){
         viewModelScope.launch {
-            authInformation = try{
+            try{
                 loadingState = LoadingState.LOADING
-                Result.success(userService.login(User(username, password)))
+                authInformation = Result.success(userService.login(user))
             }catch (e: Exception){
-                Result.failure(e)
+                authInformation = Result.failure(e)
             }
             loadingState = LoadingState.IDLE
         }
+    }
+
+    fun logout(){
+        authInformation = null
     }
 
 }
