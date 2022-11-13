@@ -1,5 +1,6 @@
 package com.example.battleshipmobile.battleship.service.user
 
+import com.example.battleshipmobile.battleship.service.UserID
 
 
 sealed class UserModelException: Exception()
@@ -21,4 +22,4 @@ data class User(val username: String, val password: String){
 /**
  *
  */
-data class AuthInfo(val uid: Int, val token: String)
+data class AuthInfo(val uid: UserID, val token: String)

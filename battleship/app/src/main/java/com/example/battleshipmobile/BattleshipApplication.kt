@@ -1,6 +1,8 @@
 package com.example.battleshipmobile
 
 import android.app.Application
+import com.example.battleshipmobile.battleship.service.lobby.LobbyService
+import com.example.battleshipmobile.battleship.service.lobby.RealLobbyService
 import com.example.battleshipmobile.battleship.service.user.RealUserService
 import com.example.battleshipmobile.battleship.service.user.UserService
 import com.google.gson.Gson
@@ -13,9 +15,12 @@ const val TAG = "BattleshipGameApp"
 
 interface DependenciesContainer{
     val userService: UserService
+    val lobbyService: LobbyService
 }
 
-private const val userURL = "https://1a23-2001-818-e245-8100-389b-35be-5c50-1a09.eu.ngrok.io/api/user"
+private const val ngrokURL = "https://2ab7-95-92-100-136.eu.ngrok.io/api"
+private const val userURL = "${ngrokURL}/user"
+private const val lobbyURL = "${ngrokURL}/lobby"
 private const val SIZE_50MB: Long = 50 * 1024 * 1024
 
 class BattleshipApplication: Application(), DependenciesContainer{
@@ -34,6 +39,10 @@ class BattleshipApplication: Application(), DependenciesContainer{
 
     override val userService: UserService by lazy {
         RealUserService(httpClient, jsonEncoder, userURL)
+    }
+
+    override val lobbyService: LobbyService by lazy{
+        RealLobbyService(httpClient, jsonEncoder, lobbyURL)
     }
 
 }

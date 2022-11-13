@@ -12,6 +12,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import java.net.URL
+import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -44,49 +45,53 @@ class RealUserService(
     override suspend fun login(authenticator: User): AuthInfo {
 
         val body = jsonFormatter.toJson(authenticator)
-
-
         Log.d("REQUEST_BODY", body)
 
-        val request = Request
-            .Builder()
-            .url(loginUrl)
-            .post(body.toRequestBody("application/json".toMediaType()))
-            .build()
-
-        return suspendCoroutine { continuation ->
-
-            client.newCall(request).enqueue(object : Callback{
-                override fun onFailure(call: Call, e: IOException) {
-                    continuation.resumeWithException(e)
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    val body = response.body?.string()
-                    Log.d("RESPONSE_BODY", body.toString())
-                    if(response.code == 200){
-                        val sirenEntity = jsonFormatter.fromJson<SirenEntity<AuthInfo>>(
-                            body,
-                            SirenEntity.getType<AuthInfo>().type
-                        )
-                        sirenEntity.properties?.let {
-                            continuation.resume(it)
-                        } ?: continuation.resumeWithException(Exception())
-
-                    }else{
-
-                        val problem = jsonFormatter.fromJson<Problem>(
-                            body,
-                            object: TypeToken<Problem>(){}.type
-                        )
-
-                        continuation.resumeWithException(Exception()) // Map Problems to Exception
-                    }
-                }
-            })
-
-        }
-
+        return request<AuthInfo>(client, loginUrl, body, jsonFormatter)
     }
 
+}
+
+
+private fun <T> Continuation<T>.handle(response: Response, jsonFormatter: Gson){
+    val body = response.body?.string()
+    Log.d("RESPONSE_BODY", body.toString())
+
+    if(response.code == 200) {
+        val sirenEntity = jsonFormatter.fromJson<SirenEntity<T>>(
+            body,
+            SirenEntity.getType<AuthInfo>().type
+        )
+        sirenEntity.properties?.let {
+            resume(it)
+        } ?: resumeWithException(Exception())
+    }else{
+        val problem = jsonFormatter.fromJson<Problem>(
+            body,
+            object: TypeToken<Problem>(){}.type
+        )
+        resumeWithException(Exception()) // Map Problems to Exception
+    }
+}
+
+private suspend fun <T> request(client: OkHttpClient, url: URL, body: String, jsonFormatter: Gson): T{
+    val request = Request
+        .Builder()
+        .url(url)
+        .post(body.toRequestBody("application/json".toMediaType()))
+        .build()
+
+    return suspendCoroutine { continuation ->
+
+        client.newCall(request).enqueue(object : Callback{
+            override fun onFailure(call: Call, e: IOException) {
+                continuation.resumeWithException(e)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                continuation.handle(response, jsonFormatter)
+            }
+        })
+
+    }
 }

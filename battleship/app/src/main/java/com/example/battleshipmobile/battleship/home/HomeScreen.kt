@@ -127,7 +127,7 @@ class HomeScreenActivity : ComponentActivity(){
 }
 
 @Composable
-fun HomeScreen(onClick: () -> Unit, creditsOnClick: () -> Unit) {
+fun HomeScreen(onClick: () -> Unit, queueOnClick: () -> Unit, creditsOnClick: () -> Unit) {
 
     Image(
         modifier = Modifier.fillMaxSize(),
@@ -153,7 +153,7 @@ fun HomeScreen(onClick: () -> Unit, creditsOnClick: () -> Unit) {
 
         Spacer(Modifier.size(200.dp))
         TextButton(
-            onClick = onClick,
+            onClick = queueOnClick,
             buttonWidth = PLAY_BUTTON_WIDTH,
             text = "Play"
         )

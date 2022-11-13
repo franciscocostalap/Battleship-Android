@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.battleshipmobile.battleship.info.InfoScreenActivity
+import com.example.battleshipmobile.battleship.play.QueueActivity
 import com.example.battleshipmobile.battleship.service.user.AuthInfo
 import com.example.battleshipmobile.battleship.service.user.AuthInfoDTO
 import com.example.battleshipmobile.battleship.service.user.toDTO
@@ -31,7 +32,7 @@ class HomeActivity: ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BattleshipMobileTheme {
-                HomeScreen(onClick = {  }) {
+                HomeScreen(onClick = {  }, queueOnClick =  {authInfoExtra?.let { QueueActivity.navigate(this, AuthInfo(it.uid, it.token))}}) {
                     InfoScreenActivity.navigate(this)
                 }
 

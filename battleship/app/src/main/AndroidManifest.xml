@@ -36,5 +36,8 @@
         <activity
             android:name=".battleship.home.HomeActivity"
             android:exported="false" />
+        <activity
+            android:name=".battleship.play.QueueActivity"
+            android:exported="false" />
     </application>
 </manifest>
