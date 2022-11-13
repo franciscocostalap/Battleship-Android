@@ -2,10 +2,14 @@
 <resources>
     <string name="app_name">Batalha Naval</string>
     <string name="register">Registar</string>
-    <string name="username">Nome</string>
-    <string name="password">Palavra-Chave</string>
     <string name="login">Entrar</string>
     <string name="general_error">Ocorreu um erro</string>
     <string name="general_error_title">Erro</string>
-    <string name="error_username_blank">Username cannot be blank</string>
+    <string name="username_field_label">Nome de Utilizador</string>
+    <string name="password_field_label">Palavra-Chave</string>
+    <string name="password_must_have_a_special_character">Tem que conter pelo menos um caracter especial</string>
+    <string name="username_is_too_short">Campo muito curto</string>
+    <string name="password_is_too_short">Campo muito curto</string>
+    <string name="password_must_have_a_digit">Tem que conter pelo menos um dígito</string>
+    <string name="field_is_blank">Campo tem de ser preenchido</string>
 </resources>

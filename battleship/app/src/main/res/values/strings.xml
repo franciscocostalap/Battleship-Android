@@ -1,11 +1,16 @@
 <resources>
     <string name="app_name">Battleship</string>
     <string name="register">Register</string>
-    <string name="username">Username</string>
-    <string name="password">Password</string>
+    <string name="username_field_label">Username</string>
+    <string name="password_field_label">Password</string>
     <string name="login">Login</string>
     <string name="general_error">An error has occurred</string>
     <string name="general_error_title">Error</string>
-    <string name="confirm" translatable="false">OK</string>
-    <string name="error_username_blank">Username cannot be blank</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="title_activity_main" translatable="false">MainActivity</string>
+    <string name="field_is_blank">Field must not be blank</string>
+    <string name="username_is_too_short">Username is to short</string>
+    <string name="password_is_too_short">Password is too short</string>
+    <string name="password_must_have_a_special_character">Password need at least one special character></string>
+    <string name="password_must_have_a_digit">Password must have at least a digit</string>
 </resources>
