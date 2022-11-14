@@ -22,7 +22,7 @@ interface DependenciesContainer{
     val lobbyService: LobbyService
 }
 
-private const val host = "http://10.0.2.2:8080"
+private const val host = "https://dfe5-95-92-100-136.eu.ngrok.io"
 private const val root = "$host/api/"
 private const val SIZE_50MB: Long = 50 * 1024 * 1024
 
@@ -45,7 +45,7 @@ class BattleshipApplication: Application(), DependenciesContainer{
     }
 
     override val lobbyService: LobbyService by lazy{
-        RealLobbyService(httpClient, jsonEncoder, lobbyURL)
+        RealLobbyService(httpClient, jsonEncoder, host, URL(root))
     }
 
     override val authInfoRepository: AuthInfoRepository

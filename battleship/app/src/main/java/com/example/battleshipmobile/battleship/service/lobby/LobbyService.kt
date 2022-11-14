@@ -1,5 +1,6 @@
 package com.example.battleshipmobile.battleship.service.lobby
 
+import com.example.battleshipmobile.battleship.service.Action
 import com.example.battleshipmobile.battleship.service.ID
 import com.example.battleshipmobile.battleship.service.UserID
 

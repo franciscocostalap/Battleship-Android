@@ -1,5 +1,8 @@
 package com.example.battleshipmobile.battleship.service.user
 
+import com.example.battleshipmobile.battleship.service.Action
+import com.example.battleshipmobile.battleship.service.ServiceData
+import com.example.battleshipmobile.battleship.service.ensureAction
 import com.example.battleshipmobile.utils.*
 import com.google.gson.Gson
 import okhttp3.*
@@ -11,6 +14,8 @@ class RealUserService(
     private val host: String,
     private val homeURL: URL
 ) : UserService {
+
+    private val serviceData = ServiceData(client, host, homeURL, jsonFormatter, ::fillServiceUrls)
 
     private suspend fun sendCredentials(credentials: User, action: Action): AuthInfo {
         val body = jsonFormatter.toJson(credentials)
@@ -39,36 +44,14 @@ class RealUserService(
     override suspend fun login(authenticator: User): AuthInfo =
         sendCredentials(authenticator, action = ensureLoginAction())
 
-
-    private data class Action(val url: URL, val method: HttpMethod)
     private var registerAction: SirenAction? = null
     private var loginAction: SirenAction? = null
 
-    private suspend fun ensureRegisterAction(): Action = ensureAction{ registerAction }
-    private suspend fun ensureLoginAction(): Action = ensureAction { loginAction }
+    private suspend fun ensureRegisterAction(): Action = ensureAction(serviceData){ registerAction }
+    private suspend fun ensureLoginAction(): Action = ensureAction(serviceData){ loginAction }
 
-    private suspend fun ensureAction(action: () -> SirenAction?): Action{
-        if (action() == null) fillServiceUrls()
-
-        val ensuredAction = action() ?: throw IllegalStateException("No action")
-
-        val newUrl = URL(host + ensuredAction.href)
-        val method = ensuredAction.method?.let { HttpMethod.valueOf(it) }
-            ?: throw IllegalStateException("No register action") // TODO: TIRAR ESTES ERROS MANHOSOS
-
-        return Action(newUrl, method)
-    }
-
-    private suspend fun fillServiceUrls() {
-        val request = buildRequest(homeURL)
-        val result = request.send(client) {
-            handle<SirenEntity<Any>>(
-                SirenEntity.getType<Any>().type,
-                jsonFormatter
-            )
-        }
-
-        result.actions?.forEach { action ->
+    private fun fillServiceUrls(actions: List<SirenAction>?) {
+        actions?.forEach { action ->
             when (action.name) {
                 "register" -> registerAction = action
                 "login" -> loginAction = action

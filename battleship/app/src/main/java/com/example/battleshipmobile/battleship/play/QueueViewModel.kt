@@ -42,8 +42,6 @@ class QueueViewModel(private val lobbyService: LobbyService): ViewModel() {
 
     fun enqueue(userToken: String){
         viewModelScope.launch {
-            loadingState = LoadingState.LOADING
-
             lobbyInformation = lobbyService.enqueue(userToken)
 
             val currentLobbyInfo = lobbyInformation
@@ -52,7 +50,6 @@ class QueueViewModel(private val lobbyService: LobbyService): ViewModel() {
             if(currentLobbyInfo.gameID == null){
                 updateFlow
             }
-            loadingState = LoadingState.IDLE
         }
     }
 

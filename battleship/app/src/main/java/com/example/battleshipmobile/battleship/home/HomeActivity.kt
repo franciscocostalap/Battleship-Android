@@ -9,8 +9,6 @@ import androidx.activity.compose.setContent
 import com.example.battleshipmobile.battleship.info.InfoScreenActivity
 import com.example.battleshipmobile.battleship.play.QueueActivity
 import com.example.battleshipmobile.battleship.service.user.AuthInfo
-import com.example.battleshipmobile.battleship.service.user.AuthInfoDTO
-import com.example.battleshipmobile.battleship.service.user.toDTO
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 
 class HomeActivity: ComponentActivity() {
@@ -19,10 +17,9 @@ class HomeActivity: ComponentActivity() {
 
         private const val AUTH_EXTRA = "AUTH"
 
-        fun navigate(origin: Activity, authInfo: AuthInfo?){
+        fun navigate(origin: Activity){
             with(origin){
                 val intent = Intent(this, HomeActivity::class.java)
-                if (authInfo != null) intent.putExtra(AUTH_EXTRA, authInfo.toDTO())
                 startActivity(intent)
             }
         }
@@ -32,7 +29,7 @@ class HomeActivity: ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BattleshipMobileTheme {
-                HomeScreen(onClick = {  }, queueOnClick =  {authInfoExtra?.let { QueueActivity.navigate(this, AuthInfo(it.uid, it.token))}}) {
+                HomeScreen(onClick = {  }, queueOnClick =  { QueueActivity.navigate(this)}) {
                     InfoScreenActivity.navigate(this)
                 }
 
@@ -40,13 +37,4 @@ class HomeActivity: ComponentActivity() {
         }
 
     }
-
-    @Suppress("deprecation")
-    private val authInfoExtra: AuthInfoDTO?
-        get() =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                intent.getParcelableExtra(AUTH_EXTRA, AuthInfoDTO::class.java)
-            else
-                intent.getParcelableExtra(AUTH_EXTRA)
-
 }
