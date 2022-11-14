@@ -1,5 +1,7 @@
 package com.example.battleshipmobile.battleship.service.user
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
 
 data class User(val username: String, val password: String){
@@ -62,7 +64,8 @@ fun validateUserInfo(username: String, password: String): Pair<UsernameValidatio
 /**
  *
  */
-data class AuthInfo(val uid: Int, val token: String)
+@Parcelize
+data class AuthInfo(val uid: Int, val token: String) : Parcelable
 
 
 

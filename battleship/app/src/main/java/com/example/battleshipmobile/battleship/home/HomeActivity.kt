@@ -6,46 +6,45 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.battleshipmobile.battleship.info.InfoScreenActivity
+import androidx.activity.viewModels
+import com.example.battleshipmobile.DependenciesContainer
+import com.example.battleshipmobile.battleship.info.InfoActivity
+import com.example.battleshipmobile.battleship.login.LoginActivity
 import com.example.battleshipmobile.battleship.service.user.AuthInfo
-import com.example.battleshipmobile.battleship.service.user.AuthInfoDTO
-import com.example.battleshipmobile.battleship.service.user.toDTO
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
+import com.example.battleshipmobile.utils.viewModelInit
 
 class HomeActivity: ComponentActivity() {
 
     companion object{
 
-        private const val AUTH_EXTRA = "AUTH"
-
-        fun navigate(origin: Activity, authInfo: AuthInfo?){
+        fun navigate(origin: Activity){
             with(origin){
                 val intent = Intent(this, HomeActivity::class.java)
-                if (authInfo != null) intent.putExtra(AUTH_EXTRA, authInfo.toDTO())
                 startActivity(intent)
             }
         }
     }
 
+    private val dependencies by lazy { application as DependenciesContainer }
+
+    private val authRepo by lazy { dependencies.authInfoRepository }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             BattleshipMobileTheme {
-                HomeScreen(onClick = {  }) {
-                    InfoScreenActivity.navigate(this)
-                }
-
+                HomeScreen(
+                    isLoggedIn =  authRepo.authInfo != null,
+                    onLoginButtonClick = { LoginActivity.navigate(this) },
+                    onLogoutButtonClick = { authRepo.authInfo = null },
+                    onPlayButtonClick = {   },
+                    onRankingButtonClick = {  },
+                    onInfoButtonClick = { InfoActivity.navigate(this) }
+                )
             }
         }
-
     }
-
-    @Suppress("deprecation")
-    private val authInfoExtra: AuthInfoDTO?
-        get() =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                intent.getParcelableExtra(AUTH_EXTRA, AuthInfoDTO::class.java)
-            else
-                intent.getParcelableExtra(AUTH_EXTRA)
 
 }
