@@ -1,175 +1,179 @@
 package com.example.battleshipmobile.battleship.home
 
-import com.example.battleshipmobile.battleship.info.InfoScreenActivity
-
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.*
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
+import com.example.battleshipmobile.battleship.components.TextButton
 
-private val ROUNDED_CORNER_RATIO = 30.dp
-private val PLAY_BUTTON_WIDTH = 350.dp
+private val PLAY_BUTTON_WIDTH = 230.dp
+private val BUTTONS_HEIGHT = 70.dp
 private val INFO_BUTTON_WIDTH = 250.dp
-private val BUTTON_PADDING = 10.dp
-private val FONT_SIZE = 40.sp
-private val BACKGROUND_BUTTON_COLOR = Color.Red
-private val TEXT_BUTTON_COLOR = Color.White
+private val CREDITS_BUTTON_WIDTH = 270.dp
 private val HEADER_COLOR = Color(23, 55, 76)
-private val HEADER_SIZE = 60.sp
+private val LOGIN_BUTTON_WIDTH = 225.dp
+private val BATTLESHIP_IMAGE_SIZE = 180.dp
+
 
 
 @Composable
-fun TextButton(
-    onClick: () -> Unit,
-    buttonWidth: Dp,
-    buttonPadding: Dp = BUTTON_PADDING,
-    buttonBackgroundColour: Color = BACKGROUND_BUTTON_COLOR,
-    buttonTextColour: Color = TEXT_BUTTON_COLOR,
-    text: String,
-    fontSize: TextUnit = FONT_SIZE,
-    fontWeight: FontWeight = FontWeight.Bold,
-    RoundedCornerRatio: Dp = ROUNDED_CORNER_RATIO
+fun HomeScreen(
+    onLoginButtonClick: () -> Unit,
+    onLogoutButtonClick: () -> Unit,
+    onPlayButtonClick: () -> Unit,
+    onInfoButtonClick: () -> Unit,
+    onRankingButtonClick: () -> Unit,
+    isLoggedIn: Boolean,
 ) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .width(buttonWidth)
-            .padding(buttonPadding),
-        shape = RoundedCornerShape(RoundedCornerRatio),
-        colors = ButtonDefaults.buttonColors(buttonBackgroundColour, buttonTextColour)
-    ) {
-        Text(
-            text,
-            fontSize = fontSize,
-            fontWeight = fontWeight
+
+    Surface(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
+        StatelessHomeScreen(
+            isLoggedIn = isLoggedIn,
+            onLoginClick = onLoginButtonClick,
+            onLogoutClick = onLogoutButtonClick,
+            onPlayClick = onPlayButtonClick,
+            onInfoClick = onInfoButtonClick,
+            onRankingClick = onRankingButtonClick,
         )
     }
 }
 
-
-class HomeScreenActivity : ComponentActivity(){
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            BattleshipMobileTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-
-                        Image(
-                            modifier = Modifier.fillMaxSize(),
-                            painter = painterResource(R.drawable.home_bg),
-                            contentDescription = "background_image",
-                            contentScale = ContentScale.FillBounds
-                        )
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Bottom
-                        ) {
-                            Box(
-                                Modifier.background(Color.White.copy(alpha = 0.6f))
-                            ) {
-                                Text(
-                                    text = "BATTLESHIP",
-                                    color = HEADER_COLOR,
-                                    fontSize = HEADER_SIZE,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-
-                            Spacer(Modifier.size(200.dp))
-                            TextButton(
-                                onClick = {},
-                                buttonWidth = PLAY_BUTTON_WIDTH,
-                                text = "Play"
-                            )
-
-                            TextButton(
-                                onClick = {},
-                                buttonWidth = INFO_BUTTON_WIDTH,
-                                text = "Ranking"
-                            )
-
-                            TextButton(
-                                onClick = { InfoScreenActivity.navigate(this@HomeScreenActivity) },
-                                buttonWidth = INFO_BUTTON_WIDTH,
-                                text = "Credits"
-                            )
-
-                            Spacer(Modifier.size(100.dp))
-                        }
-                    }
-                }
-            }
-        }
-
+@Composable
+fun IconButton(
+    icon : Int,
+    description : String,
+    size: Dp = 40.dp,
+    buttonModifiers: Modifier = Modifier,
+    onClick: () -> Unit,
+){
+    Button(
+        onClick = onClick,
+        modifier = buttonModifiers
+    ) {
+        Icon(
+            painter = painterResource(id = icon),
+            contentDescription = description,
+            modifier = Modifier.size(size)
+        )
+    }
 }
 
 @Composable
-fun HomeScreen(onClick: () -> Unit, queueOnClick: () -> Unit, creditsOnClick: () -> Unit) {
-
-    Image(
-        modifier = Modifier.fillMaxSize(),
-        painter = painterResource(R.drawable.home_bg),
-        contentDescription = "background_image",
-        contentScale = ContentScale.FillBounds
-    )
+private fun StatelessHomeScreen(
+    isLoggedIn: Boolean = false,
+    onLoginClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
+    onPlayClick: () -> Unit = {},
+    onRankingClick : () -> Unit = {},
+    onInfoClick : () -> Unit = {},
+) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Bottom
+      //  verticalArrangement = Arrangement.Bottom
     ) {
-        Box(
-            Modifier.background(Color.White.copy(alpha = 0.6f))
-        ){
+        Image(
+            painter = painterResource(id = R.drawable.bs_icon),
+            contentDescription = "battleship icon",
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(BATTLESHIP_IMAGE_SIZE)
+        )
+
+
+        Box() {
             Text(
                 text = "BATTLESHIP",
                 color = HEADER_COLOR,
-                fontSize = HEADER_SIZE,
+                fontSize = 42.sp,
                 fontWeight = FontWeight.Bold
-                )
+            )
         }
 
-        Spacer(Modifier.size(200.dp))
-        TextButton(
-            onClick = queueOnClick,
-            buttonWidth = PLAY_BUTTON_WIDTH,
-            text = "Play"
-        )
 
+        Spacer(Modifier.size(50.dp))
+
+        if( !isLoggedIn ) {
+            Text(
+                text = "Welcome, please sign in to play!",
+                color = Color(62, 66, 68 ),  //put in theme
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(Modifier.size(8.dp))
+            TextButton(
+                onClick = onLoginClick,
+                buttonWidth = LOGIN_BUTTON_WIDTH,
+                buttonHeight = BUTTONS_HEIGHT,
+                fontSize = 25.sp,
+                text = "Sign In"
+            )
+        }
+
+        if(isLoggedIn){
+            TextButton(
+                onClick = onPlayClick ,
+                buttonWidth = PLAY_BUTTON_WIDTH,
+                buttonHeight = BUTTONS_HEIGHT,
+                text = "Play"
+            )
+        }
+
+        Spacer(Modifier.size(70.dp))
         TextButton(
-            onClick = onClick,
+            onClick = onRankingClick,
             buttonWidth = INFO_BUTTON_WIDTH,
+            buttonHeight = BUTTONS_HEIGHT,
             text = "Ranking"
         )
 
         TextButton(
-            onClick = creditsOnClick,
-            buttonWidth = INFO_BUTTON_WIDTH,
+            onClick = onInfoClick,
+            buttonWidth = CREDITS_BUTTON_WIDTH,
+            buttonHeight = BUTTONS_HEIGHT,
             text = "Credits"
         )
 
+        if(isLoggedIn){
+            Spacer(Modifier.size(70.dp))
+            TextButton(
+                onClick = onLogoutClick,
+                buttonWidth = LOGIN_BUTTON_WIDTH,
+                buttonHeight = BUTTONS_HEIGHT,
+                text = "Logout"
+            )
+        }
+
         Spacer(Modifier.size(100.dp))
+
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    BattleshipMobileTheme {
+        HomeScreen(
+            onLoginButtonClick = {},
+            onLogoutButtonClick = {},
+            onPlayButtonClick = {},
+            onInfoButtonClick = {},
+            onRankingButtonClick = {},
+            isLoggedIn = true
+        )
     }
 }

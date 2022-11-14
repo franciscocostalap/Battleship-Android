@@ -12,13 +12,13 @@ import com.example.battleshipmobile.TAG
 
 
 
-class InfoScreenActivity : ComponentActivity() {
+class InfoActivity : ComponentActivity() {
 
 
     companion object{
         fun navigate(origin: Activity){
             with(origin){
-                val intent = Intent(this, InfoScreenActivity::class.java)
+                val intent = Intent(this, InfoActivity::class.java)
                 startActivity(intent)
             }
         }

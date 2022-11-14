@@ -6,16 +6,17 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.battleshipmobile.battleship.info.InfoScreenActivity
-import com.example.battleshipmobile.battleship.play.QueueActivity
+import androidx.activity.viewModels
+import com.example.battleshipmobile.DependenciesContainer
+import com.example.battleshipmobile.battleship.info.InfoActivity
+import com.example.battleshipmobile.battleship.login.LoginActivity
 import com.example.battleshipmobile.battleship.service.user.AuthInfo
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
+import com.example.battleshipmobile.utils.viewModelInit
 
 class HomeActivity: ComponentActivity() {
 
     companion object{
-
-        private const val AUTH_EXTRA = "AUTH"
 
         fun navigate(origin: Activity){
             with(origin){
@@ -25,16 +26,25 @@ class HomeActivity: ComponentActivity() {
         }
     }
 
+    private val dependencies by lazy { application as DependenciesContainer }
+
+    private val authRepo by lazy { dependencies.authInfoRepository }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             BattleshipMobileTheme {
-                HomeScreen(onClick = {  }, queueOnClick =  { QueueActivity.navigate(this)}) {
-                    InfoScreenActivity.navigate(this)
-                }
-
+                HomeScreen(
+                    isLoggedIn =  authRepo.authInfo != null,
+                    onLoginButtonClick = { LoginActivity.navigate(this) },
+                    onLogoutButtonClick = { authRepo.authInfo = null },
+                    onPlayButtonClick = {   },
+                    onRankingButtonClick = {  },
+                    onInfoButtonClick = { InfoActivity.navigate(this) }
+                )
             }
         }
-
     }
+
 }
