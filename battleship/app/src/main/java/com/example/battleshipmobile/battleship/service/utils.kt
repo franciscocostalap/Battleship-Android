@@ -9,7 +9,7 @@ data class Action(val url: URL, val method: HttpMethod)
 
 data class ServiceData(
     val client: OkHttpClient,
-    val host: String,
+    val root: String,
     val url: URL,
     val jsonFormatter: Gson,
     val fillServiceUrls: (List<SirenAction>?) -> Unit
@@ -25,7 +25,7 @@ suspend fun ensureAction(
 
     val ensuredAction = action() ?: throw IllegalStateException("No action")
 
-    val newUrl = URL(_super.host + ensuredAction.href)
+    val newUrl = URL(_super.root + ensuredAction.href)
     val method = ensuredAction.method?.let { HttpMethod.valueOf(it) }
         ?: throw IllegalStateException("No register action") // TODO: TIRAR ESTES ERROS MANHOSOS
 

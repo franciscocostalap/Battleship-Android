@@ -58,6 +58,8 @@ private fun Request.Builder.addAuthHeaderIfNotNull(value: String?): Request.Buil
 fun <T> Response.handle(bodyType: Type, jsonEncoder: Gson): T {
     val actualContentType = body?.contentType()
     val actualBody = body?.string()
+    Log.v("RESPONSE BODY", actualBody!!)
+
     if (isSuccessful && actualContentType != null && actualContentType == SirenMediaType) {
         try {
             return jsonEncoder.fromJson(actualBody, bodyType)
@@ -70,7 +72,6 @@ fun <T> Response.handle(bodyType: Type, jsonEncoder: Gson): T {
         throw UnexpectedResponseException(this)
     }
 }
-
 
 /**
  * Extension function used to send [this] request using [okHttpClient] and process the
@@ -93,6 +94,8 @@ suspend fun <T> Request.send(okHttpClient: OkHttpClient, handler: Response.() ->
 
             override fun onResponse(call: Call, response: Response) {
                 try {
+                    Log.v("RESPONSE STATUS", response.code.toString())
+                    Log.v("RESPONSE MESSAGE", response.message)
                     continuation.resume(response.handler())
                 } catch (t: Throwable) {
                     continuation.resumeWithException(t)

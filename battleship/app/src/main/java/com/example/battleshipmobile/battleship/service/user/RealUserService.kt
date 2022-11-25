@@ -1,5 +1,6 @@
 package com.example.battleshipmobile.battleship.service.user
 
+import android.util.Log
 import com.example.battleshipmobile.battleship.service.Action
 import com.example.battleshipmobile.battleship.service.ServiceData
 import com.example.battleshipmobile.battleship.service.ensureAction
@@ -8,19 +9,27 @@ import com.google.gson.Gson
 import okhttp3.*
 import java.net.URL
 
+/**
+ * User Service
+ * @property client Http client
+ * @property jsonFormatter
+ * @property rootUrl api base url used in all endpoints
+ * @property parentUrl url that gives access to the requested resources with its siren actions/links
+ */
 class RealUserService(
     private val client: OkHttpClient,
     private val jsonFormatter: Gson,
-    private val host: String,
-    private val homeURL: URL
+    private val rootUrl: String,
+    private val parentUrl: URL
 ) : UserService {
 
-    private val serviceData = ServiceData(client, host, homeURL, jsonFormatter, ::fillServiceUrls)
+    private val serviceData = ServiceData(client, rootUrl, parentUrl, jsonFormatter, ::fillServiceUrls)
 
     private suspend fun sendCredentials(credentials: User, action: Action): AuthInfo {
         val body = jsonFormatter.toJson(credentials)
 
         val request = buildRequest(action.url, action.method, body)
+        Log.v("REQUEST", request.toString())
 
         val result = request.send(client) {
             handle<SirenEntity<AuthInfo>>(
@@ -43,6 +52,8 @@ class RealUserService(
      */
     override suspend fun login(authenticator: User): AuthInfo =
         sendCredentials(authenticator, action = ensureLoginAction())
+
+
 
     private var registerAction: SirenAction? = null
     private var loginAction: SirenAction? = null
