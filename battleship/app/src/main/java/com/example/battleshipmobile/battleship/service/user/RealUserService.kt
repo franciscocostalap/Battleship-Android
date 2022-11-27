@@ -3,6 +3,7 @@ package com.example.battleshipmobile.battleship.service.user
 import android.util.Log
 import com.example.battleshipmobile.battleship.service.Action
 import com.example.battleshipmobile.battleship.service.ServiceData
+import com.example.battleshipmobile.battleship.service.dto.UserDTO
 import com.example.battleshipmobile.battleship.service.ensureAction
 import com.example.battleshipmobile.utils.*
 import com.google.gson.Gson
@@ -25,8 +26,9 @@ class RealUserService(
 
     private val serviceData = ServiceData(client, rootUrl, parentUrl, jsonFormatter, ::fillServiceUrls)
 
+
     private suspend fun sendCredentials(credentials: User, action: Action): AuthInfo {
-        val body = jsonFormatter.toJson(credentials)
+        val body = jsonFormatter.toJson(UserDTO(credentials))
 
         val request = buildRequest(action.url, action.method, body)
         Log.v("REQUEST", request.toString())

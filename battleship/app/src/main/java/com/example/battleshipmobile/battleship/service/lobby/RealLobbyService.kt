@@ -53,7 +53,7 @@ class RealLobbyService(
     /**
      * Gets the lobby information of the one that was requested.
      */
-    override suspend fun get(lobbyID: ID): LobbyInformation? {
+    override suspend fun getLobbyInfo(lobbyID: ID): LobbyInformation? {
         val request = buildRequest(URL("${parentUrl}/lobby/${lobbyID}"))
 
         return request.send(client){

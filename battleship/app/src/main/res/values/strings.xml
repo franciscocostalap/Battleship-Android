@@ -13,4 +13,10 @@
     <string name="password_is_too_short">Password is too short</string>
     <string name="password_must_have_a_special_character">Password need at least one special character></string>
     <string name="password_must_have_a_digit">Password must have at least a digit</string>
+    <string name="password_dont_match">Passwords don\'t match</string>
+    <string name="repeat_password_field_label">Repeat Password</string>
+    <string name="dont_have_an_account">Don\'t have an account?</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
 </resources>

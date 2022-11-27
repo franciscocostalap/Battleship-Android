@@ -1,9 +1,9 @@
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.battleshipmobile.battleship.login.AuthInfoRepositorySharedPrefs
+import com.example.battleshipmobile.battleship.auth.AuthInfoRepositorySharedPrefs
 import com.example.battleshipmobile.battleship.service.user.AuthInfo
-import junit.framework.Assert.assertNotNull
-import junit.framework.Assert.assertNull
+import junit.framework.TestCase.assertNotNull
+import junit.framework.TestCase.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
 
