@@ -1,4 +1,4 @@
-package com.example.battleshipmobile.battleship.login
+package com.example.battleshipmobile.battleship.auth
 
 import android.content.Context
 import com.example.battleshipmobile.battleship.service.user.AuthInfo

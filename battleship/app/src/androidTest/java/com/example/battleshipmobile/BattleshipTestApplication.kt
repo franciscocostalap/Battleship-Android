@@ -7,44 +7,35 @@ import com.example.battleshipmobile.battleship.login.AuthInfoRepository
 import com.example.battleshipmobile.battleship.service.ID
 import com.example.battleshipmobile.battleship.service.lobby.LobbyInformation
 import com.example.battleshipmobile.battleship.service.lobby.LobbyService
+import com.example.battleshipmobile.battleship.auth.AuthInfoRepository
+import com.example.battleshipmobile.battleship.service.lobby.LobbyInformation
+import com.example.battleshipmobile.battleship.service.lobby.LobbyService
 import com.example.battleshipmobile.battleship.service.user.AuthInfo
-import com.example.battleshipmobile.battleship.service.user.User
 import com.example.battleshipmobile.battleship.service.user.UserService
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 
 class BattleshipTestApplication: DependenciesContainer, Application() {
 
-    private val testInfo = AuthInfo(0, "testToken")
 
-    override val userService: UserService = object : UserService {
-
-
-        override suspend fun login(authenticator: User): AuthInfo = testInfo
-        override suspend fun register(user: User): AuthInfo = testInfo
-
+    override var userService: UserService = mockk(relaxed = true){
+        coEvery { login(any()) } returns AuthInfo(0, "testToken")
+        coEvery { register(any()) } returns AuthInfo(0, "testToken")
     }
 
-    override val lobbyService: LobbyService = object : LobbyService{
-        override suspend fun enqueue(userToken: String): LobbyInformation {
-            TODO("Not yet implemented")
+    override var authInfoRepository: AuthInfoRepository = mockk(relaxed = true) {
+            every { authInfo } returns AuthInfo(0, "testToken")
         }
 
-        override suspend fun get(lobbyID: ID, userToken: String): LobbyInformation? {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun cancel(lobbyID: ID, userToken: String) {
-            TODO("Not yet implemented")
-        }
-
-    }
-
-
-    override val authInfoRepository: AuthInfoRepository
+       override val authInfoRepository: AuthInfoRepository
         get() = mockk(relaxed = true) {
             coEvery { authInfo } returns testInfo
         }
+    override val lobbyService: LobbyService = mockk(relaxed = true){
+        coEvery { getLobbyInfo(any()) } returns LobbyInformation(0, null)
+        coEvery { enqueue(any()) } returns LobbyInformation(0, null)
+    }
 }
 
 @Suppress("unused")

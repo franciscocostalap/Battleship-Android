@@ -31,12 +31,12 @@ private val BUTTON_CORNER_BOXES_SIZE = 12.dp
 fun CustomBox(
     width: Dp,
     height : Dp,
+    modifier: Modifier = Modifier,
     padding: Dp = BUTTON_PADDING,
     backgroundColor: Color = BUTTON_CORNER_BOXES_COLOR,
     cornerBoxesSize : Dp = BUTTON_CORNER_BOXES_SIZE,
     borderColor: Color = BUTTON_BORDER_COLOR,
     borderWidth: Dp = BUTTON_BORDER_WIDTH,
-    modifier: Modifier = Modifier,
     content: @Composable() (BoxScope.() -> Unit)
 ) {
     BoxWithConstraints(
@@ -109,6 +109,7 @@ fun TextButton(
     onClick: () -> Unit,
     buttonWidth: Dp,
     buttonHeight : Dp,
+    modifier: Modifier = Modifier,
     buttonPadding: Dp = BUTTON_PADDING,
     buttonBackgroundColour: Color = BACKGROUND_BUTTON_COLOR,
     buttonBorderColour: Color = BUTTON_BORDER_COLOR,
@@ -116,7 +117,7 @@ fun TextButton(
     buttonTextColour: Color = TEXT_BUTTON_COLOR,
     text: String,
     fontSize: TextUnit = FONT_SIZE,
-    fontWeight: FontWeight = FontWeight.Bold,
+    fontWeight: FontWeight = FontWeight.Bold
 ) {
     CustomBox(
         width = buttonWidth,
@@ -126,8 +127,7 @@ fun TextButton(
         borderColor = buttonBorderColour,
         borderWidth = buttonBorderWidth,
         cornerBoxesSize = BUTTON_CORNER_BOXES_SIZE,
-        modifier = Modifier
-
+        modifier = modifier
     ){
         Box(
             modifier = Modifier
