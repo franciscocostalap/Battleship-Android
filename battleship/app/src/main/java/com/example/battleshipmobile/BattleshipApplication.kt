@@ -3,6 +3,8 @@ package com.example.battleshipmobile
 import android.app.Application
 import com.example.battleshipmobile.battleship.login.AuthInfoRepository
 import com.example.battleshipmobile.battleship.login.AuthInfoRepositorySharedPrefs
+import com.example.battleshipmobile.battleship.service.Params
+import com.example.battleshipmobile.battleship.service.Params.*
 import com.example.battleshipmobile.battleship.service.lobby.LobbyService
 import com.example.battleshipmobile.battleship.service.lobby.RealLobbyService
 import com.example.battleshipmobile.battleship.service.user.RealUserService
@@ -16,18 +18,17 @@ import java.net.URL
 
 const val TAG = "BattleshipGameApp"
 
-interface DependenciesContainer{
+interface DependenciesContainer {
     val userService: UserService
     val authInfoRepository: AuthInfoRepository
     val lobbyService: LobbyService
 }
 
-private const val host = "https://e8b8-95-92-100-136.eu.ngrok.io"
+private const val host = "https://d13c-95-92-100-136.eu.ngrok.io"
 private const val root = "$host/api"
-private const val userRoot = "${root}/my"
 private const val SIZE_50MB: Long = 50 * 1024 * 1024
 
-class BattleshipApplication: Application(), DependenciesContainer{
+class BattleshipApplication : Application(), DependenciesContainer {
 
     private val httpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
@@ -40,13 +41,12 @@ class BattleshipApplication: Application(), DependenciesContainer{
             .create()
     }
 
-
     override val userService: UserService by lazy {
-        RealUserService(httpClient, jsonEncoder, rootUrl = root, parentUrl = URL("$root/"))
+        RealUserService(httpClient, jsonEncoder, rootUrl = root)
     }
 
-    override val lobbyService: LobbyService by lazy{
-        RealLobbyService(httpClient, jsonEncoder, rootUrl = root, parentUrl =  URL(userRoot))
+    override val lobbyService: LobbyService by lazy {
+        RealLobbyService(httpClient, jsonEncoder, rootUrl = root)
     }
 
     override val authInfoRepository: AuthInfoRepository

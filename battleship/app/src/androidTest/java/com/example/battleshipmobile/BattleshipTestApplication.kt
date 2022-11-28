@@ -4,6 +4,9 @@ import android.app.Application
 import android.content.Context
 import androidx.test.runner.AndroidJUnitRunner
 import com.example.battleshipmobile.battleship.login.AuthInfoRepository
+import com.example.battleshipmobile.battleship.service.ID
+import com.example.battleshipmobile.battleship.service.lobby.LobbyInformation
+import com.example.battleshipmobile.battleship.service.lobby.LobbyService
 import com.example.battleshipmobile.battleship.service.user.AuthInfo
 import com.example.battleshipmobile.battleship.service.user.User
 import com.example.battleshipmobile.battleship.service.user.UserService
@@ -21,6 +24,22 @@ class BattleshipTestApplication: DependenciesContainer, Application() {
         override suspend fun register(user: User): AuthInfo = testInfo
 
     }
+
+    override val lobbyService: LobbyService = object : LobbyService{
+        override suspend fun enqueue(userToken: String): LobbyInformation {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun get(lobbyID: ID, userToken: String): LobbyInformation? {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun cancel(lobbyID: ID, userToken: String) {
+            TODO("Not yet implemented")
+        }
+
+    }
+
 
     override val authInfoRepository: AuthInfoRepository
         get() = mockk(relaxed = true) {

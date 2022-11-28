@@ -5,9 +5,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.progressSemantics
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProgressIndicatorDefaults
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -16,16 +14,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.battleshipmobile.battleship.components.TextButton
 import com.example.battleshipmobile.battleship.play.QueueState.*
+import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 
 private val SPACER_DIM = 50.dp
+const val MAX_NUM_PLAYERS = 2
+private val BUTTON_HEIGHT = 70.dp
+private val INFO_BUTTON_WIDTH = 250.dp
 
 @Composable
-fun QueueScreen(queueState: QueueState) {
+fun QueueScreen(queueState: QueueState, onCancelClick: (() -> Unit)? = null) {
     val numPlayers = if(queueState == SEARCHING_OPPONENT) 1 else 2
 
     Column(
@@ -33,36 +37,50 @@ fun QueueScreen(queueState: QueueState) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ){
-        Text(text = "$numPlayers/$MAX_NUM_PLAYERS")
+        Text(
+            text = "$numPlayers/$MAX_NUM_PLAYERS",
+            modifier = Modifier.testTag(TestTags.Lobby.LobbyState)
+        )
 
         Spacer(modifier = Modifier.height(SPACER_DIM))
 
-        Indicator()
+        LoadingIndicator(
+            modifier = Modifier.testTag(TestTags.Lobby.LoadingIndicator)
+        )
 
         Spacer(modifier = Modifier.height(SPACER_DIM))
 
         if(numPlayers == MAX_NUM_PLAYERS){
-            Text(text = "Opponent Found, game is starting")
+            Text(
+                text = "Opponent Found, game is starting",
+                modifier = Modifier.testTag(TestTags.Lobby.StatusMessage)
+            )
         }else{
-            Text(text = "Searching for an opponent")
+            Text(
+                text = "Searching for an opponent",
+                modifier = Modifier.testTag(TestTags.Lobby.StatusMessage)
+            )
+
+            Spacer(modifier = Modifier.height(SPACER_DIM))
+            require(onCancelClick != null) { "Must have a cancel action on click"}
+
+            TextButton(
+                onClick = onCancelClick,
+                buttonWidth = INFO_BUTTON_WIDTH,
+                buttonHeight = BUTTON_HEIGHT,
+                text = "Cancel"
+            )
         }
     }
 }
 
-@Preview
 @Composable
-fun QueueScreenPreview() {
-    BattleshipMobileTheme {
-       QueueScreen(SEARCHING_OPPONENT)
-    }
-}
-
-@Composable
-fun Indicator(
+fun LoadingIndicator(
     size: Dp = 32.dp, // indicator size
     sweepAngle: Float = 90f, // angle (length) of indicator arc
     color: Color = MaterialTheme.colors.primary, // color of indicator arc line
-    strokeWidth: Dp = ProgressIndicatorDefaults.StrokeWidth //width of cicle and ar lines
+    strokeWidth: Dp = ProgressIndicatorDefaults.StrokeWidth,//width of cicle and ar lines
+    modifier: Modifier
 ) {
     ////// animation //////
 
@@ -114,5 +132,13 @@ fun Indicator(
             useCenter = false,
             style = stroke
         )
+    }
+}
+
+@Preview
+@Composable
+fun QueueScreenPreview() {
+    BattleshipMobileTheme {
+        QueueScreen(SEARCHING_OPPONENT) {}
     }
 }

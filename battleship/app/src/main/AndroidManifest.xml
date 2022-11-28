@@ -39,6 +39,7 @@
         </activity>
         <activity
             android:name=".battleship.play.QueueActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.BattleshipMobile"/>
     </application>
 </manifest>

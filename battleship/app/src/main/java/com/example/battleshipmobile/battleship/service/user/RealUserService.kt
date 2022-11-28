@@ -14,16 +14,14 @@ import java.net.URL
  * @property client Http client
  * @property jsonFormatter
  * @property rootUrl api base url used in all endpoints
- * @property parentUrl url that gives access to the requested resources with its siren actions/links
  */
 class RealUserService(
     private val client: OkHttpClient,
     private val jsonFormatter: Gson,
-    private val rootUrl: String,
-    private val parentUrl: URL
+    private val rootUrl: String
 ) : UserService {
 
-    private val serviceData = ServiceData(client, rootUrl, parentUrl, jsonFormatter, ::fillServiceUrls)
+    private val serviceData = ServiceData(client, rootUrl, jsonFormatter, ::fillServiceUrls)
 
     private suspend fun sendCredentials(credentials: User, action: Action): AuthInfo {
         val body = jsonFormatter.toJson(credentials)
@@ -58,8 +56,16 @@ class RealUserService(
     private var registerAction: SirenAction? = null
     private var loginAction: SirenAction? = null
 
-    private suspend fun ensureRegisterAction(): Action = ensureAction(serviceData){ registerAction }
-    private suspend fun ensureLoginAction(): Action = ensureAction(serviceData){ loginAction }
+    private suspend fun ensureRegisterAction(): Action = ensureAction(
+        serviceData,
+        parentURL = URL(rootUrl),
+        action = { registerAction }
+    )
+    private suspend fun ensureLoginAction(): Action = ensureAction(
+        serviceData,
+        parentURL = URL(rootUrl),
+        action = { loginAction }
+    )
 
     private fun fillServiceUrls(actions: List<SirenAction>?) {
         actions?.forEach { action ->

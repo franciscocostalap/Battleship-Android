@@ -7,7 +7,7 @@ import com.example.battleshipmobile.battleship.service.UserID
 interface LobbyService {
     /**
      * Enqueues a user and starts the game if the lobby is already full
-     * @param userID user to enqueue
+     * @param userToken token of the user to enqueue
      * @return [LobbyInformation]
      */
     suspend fun enqueue(userToken: String): LobbyInformation
@@ -15,5 +15,10 @@ interface LobbyService {
     /**
      *
      */
-    suspend fun get(lobbyID: ID): LobbyInformation?
+    suspend fun get(lobbyID: ID, userToken: String): LobbyInformation?
+
+    /**
+     *
+     */
+    suspend fun cancel(lobbyID: ID, userToken: String)
 }

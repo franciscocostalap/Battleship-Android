@@ -38,7 +38,8 @@ data class SirenLink(
     val rel: List<String>,
     val href: URI,
     val title: String? = null,
-    val type: String? = null)
+    val type: String? = null
+)
 
 /**
  * Class whose instances represent actions that are included in a siren entity.
@@ -107,7 +108,6 @@ data class EmbeddedEntity<T>(
             object : TypeToken<EmbeddedEntity<T>>() { }
     }
 }
-
 
 /**
  * Gson deserializer for the SubEntity sum type
