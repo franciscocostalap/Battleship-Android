@@ -24,4 +24,10 @@
     <string name="credits_label">Credits</string>
     <string name="logout">Logout</string>
     <string name="total_games_played_label">Total Games Played</string>
+    <string name="password_dont_match">Passwords don\'t match</string>
+    <string name="repeat_password_field_label">Repeat Password</string>
+    <string name="dont_have_an_account">Don\'t have an account?</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
 </resources>

@@ -31,12 +31,12 @@ private val BUTTON_CORNER_BOXES_SIZE = 12.dp
 fun CustomBox(
     width: Dp,
     height : Dp,
+    modifier: Modifier = Modifier,
     padding: Dp = BUTTON_PADDING,
     backgroundColor: Color = BUTTON_CORNER_BOXES_COLOR,
     cornerBoxesSize : Dp = BUTTON_CORNER_BOXES_SIZE,
     borderColor: Color = BUTTON_BORDER_COLOR,
     borderWidth: Dp = BUTTON_BORDER_WIDTH,
-    modifier: Modifier = Modifier,
     content: @Composable() (BoxScope.() -> Unit)
 ) {
     BoxWithConstraints(

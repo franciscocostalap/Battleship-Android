@@ -1,8 +1,10 @@
 package com.example.battleshipmobile
 
 import android.app.Application
-import com.example.battleshipmobile.battleship.login.AuthInfoRepository
-import com.example.battleshipmobile.battleship.login.AuthInfoRepositorySharedPrefs
+import com.example.battleshipmobile.battleship.auth.AuthInfoRepository
+import com.example.battleshipmobile.battleship.auth.AuthInfoRepositorySharedPrefs
+import com.example.battleshipmobile.battleship.service.lobby.LobbyService
+import com.example.battleshipmobile.battleship.service.lobby.RealLobbyService
 import com.example.battleshipmobile.battleship.service.user.RealUserService
 import com.example.battleshipmobile.battleship.service.user.UserService
 import com.google.gson.Gson
@@ -17,10 +19,12 @@ const val TAG = "BattleshipGameApp"
 interface DependenciesContainer{
     val userService: UserService
     val authInfoRepository: AuthInfoRepository
+    val lobbyService: LobbyService
 }
 
 private const val host = "http://10.0.2.2:8080"
-private const val root = "$host/api/"
+private const val root = "$host/api"
+private const val userRoot = "${root}/my"
 private const val SIZE_50MB: Long = 50 * 1024 * 1024
 
 class BattleshipApplication: Application(), DependenciesContainer{
@@ -38,7 +42,11 @@ class BattleshipApplication: Application(), DependenciesContainer{
 
 
     override val userService: UserService by lazy {
-        RealUserService(httpClient, jsonEncoder, host, URL(root))
+        RealUserService(httpClient, jsonEncoder, rootUrl = root, parentUrl = URL("$root/"))
+    }
+
+    override val lobbyService: LobbyService by lazy{
+        RealLobbyService(httpClient, jsonEncoder, rootUrl = root, parentUrl =  URL(userRoot))
     }
 
     override val authInfoRepository: AuthInfoRepository

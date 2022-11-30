@@ -7,8 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.battleship.info.InfoActivity
-import com.example.battleshipmobile.battleship.login.LoginActivity
-import com.example.battleshipmobile.battleship.ranking.StatisticsActivity
+import com.example.battleshipmobile.battleship.auth.AuthenticationActivity
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 
 class HomeActivity: ComponentActivity() {
@@ -34,10 +33,13 @@ class HomeActivity: ComponentActivity() {
             BattleshipMobileTheme {
                 HomeScreen(
                     isLoggedIn =  authRepo.authInfo != null,
-                    onLoginButtonClick = { LoginActivity.navigate(this) },
+                    onLoginButtonClick = {
+                        AuthenticationActivity.navigate(this)
+                        finish()
+                    },
                     onLogoutButtonClick = { authRepo.authInfo = null },
                     onPlayButtonClick = {   },
-                    onRankingButtonClick = {  StatisticsActivity.navigate(this) },
+                    onRankingButtonClick = { },
                     onInfoButtonClick = { InfoActivity.navigate(this) }
                 )
             }

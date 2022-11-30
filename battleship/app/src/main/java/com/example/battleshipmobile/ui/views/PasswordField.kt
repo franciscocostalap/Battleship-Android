@@ -10,21 +10,23 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.example.battleshipmobile.ui.TestTags
+import com.example.battleshipmobile.ui.contentIsVisible
 
 @Composable
 fun PasswordField(
     value: String,
     label: String,
-    isVisible: Boolean,
-    isError: Boolean,
-    error: String,
-    onValueChange: (String) -> Unit,
-    onVisibilityToggle: () -> Unit,
     modifier: Modifier = Modifier,
+    isVisible: Boolean = false,
+    isError: Boolean=false,
+    error: String="",
+    onValueChange: (String) -> Unit,
+    onVisibilityToggle: () -> Unit = {}
 ) {
     OutlinedTextFieldValidation(
         value = value,
@@ -48,7 +50,7 @@ fun PasswordField(
                 Icon(imageVector = image, description)
             }
         },
-        modifier=modifier,
+        modifier=modifier.semantics { this[contentIsVisible] = isVisible },
         error = error
     )
 }

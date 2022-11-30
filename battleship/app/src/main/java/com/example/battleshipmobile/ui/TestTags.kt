@@ -2,10 +2,12 @@ package com.example.battleshipmobile.ui
 
 object TestTags {
 
-    object Login{
-        const val Screen = "LoginScreen"
+    object Auth{
+        const val Screen = "AuthScreen"
         const val UsernameField = "UsernameField"
         const val PasswordField = "PasswordField"
+        const val RepeatPasswordField = "RepeatPasswordField"
+        const val AuthSwapLink = "AuthSwapLink"
         const val SubmitButton = "SubmitButton"
     }
 
@@ -18,6 +20,10 @@ object TestTags {
         const val PlayButton = "PlayButton"
     }
 
+    object Info{
+        const val Screen = "InfoScreen"
+    }
+
     object Statistics{
         const val Table = "Table"
         const val BackButton = "BackButton"
@@ -27,6 +33,7 @@ object TestTags {
     object Other{
         const val TableRow = "TableRow"
         const val PasswordVisibilityIcon = "PasswordVisibilityIcon"
+        const val FieldErrorText = "FieldErrorText"
     }
 
 }

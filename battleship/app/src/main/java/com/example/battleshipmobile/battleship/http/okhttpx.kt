@@ -2,6 +2,8 @@ package com.example.battleshipmobile.utils
 
 import com.example.battleshipmobile.battleship.http.hypermedia.Problem
 import com.example.battleshipmobile.battleship.http.hypermedia.ProblemMediaType
+import android.util.Log
+import com.example.battleshipmobile.utils.HttpMethod.*
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import okhttp3.*
@@ -38,16 +40,28 @@ class UnexpectedResponseException(
 class UnresolvedActionException(msg: String = "") : ApiException(msg)
 
 
-fun buildRequest(url: URL, method: HttpMethod = HttpMethod.GET, body: String? = null): Request =
-    Request.Builder()
-        .url(url)
-        .method(method.name, body?.toRequestBody("application/json".toMediaType()))
-        .build()
+fun buildRequest(url: URL, method: HttpMethod = GET, body: String? = null, token: String? = null): Request {
+    val emptyBody = "{}"
+    val bodyToSend = if(method != GET && body == null) emptyBody else body
 
+    return Request.Builder()
+        .url(url)
+        .addAuthHeaderIfNotNull(token)
+        .method(method.name, bodyToSend?.toRequestBody("application/json".toMediaType()))
+        .build()
+}
+
+
+private fun Request.Builder.addAuthHeaderIfNotNull(value: String?): Request.Builder{
+    value ?: return this
+    return addHeader("Authorization", "Bearer $value")
+}
 
 fun <T> Response.handle(bodyType: Type, jsonEncoder: Gson): T {
     val actualContentType = body?.contentType()
     val actualBody = body?.string()
+    Log.v("RESPONSE BODY", actualBody!!)
+
     if (isSuccessful && actualContentType != null && actualContentType == SirenMediaType) {
         try {
             return jsonEncoder.fromJson(actualBody, bodyType)
@@ -60,7 +74,6 @@ fun <T> Response.handle(bodyType: Type, jsonEncoder: Gson): T {
         throw UnexpectedResponseException(this)
     }
 }
-
 
 /**
  * Extension function used to send [this] request using [okHttpClient] and process the
@@ -83,6 +96,8 @@ suspend fun <T> Request.send(okHttpClient: OkHttpClient, handler: Response.() ->
 
             override fun onResponse(call: Call, response: Response) {
                 try {
+                    Log.v("RESPONSE STATUS", response.code.toString())
+                    Log.v("RESPONSE MESSAGE", response.message)
                     continuation.resume(response.handler())
                 } catch (t: Throwable) {
                     continuation.resumeWithException(t)
