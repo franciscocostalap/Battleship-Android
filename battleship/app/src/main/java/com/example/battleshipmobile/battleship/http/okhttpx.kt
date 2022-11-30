@@ -1,5 +1,7 @@
 package com.example.battleshipmobile.utils
 
+import com.example.battleshipmobile.battleship.http.hypermedia.Problem
+import com.example.battleshipmobile.battleship.http.hypermedia.ProblemMediaType
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import okhttp3.*

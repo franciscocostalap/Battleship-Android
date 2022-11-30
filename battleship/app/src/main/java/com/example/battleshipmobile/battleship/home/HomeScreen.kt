@@ -10,18 +10,21 @@ import androidx.compose.foundation.background
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.battleship.components.TextButton
+import com.example.battleshipmobile.ui.TestTags
+import com.example.battleshipmobile.ui.theme.HEADER_COLOR
 
 private val PLAY_BUTTON_WIDTH = 230.dp
 private val BUTTONS_HEIGHT = 70.dp
 private val INFO_BUTTON_WIDTH = 250.dp
 private val CREDITS_BUTTON_WIDTH = 270.dp
-private val HEADER_COLOR = Color(23, 55, 76)
 private val LOGIN_BUTTON_WIDTH = 225.dp
 private val BATTLESHIP_IMAGE_SIZE = 180.dp
 
@@ -37,7 +40,11 @@ fun HomeScreen(
     isLoggedIn: Boolean,
 ) {
 
-    Surface(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
+    Surface(modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colors.background)
+        .testTag(TestTags.Home.Screen)
+    ) {
         StatelessHomeScreen(
             isLoggedIn = isLoggedIn,
             onLoginClick = onLoginButtonClick,
@@ -45,26 +52,6 @@ fun HomeScreen(
             onPlayClick = onPlayButtonClick,
             onInfoClick = onInfoButtonClick,
             onRankingClick = onRankingButtonClick,
-        )
-    }
-}
-
-@Composable
-fun IconButton(
-    icon : Int,
-    description : String,
-    size: Dp = 40.dp,
-    buttonModifiers: Modifier = Modifier,
-    onClick: () -> Unit,
-){
-    Button(
-        onClick = onClick,
-        modifier = buttonModifiers
-    ) {
-        Icon(
-            painter = painterResource(id = icon),
-            contentDescription = description,
-            modifier = Modifier.size(size)
         )
     }
 }
@@ -79,9 +66,8 @@ private fun StatelessHomeScreen(
     onInfoClick : () -> Unit = {},
 ) {
     Column(
-         horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize(),
-      //  verticalArrangement = Arrangement.Bottom
     ) {
         Image(
             painter = painterResource(id = R.drawable.bs_icon),
@@ -92,34 +78,33 @@ private fun StatelessHomeScreen(
                 .height(BATTLESHIP_IMAGE_SIZE)
         )
 
-
-        Box() {
-            Text(
-                text = "BATTLESHIP",
-                color = HEADER_COLOR,
-                fontSize = 42.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-
+        Text(
+            text = stringResource(R.string.app_name),
+            color = HEADER_COLOR,
+            fontSize =  MaterialTheme.typography.h3.fontSize,
+            fontWeight = FontWeight.Bold
+        )
 
         Spacer(Modifier.size(50.dp))
 
         if( !isLoggedIn ) {
             Text(
-                text = "Welcome, please sign in to play!",
+                text = stringResource(R.string.welcome_message),
                 color = Color(62, 66, 68 ),  //put in theme
-                fontSize = 20.sp,
+                fontSize = MaterialTheme.typography.subtitle1.fontSize,
                 fontWeight = FontWeight.Bold
             )
 
             Spacer(Modifier.size(8.dp))
+
             TextButton(
                 onClick = onLoginClick,
                 buttonWidth = LOGIN_BUTTON_WIDTH,
                 buttonHeight = BUTTONS_HEIGHT,
-                fontSize = 25.sp,
-                text = "Sign In"
+                fontSize = 25.sp,    // pu
+                text = stringResource(R.string.login),
+                modifiers = Modifier
+                    .testTag(TestTags.Home.LoginButton)
             )
         }
 
@@ -128,7 +113,9 @@ private fun StatelessHomeScreen(
                 onClick = onPlayClick ,
                 buttonWidth = PLAY_BUTTON_WIDTH,
                 buttonHeight = BUTTONS_HEIGHT,
-                text = "Play"
+                text = stringResource(R.string.play_label),
+                modifiers = Modifier
+                    .testTag(TestTags.Home.PlayButton)
             )
         }
 
@@ -137,23 +124,30 @@ private fun StatelessHomeScreen(
             onClick = onRankingClick,
             buttonWidth = INFO_BUTTON_WIDTH,
             buttonHeight = BUTTONS_HEIGHT,
-            text = "Ranking"
+            text = stringResource(R.string.ranking_label),
+            modifiers = Modifier
+                .testTag(TestTags.Home.RankingButton)
         )
 
         TextButton(
             onClick = onInfoClick,
             buttonWidth = CREDITS_BUTTON_WIDTH,
             buttonHeight = BUTTONS_HEIGHT,
-            text = "Credits"
+            text = stringResource(R.string.credits_label),
+            modifiers = Modifier
+                .testTag(TestTags.Home.CreditsButton)
         )
 
         if(isLoggedIn){
             Spacer(Modifier.size(70.dp))
+
             TextButton(
                 onClick = onLogoutClick,
                 buttonWidth = LOGIN_BUTTON_WIDTH,
                 buttonHeight = BUTTONS_HEIGHT,
-                text = "Logout"
+                text = stringResource(R.string.logout),
+                modifiers = Modifier
+                    .testTag(TestTags.Home.LogoutButton)
             )
         }
 
@@ -165,7 +159,7 @@ private fun StatelessHomeScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
+fun HomeScreenPreview() {
     BattleshipMobileTheme {
         HomeScreen(
             onLoginButtonClick = {},
@@ -173,7 +167,7 @@ fun DefaultPreview() {
             onPlayButtonClick = {},
             onInfoButtonClick = {},
             onRankingButtonClick = {},
-            isLoggedIn = true
+            isLoggedIn = false
         )
     }
 }

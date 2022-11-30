@@ -2,17 +2,14 @@ package com.example.battleshipmobile.battleship.home
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.battleship.info.InfoActivity
 import com.example.battleshipmobile.battleship.login.LoginActivity
-import com.example.battleshipmobile.battleship.service.user.AuthInfo
+import com.example.battleshipmobile.battleship.ranking.StatisticsActivity
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
-import com.example.battleshipmobile.utils.viewModelInit
 
 class HomeActivity: ComponentActivity() {
 
@@ -40,7 +37,7 @@ class HomeActivity: ComponentActivity() {
                     onLoginButtonClick = { LoginActivity.navigate(this) },
                     onLogoutButtonClick = { authRepo.authInfo = null },
                     onPlayButtonClick = {   },
-                    onRankingButtonClick = {  },
+                    onRankingButtonClick = {  StatisticsActivity.navigate(this) },
                     onInfoButtonClick = { InfoActivity.navigate(this) }
                 )
             }

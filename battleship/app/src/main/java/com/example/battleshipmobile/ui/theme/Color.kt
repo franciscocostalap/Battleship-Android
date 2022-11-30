@@ -14,3 +14,13 @@ val gray300 = Color(0xFFA3A3A3)
 val gray400 = Color(0xFF828282)
 val gray500 = Color(0xFF616161)
 val gray600 = Color(0xFF404040)
+
+
+val blueDark = Color(0xFF32292F)
+val blueMedium = Color(0xFF575366)
+val blueNormal = Color(0xFF6E7DAB)
+val blueLight = Color(0xFF5762D5)
+val whitelight = Color(0xFFD1E3DD)
+
+
+val HEADER_COLOR = Color(23, 55, 76)

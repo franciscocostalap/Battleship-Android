@@ -1,4 +1,4 @@
-package com.example.battleshipmobile.utils
+package com.example.battleshipmobile.battleship.http.hypermedia
 
 import okhttp3.MediaType.Companion.toMediaType
 

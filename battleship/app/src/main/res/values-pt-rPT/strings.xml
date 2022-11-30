@@ -12,4 +12,15 @@
     <string name="password_is_too_short">Campo muito curto</string>
     <string name="password_must_have_a_digit">Tem que conter pelo menos um dígito</string>
     <string name="field_is_blank">Campo tem de ser preenchido</string>
+    <string name="player_label">Jogador</string>
+    <string name="games_label">Jogos</string>
+    <string name="wins_label">Vitórias</string>
+    <string name="rank_label">Classificação</string>
+    <string name="back_label">Voltar</string>
+    <string name="welcome_message">Bem-vindo, por favor registe-se para jogar.</string>
+    <string name="play_label">Jogar</string>
+    <string name="ranking_label">Classificação</string>
+    <string name="credits_label">Creditos</string>
+    <string name="logout">Sair</string>
+    <string name="total_games_played_label">Total de jogos jogados</string>
 </resources>

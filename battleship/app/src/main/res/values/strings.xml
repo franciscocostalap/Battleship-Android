@@ -13,4 +13,15 @@
     <string name="password_is_too_short">Password is too short</string>
     <string name="password_must_have_a_special_character">Password need at least one special character></string>
     <string name="password_must_have_a_digit">Password must have at least a digit</string>
+    <string name="player_label">Player</string>
+    <string name="games_label">Games</string>
+    <string name="wins_label">Wins</string>
+    <string name="rank_label">Rank</string>
+    <string name="back_label">Back</string>
+    <string name="welcome_message">Welcome, please sign in to play!</string>
+    <string name="play_label">Play</string>
+    <string name="ranking_label">Ranking</string>
+    <string name="credits_label">Credits</string>
+    <string name="logout">Logout</string>
+    <string name="total_games_played_label">Total Games Played</string>
 </resources>
