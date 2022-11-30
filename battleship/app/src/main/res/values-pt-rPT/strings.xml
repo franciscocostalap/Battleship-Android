@@ -29,4 +29,9 @@
     <string name="already_have_an_account">Já tem uma conta?</string>
     <string name="sign_in">Entrar</string>
     <string name="sign_up">Inscrever</string>
+    <string name="strength_level_too_weak">Muito fraca</string>
+    <string name="strength_level_weak">Fraca</string>
+    <string name="strength_level_decent">Decente</string>
+    <string name="strength_level_strong">Forte</string>
+    <string name="strength_level_very_strong">Muito Forte</string>
 </resources>
