@@ -29,7 +29,6 @@ class InfoActivity : ComponentActivity() {
 
         setContent {
             InfoScreen(
-                onSendEmailRequested = { openSendEmail() },
                 socials = socialsPreview
             )
         }
@@ -49,23 +48,5 @@ class InfoActivity : ComponentActivity() {
         }
     }
 }
-
-val socialsPreview = listOf(
-    SocialInfo(
-        name = "Francisco Costa",
-        nr = 48282,
-        email =  "a48282@alunos.isel.pt"
-    ),
-    SocialInfo(
-        name = "Tiago Filipe",
-        nr = 48265,
-        email = "a48265@alunos.isel.pt"
-    ),
-    SocialInfo(
-        name = "Teodosie Pienescu",
-        nr = 48267,
-        email = "a48267@alunos.isel.pt"
-    )
-)
 
 private const val emailSubject = "About the BattleShip game"
