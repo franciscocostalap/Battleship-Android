@@ -10,12 +10,14 @@ import androidx.compose.foundation.background
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.battleship.components.TextButton
+import com.example.battleshipmobile.ui.TestTags
 
 private val PLAY_BUTTON_WIDTH = 230.dp
 private val BUTTONS_HEIGHT = 70.dp
@@ -37,7 +39,10 @@ fun HomeScreen(
     isLoggedIn: Boolean,
 ) {
 
-    Surface(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
+    Surface(modifier = Modifier.fillMaxSize()
+        .background(MaterialTheme.colors.background)
+        .testTag(TestTags.Home.Screen)
+    ){
         StatelessHomeScreen(
             isLoggedIn = isLoggedIn,
             onLoginClick = onLoginButtonClick,

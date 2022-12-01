@@ -24,7 +24,5 @@ class AuthInfoRepositoryTests {
         repo.authInfo = null
 
         assertNull(repo.authInfo)
-
     }
-
 }

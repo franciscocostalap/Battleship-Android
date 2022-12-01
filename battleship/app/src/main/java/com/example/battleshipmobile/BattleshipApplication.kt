@@ -1,10 +1,6 @@
 package com.example.battleshipmobile
 
 import android.app.Application
-import com.example.battleshipmobile.battleship.login.AuthInfoRepository
-import com.example.battleshipmobile.battleship.login.AuthInfoRepositorySharedPrefs
-import com.example.battleshipmobile.battleship.service.Params
-import com.example.battleshipmobile.battleship.service.Params.*
 import com.example.battleshipmobile.battleship.auth.AuthInfoRepository
 import com.example.battleshipmobile.battleship.auth.AuthInfoRepositorySharedPrefs
 import com.example.battleshipmobile.battleship.service.lobby.LobbyService
@@ -26,8 +22,10 @@ interface DependenciesContainer{
     val lobbyService: LobbyService
 }
 
-private const val host = "https://e8b8-95-92-100-136.eu.ngrok.io"
+private const val host = "https://fb11-95-92-100-136.eu.ngrok.io"
 private const val root = "$host/api"
+private const val home = "$root/"
+private const val userHome = "$root/my"
 private const val SIZE_50MB: Long = 50 * 1024 * 1024
 
 class BattleshipApplication : Application(), DependenciesContainer {
@@ -44,11 +42,11 @@ class BattleshipApplication : Application(), DependenciesContainer {
     }
 
     override val userService: UserService by lazy {
-        RealUserService(httpClient, jsonEncoder, rootUrl = root)
+        RealUserService(httpClient, jsonEncoder, rootUrl = root, parentUrl = URL(home))
     }
 
     override val lobbyService: LobbyService by lazy {
-        RealLobbyService(httpClient, jsonEncoder, rootUrl = root)
+        RealLobbyService(httpClient, jsonEncoder, rootUrl = root, parentUrl = URL(userHome))
     }
 
     override val authInfoRepository: AuthInfoRepository

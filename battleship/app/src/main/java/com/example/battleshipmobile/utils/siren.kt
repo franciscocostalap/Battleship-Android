@@ -31,6 +31,8 @@ val SirenMediaType = "$APPLICATION_TYPE/$SIREN_SUBTYPE".toMediaType()
  */
 fun selfLink(uri: String) = SirenLink(rel = listOf("self"), href = URI(uri))
 
+
+
 /**
  * Class whose instances represent links as they are represented in Siren.
  */

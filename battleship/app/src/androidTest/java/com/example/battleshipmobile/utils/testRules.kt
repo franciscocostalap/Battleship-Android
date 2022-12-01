@@ -32,7 +32,7 @@ fun <A : ComponentActivity> createAndroidComposeRule(
  * other doubles that serve their purposes. The behaviour of the remaining tests
  * is preserved by saving the default doubles and restoring them after the execution of the test.
  */
-class PreserveDefaultDependencies : TestRule {
+class  PreserveDefaultDependencies : TestRule {
 
     val testApplication: BattleshipTestApplication = InstrumentationRegistry
         .getInstrumentation()

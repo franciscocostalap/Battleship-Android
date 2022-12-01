@@ -1,79 +1,101 @@
 package com.example.battleshipmobile.battleship.service
 
+import android.util.Log
+import com.example.battleshipmobile.battleship.service.RelationType.*
 import com.example.battleshipmobile.utils.*
 import com.example.battleshipmobile.utils.HttpMethod.*
 import com.google.gson.Gson
-import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
-import java.net.URI
+import okhttp3.Request
 import java.net.URL
 
-enum class Params(val stringRepresentation: String) {
-    LOBBY_ID("lobbyId"),
-}
+enum class RelationType { ACTION, LINK }
+data class Action(val url: URL, val method: HttpMethod = GET)
 
-data class Parameter(val name: Params, val value: String)
+private const val HTTP_METHOD_REQUIRED = "HTTP method required"
+private const val LINK_NOT_FOUND = "Entity has no link with the rel: "
+private const val ACTION_NOT_FOUND = "Entity has no action with the rel: "
 
-data class Action(val url: URL, val method: HttpMethod)
+/**
+ * Ensures that the action or link is present in the entity
+ *
+ * @param sirenEntity entity to check
+ * @param relation relation to check
+ * @param rootUrl api base url used for all endpoints
+ * @param relationType type of connection to check: action or link
+ * @return [Action] the action or link url and method
+ */
 
-data class ServiceData(
-    val client: OkHttpClient,
-    val root: String,
-    val jsonFormatter: Gson,
-    val fillServiceUrls: (List<SirenAction>?) -> Unit
-)
+fun <T> ensureAction(
+    sirenEntity: SirenEntity<T>,
+    relation: String,
+    rootUrl: String,
+    relationType: RelationType
+): Action =
+    if (relationType == ACTION) {
+        val sirenAction =
+            sirenEntity.actions?.find { it.name == relation } ?:
+            throw UnresolvedActionException(ACTION_NOT_FOUND + relation)
 
-suspend fun ensureAction(
-    _super: ServiceData,
-    params: List<Parameter>? = null,
-    parentURL: URL,
-    token: String? = null,
-    action: () -> SirenAction?
-): Action{
+        buildAction(rootUrl, sirenAction.href.toString(), sirenAction.method)
+    } else {
+        val sirenLink =
+            sirenEntity.links?.find { it.rel.contains(relation) } ?:
+            throw UnresolvedActionException(LINK_NOT_FOUND + relation)
 
-    val actions = parentURL.getActions(_super.client, _super.jsonFormatter, params, token)
-    if (action() == null) _super.fillServiceUrls(actions)
+        buildAction(rootUrl, sirenLink.href.toString())
+    }
 
-    val ensuredAction = action() ?: throw IllegalStateException("No action")
-
-    val newUrl = URL(_super.root + ensuredAction.href)
-    val method = ensuredAction.method?.let { HttpMethod.valueOf(it) }
-        ?: throw IllegalStateException("No register action") // TODO: TIRAR ESTES ERROS MANHOSOS*/
-
-    return Action(newUrl, method)
-}
-
-private suspend fun URL.getActions(
-    client: OkHttpClient,
-    jsonFormatter: Gson,
-    params: List<Parameter>?,
-    userToken: String?
-): List<SirenAction>? {
-    val newURL = replaceParamPlaceholders(this, params)
-    val request = buildRequest(newURL, token= userToken)
-
-    return request.send(client) {
-        handle<SirenEntity<Any>>(
-            SirenEntity.getType<Any>().type,
-            jsonFormatter
-        )
-    }.actions
+/**
+ * Builds an [Action]
+ *
+ * @param root api base url used for all endpoints
+ * @param uri action or link href
+ * @param method action or link method
+ * @return [Action] the action or link url and method
+ */
+private fun buildAction(root: String, uri: String, method: String? = "GET"): Action {
+    val url = URL(root + uri)
+    val httpMethod = HttpMethod.valueOf(
+        method ?: throw IllegalArgumentException(HTTP_METHOD_REQUIRED)
+    )
+    return Action(url, httpMethod)
 }
 
 /**
- * params: [(id1, 1), (id2,2)],
+ * Builds a request using an [Action]
  *
- * path/id1/path/id2 -> path/1/path/2
+ * @param action action to build the request from
+ * @param body request body
+ * @param userToken token of the user performing the action
+ * @return [Request]
  */
-private fun replaceParamPlaceholders(url: URL, params: List<Parameter>?): URL{
-    val stringBuilder = StringBuilder()
-    stringBuilder.append(url)
-    params?.forEach { parameter ->
-        stringBuilder.replace(
-            Regex("/${parameter.name.stringRepresentation}"),
-            parameter.value
+fun buildRequest(action: Action, userToken: String? = null, body: String? = null): Request =
+    buildRequest(action.url, action.method, body, userToken)
+
+/**
+ * Builds a request and sends it using the [client]
+ *
+ * @param client HTTP client
+ * @param jsonFormatter
+ * @param action action to build the request from
+ * @param userToken token of the user performing the action
+ * @return [SirenEntity] response entity
+ */
+suspend inline fun <reified T> buildAndSendRequest(
+    client: OkHttpClient,
+    jsonFormatter: Gson,
+    action: Action,
+    userToken: String? = null,
+    body: String? = null
+): SirenEntity<T> {
+    val request = buildRequest(action, userToken, body)
+    Log.v("REQUEST", request.toString())
+
+    return request.send(client) {
+        handle(
+            SirenEntity.getType<T>().type,
+            jsonFormatter
         )
     }
-    return URL(stringBuilder.toString())
 }
-

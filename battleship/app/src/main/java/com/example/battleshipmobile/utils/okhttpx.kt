@@ -37,7 +37,15 @@ class UnexpectedResponseException(
  */
 class UnresolvedActionException(msg: String = "") : ApiException(msg)
 
-
+/**
+ * Builds an http request
+ *
+ * @param url request URL
+ * @param method HTTP method
+ * @param body request body
+ * @param token token of the user that requested the action
+ * @return [Request]
+ */
 fun buildRequest(url: URL, method: HttpMethod = GET, body: String? = null, token: String? = null): Request {
     val emptyBody = "{}"
     val bodyToSend = if(method != GET && body == null) emptyBody else body
@@ -49,12 +57,23 @@ fun buildRequest(url: URL, method: HttpMethod = GET, body: String? = null, token
         .build()
 }
 
-
+/**
+ * Adds an authorization header to the request if the token is not null
+ * @param value token of the user or null if there is no need for authorization
+ * @return [Request.Builder]
+ */
 private fun Request.Builder.addAuthHeaderIfNotNull(value: String?): Request.Builder{
     value ?: return this
     return addHeader("Authorization", "Bearer $value")
 }
 
+/**
+ * Handles an HTTP response using a json encoder [Gson]
+ *
+ * @param bodyType type of the response body
+ * @param jsonEncoder
+ * @return [T] the response body decoded from json
+ */
 fun <T> Response.handle(bodyType: Type, jsonEncoder: Gson): T {
     val actualContentType = body?.contentType()
     val actualBody = body?.string()

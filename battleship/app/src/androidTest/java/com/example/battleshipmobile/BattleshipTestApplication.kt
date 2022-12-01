@@ -3,10 +3,6 @@ package com.example.battleshipmobile
 import android.app.Application
 import android.content.Context
 import androidx.test.runner.AndroidJUnitRunner
-import com.example.battleshipmobile.battleship.login.AuthInfoRepository
-import com.example.battleshipmobile.battleship.service.ID
-import com.example.battleshipmobile.battleship.service.lobby.LobbyInformation
-import com.example.battleshipmobile.battleship.service.lobby.LobbyService
 import com.example.battleshipmobile.battleship.auth.AuthInfoRepository
 import com.example.battleshipmobile.battleship.service.lobby.LobbyInformation
 import com.example.battleshipmobile.battleship.service.lobby.LobbyService
@@ -28,13 +24,10 @@ class BattleshipTestApplication: DependenciesContainer, Application() {
             every { authInfo } returns AuthInfo(0, "testToken")
         }
 
-       override val authInfoRepository: AuthInfoRepository
-        get() = mockk(relaxed = true) {
-            coEvery { authInfo } returns testInfo
-        }
-    override val lobbyService: LobbyService = mockk(relaxed = true){
-        coEvery { getLobbyInfo(any()) } returns LobbyInformation(0, null)
+    override var lobbyService: LobbyService = mockk(relaxed = true){
+        coEvery { get(any(), any()) } returns LobbyInformation(0, null)
         coEvery { enqueue(any()) } returns LobbyInformation(0, null)
+        coEvery { cancel(any(), any())}
     }
 }
 
