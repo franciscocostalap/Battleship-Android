@@ -29,11 +29,22 @@ object TestTags {
         const val BackButton = "BackButton"
         const val Screen = "StatisticsScreen"
     }
+    object Lobby{
+        const val Screen = "QueueScreen"
+        const val LoadingIndicator = "LoadingIndicator"
+        const val StatusMessage = "StatusText"
+        const val LobbyState = "LobbyState"
+        const val CancelButton = "CancelButton"
+    }
 
     object Other{
         const val TableRow = "TableRow"
         const val PasswordVisibilityIcon = "PasswordVisibilityIcon"
         const val FieldErrorText = "FieldErrorText"
+    }
+
+    object PlaceShipsLayout{
+        const val Screen = "PlaceShipsScreen"
     }
 
 }

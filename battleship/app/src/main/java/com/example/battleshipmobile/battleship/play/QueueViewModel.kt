@@ -1,63 +1,70 @@
 package com.example.battleshipmobile.battleship.play
 
+
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.battleshipmobile.battleship.service.UserID
+import com.example.battleshipmobile.battleship.service.ID
 import com.example.battleshipmobile.battleship.service.lobby.LobbyInformation
 import com.example.battleshipmobile.battleship.service.lobby.LobbyService
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
-import java.lang.Thread.sleep
-import java.util.UUID
-
-const val MAX_NUM_PLAYERS = 2
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
 class QueueViewModel(private val lobbyService: LobbyService): ViewModel() {
-    enum class LoadingState{ LOADING, IDLE }
 
-    var loadingState by mutableStateOf(LoadingState.IDLE)
-    private set
+    private var lobbyInformation by mutableStateOf<LobbyInformation?>(null)
+    private val DELAY_TIME = 1500L
 
-    var lobbyInformation by mutableStateOf<LobbyInformation?>(null)
-    private set
+    private val flow = MutableStateFlow<LobbyInformation?>(null)
+    val stateFlow: StateFlow<LobbyInformation?> = flow.asStateFlow()
 
-    val updateFlow = flow<LobbyInformation>{
-        val startingValue = lobbyInformation ?: throw IllegalAccessError() //TODO remove throw
-        var currentValue = startingValue
+    private fun lobbyInformationFlow(lobbyID: ID, userToken: String) = flow{
+        var currentLobbyValue = fetchLobbyInfo(lobbyID, userToken)
 
-        while(currentValue.gameID == null){
-            emit(currentValue)
-            delay(500)
-            val lobbyInfo = lobbyService.get(currentValue.id)
-            require(lobbyInfo != null)
-            currentValue = lobbyInfo
+        while(currentLobbyValue.gameId == null){
+            emit(currentLobbyValue)
+            delay(DELAY_TIME)
+            currentLobbyValue = fetchLobbyInfo(lobbyID, userToken)
         }
     }
 
-    fun enqueue(userToken: String){
-        viewModelScope.launch {
-            lobbyInformation = lobbyService.enqueue(userToken)
 
-            val currentLobbyInfo = lobbyInformation
-            require(currentLobbyInfo != null)
-
-            if(currentLobbyInfo.gameID == null){
-                updateFlow
+    private suspend fun fetchLobbyInfo(lobbyID: ID, userToken: String): LobbyInformation {
+        stateFlow
+        return coroutineScope {
+            val result = async {
+                lobbyInformation = lobbyService.get(lobbyID, userToken)
+                lobbyInformation
             }
+            return@coroutineScope result.await() ?:
+            throw IllegalArgumentException("LobbyInformation is null")
         }
     }
 
-    fun collectFlow(){
+
+    fun waitForFullLobby(lobbyID: ID, userToken: String, onContinuation: suspend ()-> Unit){
         viewModelScope.launch {
-            updateFlow.collectLatest {
+            lobbyInformationFlow(lobbyID, userToken).collectLatest {
+                lobbyInformation ?: cancel()
                 lobbyInformation = it
+            }
+
+            Log.v("QUEUE_FLOW", "Opponent joined the lobby")
+            onContinuation()
+        }
+    }
+
+    fun cancelQueue(lobbyID: ID, userToken: String){
+        viewModelScope.launch {
+            try{
+                Result.success(lobbyService.cancel(lobbyID, userToken))
+                lobbyInformation = null
+            }catch (e: Exception){
+                Result.failure<LobbyInformation>(e)
             }
         }
     }
 }
+
+

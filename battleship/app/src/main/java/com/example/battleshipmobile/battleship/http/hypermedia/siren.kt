@@ -31,6 +31,8 @@ val SirenMediaType = "$APPLICATION_TYPE/$SIREN_SUBTYPE".toMediaType()
  */
 fun selfLink(uri: String) = SirenLink(rel = listOf("self"), href = URI(uri))
 
+
+
 /**
  * Class whose instances represent links as they are represented in Siren.
  */
@@ -38,7 +40,8 @@ data class SirenLink(
     val rel: List<String>,
     val href: URI,
     val title: String? = null,
-    val type: String? = null)
+    val type: String? = null
+)
 
 /**
  * Class whose instances represent actions that are included in a siren entity.
@@ -107,7 +110,6 @@ data class EmbeddedEntity<T>(
             object : TypeToken<EmbeddedEntity<T>>() { }
     }
 }
-
 
 /**
  * Gson deserializer for the SubEntity sum type

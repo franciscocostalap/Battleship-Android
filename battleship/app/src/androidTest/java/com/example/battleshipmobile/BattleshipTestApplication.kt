@@ -24,9 +24,10 @@ class BattleshipTestApplication: DependenciesContainer, Application() {
             every { authInfo } returns AuthInfo(0, "testToken")
         }
 
-    override val lobbyService: LobbyService = mockk(relaxed = true){
-        coEvery { getLobbyInfo(any()) } returns LobbyInformation(0, null)
+    override var lobbyService: LobbyService = mockk(relaxed = true){
+        coEvery { get(any(), any()) } returns LobbyInformation(0, null)
         coEvery { enqueue(any()) } returns LobbyInformation(0, null)
+        coEvery { cancel(any(), any())}
     }
 }
 

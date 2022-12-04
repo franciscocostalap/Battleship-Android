@@ -35,12 +35,3 @@ data class Ship(val size: Int ,val name: String){
 
 }
 
-data class ShipInfo(val ships : List<Ship>)
-
-
-
-enum class GameState {
-    SETUP,
-    PLAYING,
-    FINISHED
-}
