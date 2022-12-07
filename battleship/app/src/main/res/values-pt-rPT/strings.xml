@@ -23,4 +23,5 @@
     <string name="strength_level_decent">Decente</string>
     <string name="strength_level_strong">Forte</string>
     <string name="strength_level_very_strong">Muito Forte</string>
+    <string name="strength_indicator_label">"Força: "</string>
 </resources>

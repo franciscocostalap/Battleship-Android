@@ -1,7 +1,9 @@
-package com.example.battleshipmobile.ui.views
+package com.example.battleshipmobile.ui.views.game
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,48 +15,63 @@ import com.example.battleshipmobile.battleship.service.model.*
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 
 
-const val SQUARE_BASE_SIDE = 200
+const val SQUARE_BASE_SIDE = 180
 const val SQUARE_SHRINK_FACTOR = 0.5
 const val SQUARE_BORDER_WIDTH = 1
 
 @Composable
-fun BoardView(board: Board){
+fun BoardView(
+    board: Board,
+    modifier: Modifier = Modifier,
+    onSquareClicked: (Square) -> Unit,
+) {
     val matrix = board.toMatrix()
-    Column {
-        for (c in 0 until board.side){
-            Row{
-                for (r in 0 until board.side){
+    Column(modifier = modifier) {
+        for (r in 0 until board.side) {
+            Row {
+                for (c in 0 until board.side) {
                     val square = Square(r.row, c.column)
-                    SquareView(type = matrix[square] ?: SquareType.Water, board.side)
+                    SquareView(
+                        type = matrix[square] ?: SquareType.Water,
+                        boardSide = board.side,
+                        onClick = { onSquareClicked(square) },
+                    )
                 }
             }
         }
     }
 }
 
+fun squareSide(side: Int): Double {
+    return (SQUARE_BASE_SIDE / (SQUARE_SHRINK_FACTOR * side))
+}
+
 @Composable
-fun SquareView(type: SquareType, boardSide: Int){
-    val bgColor = when(type){
+fun SquareView(type: SquareType, boardSide: Int, onClick: () -> Unit = {}) {
+
+    val background = when (type) {
         SquareType.Shot -> Color.Gray
         SquareType.ShipPart -> Color.White
         SquareType.Water -> Color.Blue
         SquareType.Hit -> Color.Red
     }
 
-    val side = (SQUARE_BASE_SIDE / (SQUARE_SHRINK_FACTOR * boardSide)).dp
+    val side = squareSide(boardSide).dp
 
     val boxModifier = Modifier
         .border(SQUARE_BORDER_WIDTH.dp, Color.Black)
         .width(side)
         .height(side)
-        .background(bgColor)
+        .clickable(onClick = onClick)
+        .background(background)
 
-    Box(contentAlignment = Alignment.Center, modifier = boxModifier){}
+    Box(contentAlignment = Alignment.Center, modifier = boxModifier) {}
 }
+
 
 @Preview
 @Composable
-fun EmptyBoardPreview(){
+fun EmptyBoardPreview() {
     val board = Board(
         5,
         emptyList(),
@@ -63,21 +80,9 @@ fun EmptyBoardPreview(){
     )
 
     BattleshipMobileTheme {
-        BoardView(board = board)
-    }
-}
-
-@Preview
-@Composable
-fun ExampleBoardPreview(){
-    val board = Board(
-        10,
-        shots=listOf(Square(0, 0)),
-        hits = listOf(Square(4, 2)),
-        shipParts = listOf(Square(3, 2), Square(2, 2))
-    )
-
-    BattleshipMobileTheme {
-        BoardView(board = board)
+        BoardView(
+            board = board,
+            onSquareClicked = { square -> Log.v("BoardView", "Clicked on $square") }
+        )
     }
 }

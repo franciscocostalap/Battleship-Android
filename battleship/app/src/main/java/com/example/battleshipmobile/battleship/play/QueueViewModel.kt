@@ -20,18 +20,14 @@ class QueueViewModel(private val lobbyService: LobbyService): ViewModel() {
     val stateFlow: StateFlow<LobbyInformation?> = flow.asStateFlow()
 
     private fun lobbyInformationFlow(lobbyID: ID, userToken: String) = flow{
-        var currentLobbyValue = fetchLobbyInfo(lobbyID, userToken)
-
-        while(currentLobbyValue.gameId == null){
+        do{
+            val currentLobbyValue = fetchLobbyInfo(lobbyID, userToken)
             emit(currentLobbyValue)
             delay(DELAY_TIME)
-            currentLobbyValue = fetchLobbyInfo(lobbyID, userToken)
-        }
+        }while(currentLobbyValue.gameId == null)
     }
 
-
     private suspend fun fetchLobbyInfo(lobbyID: ID, userToken: String): LobbyInformation {
-        stateFlow
         return coroutineScope {
             val result = async {
                 lobbyInformation = lobbyService.get(lobbyID, userToken)

@@ -66,13 +66,13 @@ class HomeActivity : ComponentActivity() {
 
                 HomeScreen(
                     isLoggedIn = authRepo.authInfo != null,
-                    onLoginButtonClick = { AuthenticationActivity.navigate(this) },
-                    onLogoutButtonClick = { authRepo.authInfo = null },
-                    onPlayButtonClick = {
+                    onLoginRequested = { AuthenticationActivity.navigate(this) },
+                    onLogoutRequested = { authRepo.authInfo = null },
+                    onPlayRequested = {
                         homeViewModel.enqueue(authInfo.token)
                     },
-                    onRankingButtonClick = { },
-                    onInfoButtonClick = { InfoActivity.navigate(this) }
+                    onRankingRequested = { },
+                    onInfoRequested = { InfoActivity.navigate(this) }
                 )
             }
         }

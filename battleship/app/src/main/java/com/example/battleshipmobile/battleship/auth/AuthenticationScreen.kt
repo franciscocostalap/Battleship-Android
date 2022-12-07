@@ -26,8 +26,8 @@ import com.example.battleshipmobile.battleship.service.user.User
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.authType
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
-import com.example.battleshipmobile.ui.views.AuthenticationForm
-import com.example.battleshipmobile.ui.views.IgnoredValidation
+import com.example.battleshipmobile.ui.views.auth.AuthenticationForm
+import com.example.battleshipmobile.ui.views.auth.IgnoredValidation
 
 enum class AuthenticationFormType{
     Login,
@@ -54,8 +54,6 @@ fun AuthenticationScreen(
         val ignoredValidation = when(formType){
             AuthenticationFormType.Login -> IgnoredValidation(
                 password = setOf(
-                    Password.Validation.NO_SPECIAL_CHARACTERS,
-                    Password.Validation.NO_DIGITS,
                     Password.Validation.TOO_SHORT
                 )
             )
@@ -85,11 +83,12 @@ fun AuthenticationScreen(
                         .clickable { onAuthTypeSwapRequested() }
                         .testTag(TestTags.Auth.AuthSwapLink),
                 )
-                key(formType) { // Force form full recreation on form type change
+                key(formType) { // Force form full recomposition on form type change
                     AuthenticationForm(
                         usernameLabel = usernameLabel,
                         passwordLabel = passwordLabel,
                         submitLabel = submitLabel,
+                        showPasswordStrength = formType == AuthenticationFormType.Register,
                         ignoredValidation = ignoredValidation,
                         onSubmitRequested = onAuthRequested
                     )

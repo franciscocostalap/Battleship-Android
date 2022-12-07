@@ -1,21 +1,30 @@
-package com.example.battleshipmobile.ui.views
+package com.example.battleshipmobile.ui.views.auth
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.battleshipmobile.R
-import com.example.battleshipmobile.battleship.service.user.*
+import com.example.battleshipmobile.battleship.service.user.Password
+import com.example.battleshipmobile.battleship.service.user.User
+import com.example.battleshipmobile.battleship.service.user.Username
+import com.example.battleshipmobile.battleship.service.user.validate
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
+import com.example.battleshipmobile.ui.views.OutlinedTextFieldValidation
+import com.example.battleshipmobile.ui.views.PasswordField
 
 
 private val usernameErrorLabels = mapOf(
@@ -26,8 +35,6 @@ private val usernameErrorLabels = mapOf(
 private val passwordErrorLabels = mapOf(
     Password.Validation.EMPTY to R.string.field_is_blank,
     Password.Validation.TOO_SHORT to R.string.password_is_too_short,
-    Password.Validation.NO_DIGITS to R.string.password_must_have_a_digit,
-    Password.Validation.NO_SPECIAL_CHARACTERS to R.string.password_must_have_a_special_character
 )
 
 /**
@@ -55,6 +62,7 @@ fun AuthenticationForm(
     @StringRes passwordLabel: Int,
     @StringRes submitLabel: Int,
     ignoredValidation: IgnoredValidation = IgnoredValidation(),
+    showPasswordStrength: Boolean = false,
     onSubmitRequested: (User) -> Unit
 ) {
     var username by rememberSaveable { mutableStateOf("") }
@@ -80,6 +88,7 @@ fun AuthenticationForm(
         onUserNameChange = { username = it; isUsernameError = false },
         onPasswordChange = { password = it; isPasswordError = false },
         onPasswordVisibilityToggle = { passwordVisible = !passwordVisible },
+        showPasswordStrength = showPasswordStrength,
         onSubmitRequest = submit@{ uname, pwd ->
 
             val usernameValidation = Username.validate(
@@ -125,6 +134,7 @@ private fun StatelessAuthenticationForm(
     usernameLabel: String,
     passwordLabel: String,
     submitLabel: String,
+    showPasswordStrength: Boolean = false,
     isPasswordVisible: Boolean,
     isUsernameError: Boolean = false,
     isPasswordError: Boolean = false,
@@ -159,6 +169,9 @@ private fun StatelessAuthenticationForm(
             modifier = Modifier.testTag(TestTags.Auth.PasswordField),
             error = passwordErrorLabel
         )
+        if (showPasswordStrength) {
+            PasswordStrengthIndicator(password)
+        }
         Button(
             onClick = {
                 onSubmitRequest(username, password)
@@ -170,29 +183,6 @@ private fun StatelessAuthenticationForm(
         }
     }
 
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun AuthFormFilledPreview() {
-    BattleshipMobileTheme {
-        StatelessAuthenticationForm(
-            username = "costakilapada",
-            password = "craques",
-            usernameLabel = "Username",
-            passwordLabel = "Password",
-            submitLabel = "Sign In",
-            isPasswordVisible = false,
-            onUserNameChange = {},
-            onPasswordChange = {},
-            onPasswordVisibilityToggle = {},
-            onSubmitRequest = { _, _ -> },
-            isUsernameError = false,
-            isPasswordError = false,
-            usernameErrorLabel = "",
-            passwordErrorLabel = ""
-        )
-    }
 }
 
 @Preview(showBackground = true)
@@ -213,7 +203,7 @@ private fun AuthFormWithErrorsPreview() {
             isUsernameError = true,
             isPasswordError = true,
             usernameErrorLabel = "Username is blank",
-            passwordErrorLabel = "Password must have a special character"
+            passwordErrorLabel = "Password must have at least 8 characters"
         )
     }
 }
@@ -229,6 +219,26 @@ private fun AuthFormRegisterPreview() {
             usernameLabel = "Username",
             passwordLabel = "Password",
             isPasswordVisible = false,
+            onUserNameChange = {},
+            onPasswordChange = {},
+            onPasswordVisibilityToggle = {},
+            onSubmitRequest = { _, _ -> }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AuthFormVisiblePasswordWithStrenghtPreview() {
+    BattleshipMobileTheme {
+        StatelessAuthenticationForm(
+            username = "costakilapada",
+            password = "craquesdabola123D!",
+            submitLabel = "Sign Up",
+            usernameLabel = "Username",
+            showPasswordStrength = true,
+            passwordLabel = "Password",
+            isPasswordVisible = true,
             onUserNameChange = {},
             onPasswordChange = {},
             onPasswordVisibilityToggle = {},
