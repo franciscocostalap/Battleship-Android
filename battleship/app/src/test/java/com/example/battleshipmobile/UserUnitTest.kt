@@ -40,36 +40,10 @@ class UserUnitTest {
         val expected = setOf(
             Password.Validation.EMPTY,
             Password.Validation.TOO_SHORT,
-            Password.Validation.NO_DIGITS,
-            Password.Validation.NO_SPECIAL_CHARACTERS
         )
 
         assertEquals(expected, passwordValidation)
         Password("")
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun `Password without special characters`(){
-        val sut = "password123"
-        val passwordValidation = Password.validate(sut)
-        val expected = setOf(
-            Password.Validation.NO_SPECIAL_CHARACTERS
-        )
-
-        assertEquals(expected, passwordValidation)
-        Password(sut)
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun `Password without digits`(){
-        val sut = "password!"
-        val passwordValidation = Password.validate(sut)
-        val expected = setOf(
-            Password.Validation.NO_DIGITS
-        )
-
-        assertEquals(expected, passwordValidation)
-        Password(sut)
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -98,10 +72,7 @@ class UserUnitTest {
         val passwordValidation = Password.validate("",
             ignore = setOf(Password.Validation.EMPTY, Password.Validation.TOO_SHORT)
         )
-        val expected = setOf(
-            Password.Validation.NO_DIGITS,
-            Password.Validation.NO_SPECIAL_CHARACTERS
-        )
+        val expected = emptySet<Password.Validation>()
 
         assertEquals(expected, passwordValidation)
     }

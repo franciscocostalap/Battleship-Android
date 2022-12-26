@@ -1,4 +1,4 @@
-package com.example.battleshipmobile.ui.views
+package com.example.battleshipmobile.ui.views.general
 
 import androidx.compose.foundation.clickable
 import androidx.compose.material.Icon

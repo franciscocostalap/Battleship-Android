@@ -22,13 +22,12 @@ class QueueViewModel(private val lobbyService: LobbyService): ViewModel() {
     private fun lobbyInformationFlow(lobbyID: ID) = flow{
         var currentLobbyValue = fetchLobbyInfo(lobbyID)
 
-        while(currentLobbyValue.gameId == null){
+        do{
             emit(currentLobbyValue)
             delay(DELAY_TIME)
             currentLobbyValue = fetchLobbyInfo(lobbyID)
-        }
+        }while(currentLobbyValue.gameId == null)
     }
-
 
     private suspend fun fetchLobbyInfo(lobbyID: ID): LobbyInformation {
         stateFlow

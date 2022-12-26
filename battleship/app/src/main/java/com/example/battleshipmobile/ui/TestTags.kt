@@ -47,4 +47,13 @@ object TestTags {
         const val Screen = "PlaceShipsScreen"
     }
 
+    object LayoutDefinition {
+        const val ResetFleetButton: String = "ResetFleetButton"
+        const val RotateButton: String = "RotateButton"
+        const val Board: String = "LayoutDefinitionBoard"
+        const val Screen = "LayoutDefinitionScreen"
+        const val FleetComposition = "FleetComposition"
+
+    }
+
 }

@@ -18,8 +18,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
-import com.example.battleshipmobile.ui.views.NavigationHandlers
-import com.example.battleshipmobile.ui.views.TopBar
+import com.example.battleshipmobile.ui.views.general.NavigationHandlers
+import com.example.battleshipmobile.ui.views.general.TopBar
 
 data class SocialInfo(val name: String, val nr: Int, val email: String)
 

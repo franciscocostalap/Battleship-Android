@@ -27,8 +27,8 @@ import com.example.battleshipmobile.battleship.service.user.Username
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.authType
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
-import com.example.battleshipmobile.ui.views.AuthenticationForm
-import com.example.battleshipmobile.ui.views.IgnoredValidation
+import com.example.battleshipmobile.ui.views.auth.AuthenticationForm
+import com.example.battleshipmobile.ui.views.auth.IgnoredValidation
 
 enum class AuthenticationFormType{
     Login,
@@ -52,6 +52,7 @@ fun AuthenticationScreen(
             AuthenticationFormType.Login -> R.string.sign_in
             AuthenticationFormType.Register -> R.string.sign_up
         }
+
         Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -76,11 +77,12 @@ fun AuthenticationScreen(
                         .clickable { onAuthTypeSwapRequested() }
                         .testTag(TestTags.Auth.AuthSwapLink),
                 )
-                key(formType) { // Force form full recreation on form type change
+                key(formType) { // Force form full recomposition on form type change
                     AuthenticationForm(
                         usernameLabel = usernameLabel,
                         passwordLabel = passwordLabel,
                         submitLabel = submitLabel,
+                        showPasswordStrength = formType == AuthenticationFormType.Register,
                         onSubmitRequested = onAuthRequested
                     )
                 }

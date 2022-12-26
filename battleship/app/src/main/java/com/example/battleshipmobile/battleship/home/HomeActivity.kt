@@ -65,11 +65,11 @@ class HomeActivity : ComponentActivity() {
 
                 HomeScreen(
                     isLoggedIn = homeViewModel.isLoggedIn(),
-                    onLoginButtonClick = { AuthenticationActivity.navigate(this) },
-                    onLogoutButtonClick = { homeViewModel.logout() },
-                    onPlayButtonClick = { homeViewModel.enqueue() },
-                    onRankingButtonClick = { RankingActivity.navigate(this) },
-                    onInfoButtonClick = { InfoActivity.navigate(this) }
+                    onLoginRequested = { AuthenticationActivity.navigate(this) },
+                    onLogoutRequested = { homeViewModel.logout() },
+                    onPlayRequested = { homeViewModel.enqueue() },
+                    onRankingRequested = { RankingActivity.navigate(this) },
+                    onInfoRequested = { InfoActivity.navigate(this) }
                 )
             }
         }

@@ -1,7 +1,6 @@
 package com.example.battleshipmobile.battleship.service.user
 
-import android.util.Log
-import com.example.battleshipmobile.battleship.service.ID
+import com.example.battleshipmobile.ui.views.auth.StrengthLevel
 
 
 /**
@@ -68,25 +67,36 @@ data class Password(val value: String){
     companion object{
         const val MIN_LENGTH = 8
 
-        val SPECIAL_CHARACTERS = setOf('!', '@', '#', '$', '%', '^', '&', '*', '(', ')',
+        private val SPECIAL_CHARACTERS = setOf('!', '@', '#', '$', '%', '^', '&', '*', '(', ')',
             '-', '_', '+', '=', '{', '}', '[', ']', '|', ':', ';', '<', '>', '?', '/', '.')
+
+        fun strengthLevel(value: String): StrengthLevel
+            = StrengthLevel.ofLevel(calculateStrenghtScore(value))
+
+
+        private fun calculateStrenghtScore(value: String): Int {
+            var score = 0
+            if (value.length >= MIN_LENGTH) score++
+            if (value.any { it.isDigit() }) score++
+            if (value.any { it.isUpperCase() }) score++
+            if (value.any { it.isLowerCase() }) score++
+            if (value.any { it in SPECIAL_CHARACTERS }) score++
+
+            return score
+        }
     }
 
     enum class Validation(val validate: (String) -> Boolean){
         EMPTY ({ pwd -> pwd.isBlank() }),
         TOO_SHORT ({ pwd -> pwd.length < MIN_LENGTH }),
-        NO_DIGITS ({ pwd -> pwd.none { char -> char.isDigit() } }),
-        NO_SPECIAL_CHARACTERS({ pwd -> pwd.none { char -> char in SPECIAL_CHARACTERS } })
     }
+
+    val strengthLevel: StrengthLevel = strengthLevel(value)
 
     init {
-        require(validate(value).isEmpty()) //TODO: tava errado porque faltava aqui o ignore
+        require(validate(value).isEmpty())
     }
-}
 
-fun <T>doLog(body: () -> T) : T {
-    Log.v("MY_LOG", body().toString() )
-    return body()
 }
 
 /**
@@ -107,9 +117,9 @@ fun Password.Companion.validate(
 
 
 /**
- *
+ * Represents the authentication information from a user
  */
-data class AuthInfo(val uid: Int, val name: String)
+data class AuthInfo(val uid: Int, val token: String)
 
 
 /**
@@ -136,5 +146,4 @@ data class UserInfo(
  * regarding its own validation rules
  */
 fun User(username: String, password: String) = User(Username(username), Password(password))
-//TODO: porque ter uma funçao que recebe um username e um password e retorna um user? em vez de chamares o construtor do user?
 
