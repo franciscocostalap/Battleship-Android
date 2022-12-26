@@ -54,7 +54,6 @@ fun AuthenticationForm(
     @StringRes usernameLabel: Int,
     @StringRes passwordLabel: Int,
     @StringRes submitLabel: Int,
-    ignoredValidation: IgnoredValidation = IgnoredValidation(),
     onSubmitRequested: (User) -> Unit
 ) {
     var username by rememberSaveable { mutableStateOf("") }
@@ -84,13 +83,12 @@ fun AuthenticationForm(
 
             val usernameValidation = Username.validate(
                 value=uname.trim(),
-                ignore=ignoredValidation.username
             )
 
             val passwordValidation = Password.validate(
                 value=pwd,
-                ignore= ignoredValidation.password
             )
+            //TODO: tirei ignored pq nao faz sentido, e tava bugado, o validate do user n recebe esta ignored e vai adr erro
 
             isUsernameError = usernameValidation.isNotEmpty()
             isPasswordError = passwordValidation.isNotEmpty()

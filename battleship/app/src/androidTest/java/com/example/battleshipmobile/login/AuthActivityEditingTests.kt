@@ -4,7 +4,7 @@ import androidx.compose.ui.test.*
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.battleshipmobile.R
-import com.example.battleshipmobile.battleship.auth.AuthInfoRepository
+import com.example.battleshipmobile.battleship.auth.AuthInfoService
 import com.example.battleshipmobile.battleship.auth.AuthenticationActivity
 import com.example.battleshipmobile.battleship.auth.AuthenticationFormType
 import com.example.battleshipmobile.ui.TestTags
@@ -26,15 +26,15 @@ class AuthActivityEditingTests {
         (testRule.activityRule as PreserveDefaultDependencies).testApplication
     }
 
-    private val noAuthInfoRepo: AuthInfoRepository = mockk(relaxed=true){
-        every { authInfo } returns null
+    private val noAuthInfoRepo: AuthInfoService = mockk(relaxed=true){
+        every { uid } returns null
     }
 
     @Test
     fun auth_form_state_survives_reconfiguration(){
 
         // Arrange
-        application.authInfoRepository = noAuthInfoRepo
+        application.authInfoService = noAuthInfoRepo
 
         val username = "testUsername"
         val password = "testPassword"
@@ -67,7 +67,7 @@ class AuthActivityEditingTests {
     fun all_fields_are_wiped_when_swaps_to_register_mode(){
 
         // Arrange
-        application.authInfoRepository = noAuthInfoRepo
+        application.authInfoService = noAuthInfoRepo
 
         ActivityScenario.launch(AuthenticationActivity::class.java).use {
 
@@ -97,7 +97,7 @@ class AuthActivityEditingTests {
     fun all_fields_are_wiped_when_swaps_back_to_login_mode(){
 
         // Arrange
-        application.authInfoRepository = noAuthInfoRepo
+        application.authInfoService = noAuthInfoRepo
 
 
         ActivityScenario.launch(AuthenticationActivity::class.java).use {
@@ -129,7 +129,7 @@ class AuthActivityEditingTests {
     fun clicking_password_visibility_icon_makes_password_visible(){
 
             // Arrange
-            application.authInfoRepository = noAuthInfoRepo
+            application.authInfoService = noAuthInfoRepo
 
             val password = "testPassword"
 
@@ -152,7 +152,7 @@ class AuthActivityEditingTests {
     fun password_is_invisible_at_start(){
 
         // Arrange
-        application.authInfoRepository = noAuthInfoRepo
+        application.authInfoService = noAuthInfoRepo
         val invisiblePassword = "\u2022".repeat("password".length)
 
         ActivityScenario.launch(AuthenticationActivity::class.java).use {
@@ -175,7 +175,7 @@ class AuthActivityEditingTests {
     fun blank_password_input_puts_password_field_in_error_mode(){
 
             // Arrange
-            application.authInfoRepository = noAuthInfoRepo
+            application.authInfoService = noAuthInfoRepo
 
             ActivityScenario.launch(AuthenticationActivity::class.java).use {
 
@@ -199,7 +199,7 @@ class AuthActivityEditingTests {
     fun blank_username_input_puts_password_field_in_error_mode(){
 
         // Arrange
-        application.authInfoRepository = noAuthInfoRepo
+        application.authInfoService = noAuthInfoRepo
 
         ActivityScenario.launch(AuthenticationActivity::class.java).use {
 
@@ -223,7 +223,7 @@ class AuthActivityEditingTests {
     fun error_mode_for_a_field_is_cleared_as_soon_as_any_input_is_entered(){
 
             // Arrange
-            application.authInfoRepository = noAuthInfoRepo
+            application.authInfoService = noAuthInfoRepo
 
             ActivityScenario.launch(AuthenticationActivity::class.java).use {
 

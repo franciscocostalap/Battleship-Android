@@ -5,7 +5,7 @@ import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.battleshipmobile.battleship.home.HomeActivity
-import com.example.battleshipmobile.battleship.auth.AuthInfoRepository
+import com.example.battleshipmobile.battleship.auth.AuthInfoService
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.utils.PreserveDefaultDependencies
 import com.example.battleshipmobile.utils.createPreserveDefaultDependenciesComposeRule
@@ -26,15 +26,15 @@ class HomeActivityTests {
         (testRule.activityRule as PreserveDefaultDependencies).testApplication
     }
 
-    private val mockRepo: AuthInfoRepository = mockk(relaxed = true) {
-        every { authInfo } returns null
+    private val mockRepo: AuthInfoService = mockk(relaxed = true) {
+        every { uid } returns null
     }
 
     @Test
     fun expected_home_screen_without_auth_info() {
 
         // Arrange
-        application.authInfoRepository = mockRepo
+        application.authInfoService = mockRepo
 
 
         ActivityScenario.launch(HomeActivity::class.java).use {
@@ -67,7 +67,7 @@ class HomeActivityTests {
     fun pressing_sign_in_button_navigates_to_login_activity(){
 
         // Arrange
-        application.authInfoRepository = mockRepo
+        application.authInfoService = mockRepo
 
         ActivityScenario.launch(HomeActivity::class.java).use{
 
@@ -83,7 +83,7 @@ class HomeActivityTests {
     fun pressing_credits_button_navigates_to_info_screen_activity_with_no_auth(){
 
         // Arrange
-        application.authInfoRepository = mockRepo
+        application.authInfoService = mockRepo
 
         ActivityScenario.launch(HomeActivity::class.java).use{
 
@@ -118,7 +118,7 @@ class HomeActivityTests {
     fun pressing_rankings_button_navigates_to_rankings_activity_with_no_auth(){
 
         // Arrange
-        application.authInfoRepository = mockRepo
+        application.authInfoService = mockRepo
 
         ActivityScenario.launch(HomeActivity::class.java).use{
 
@@ -127,7 +127,7 @@ class HomeActivityTests {
             testRule.waitForIdle()
 
             testRule.onNodeWithTag(TestTags.Home.Screen).assertDoesNotExist()
-            testRule.onNodeWithTag(TestTags.Rankings.Screen).assertExists()
+            testRule.onNodeWithTag(TestTags.Statistics.Screen).assertExists()
 
         }
 
@@ -145,7 +145,7 @@ class HomeActivityTests {
             testRule.waitForIdle()
 
             testRule.onNodeWithTag(TestTags.Home.Screen).assertDoesNotExist()
-            testRule.onNodeWithTag(TestTags.Rankings.Screen).assertExists()
+            testRule.onNodeWithTag(TestTags.Statistics.Screen).assertExists()
 
         }
 

@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">Battleship</string>
-    <string name="register">Register</string>
     <string name="username_field_label">Username</string>
     <string name="password_field_label">Password</string>
-    <string name="login">Login</string>
     <string name="general_error">An error has occurred</string>
     <string name="general_error_title">Error</string>
     <string name="ok" translatable="false">OK</string>
@@ -22,7 +20,7 @@
     <string name="play_label">Play</string>
     <string name="ranking_label">Ranking</string>
     <string name="credits_label">Credits</string>
-    <string name="logout">Logout</string>
+    <string name="sign_out">Sign Out</string>
     <string name="total_games_played_label">Total Games Played</string>
     <string name="password_dont_match">Passwords don\'t match</string>
     <string name="repeat_password_field_label">Repeat Password</string>

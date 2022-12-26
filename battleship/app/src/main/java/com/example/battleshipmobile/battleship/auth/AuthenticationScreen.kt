@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.service.user.Password
 import com.example.battleshipmobile.battleship.service.user.User
+import com.example.battleshipmobile.battleship.service.user.Username
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.authType
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
@@ -50,16 +51,6 @@ fun AuthenticationScreen(
         val submitLabel = when(formType){
             AuthenticationFormType.Login -> R.string.sign_in
             AuthenticationFormType.Register -> R.string.sign_up
-        }
-        val ignoredValidation = when(formType){
-            AuthenticationFormType.Login -> IgnoredValidation(
-                password = setOf(
-                    Password.Validation.NO_SPECIAL_CHARACTERS,
-                    Password.Validation.NO_DIGITS,
-                    Password.Validation.TOO_SHORT
-                )
-            )
-            AuthenticationFormType.Register -> IgnoredValidation()
         }
         Surface(
             modifier = Modifier
@@ -90,7 +81,6 @@ fun AuthenticationScreen(
                         usernameLabel = usernameLabel,
                         passwordLabel = passwordLabel,
                         submitLabel = submitLabel,
-                        ignoredValidation = ignoredValidation,
                         onSubmitRequested = onAuthRequested
                     )
                 }

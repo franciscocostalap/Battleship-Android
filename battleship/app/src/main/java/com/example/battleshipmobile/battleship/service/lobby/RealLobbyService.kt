@@ -1,5 +1,7 @@
 package com.example.battleshipmobile.battleship.service.lobby
 
+import com.example.battleshipmobile.battleship.http.handle
+import com.example.battleshipmobile.battleship.http.send
 import com.example.battleshipmobile.battleship.service.*
 import com.example.battleshipmobile.utils.*
 import com.google.gson.Gson
@@ -37,16 +39,13 @@ class RealLobbyService(
 
     /**
      * Queues up a user to play returning the lobby information.
-     *
-     * @param userToken token of the user performing the action
      * @return [LobbyInformation]
      */
-    override suspend fun enqueue(userToken: String): LobbyInformation {
+    override suspend fun enqueue(): LobbyInformation {
         val result = buildAndSendRequest<LobbyInformation>(
             client,
             jsonFormatter,
-            action = ensureQueueAction(userToken),
-            userToken
+            action = ensureQueueAction(),
         )
 
         lobbyStateEntity = result
@@ -58,15 +57,13 @@ class RealLobbyService(
      * Gets the lobby information of the one that was requested.
      *
      * @param lobbyID id of the lobby to get
-     * @param userToken token of the user performing the action
      * @return [LobbyInformation]
      */
-    override suspend fun get(lobbyID: ID, userToken: String): LobbyInformation =
+    override suspend fun get(lobbyID: ID): LobbyInformation =
         buildAndSendRequest<LobbyInformation>(
             client,
             jsonFormatter,
             action = ensureLobbyStateLink(),
-            userToken
         ).properties ?: throw IllegalStateException(PROPERTIES_REQUIRED)
 
 
@@ -74,26 +71,22 @@ class RealLobbyService(
      * The user quits from the requested lobby
      *
      * @param lobbyID the id of the lobby
-     * @param userToken token of the user performing the action
      */
-    override suspend fun cancel(lobbyID: ID, userToken: String) {
+    override suspend fun cancel(lobbyID: ID) {
         buildAndSendRequest<Unit>(
             client,
             jsonFormatter,
             action = ensureCancelAction(),
-            userToken
         )
     }
 
     /**
      * Fetches and sets the user home if it's not already set
-     *
-     * @param userToken token of the user performing the action
      */
-    private suspend fun fetchUserHomeEntity(userToken: String) {
+    private suspend fun fetchUserHomeEntity() {
         if (userHomeEntity != null) return
 
-        val request = buildRequest(parentUrl, token = userToken)
+        val request = com.example.battleshipmobile.battleship.http.buildRequest(parentUrl)
 
         val responseResult = request.send(client) {
             handle<SirenEntity<Nothing>>(
@@ -127,11 +120,10 @@ class RealLobbyService(
      * Ensures that the queue action exists and returns it.
      * Requires that the user home was fetched first.
      *
-     * @param userToken token of the user performing the action
-     * @return [Action] Queue url and method
+    * @return [Action] Queue url and method
      */
-    private suspend fun ensureQueueAction(userToken: String): Action {
-        fetchUserHomeEntity(userToken)
+    private suspend fun ensureQueueAction(): Action {
+        fetchUserHomeEntity()
         val userHomeSirenEntity = userHomeEntity
         require(userHomeSirenEntity != null) { USER_HOME_ERR_MESSAGE }
 

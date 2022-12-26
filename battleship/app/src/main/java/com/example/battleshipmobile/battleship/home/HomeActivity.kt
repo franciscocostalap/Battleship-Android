@@ -12,6 +12,7 @@ import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.auth.AuthenticationActivity
 import com.example.battleshipmobile.battleship.info.InfoActivity
 import com.example.battleshipmobile.battleship.play.QueueActivity
+import com.example.battleshipmobile.battleship.ranking.RankingActivity
 import com.example.battleshipmobile.ui.ErrorAlert
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.utils.viewModelInit
@@ -29,10 +30,9 @@ class HomeActivity : ComponentActivity() {
     }
 
     private val homeViewModel by viewModels<HomeViewModel> {
-        viewModelInit { HomeViewModel(dependencies.lobbyService) }
+        viewModelInit { HomeViewModel(dependencies.lobbyService, dependencies.authInfoService) }
     }
     private val dependencies by lazy { application as DependenciesContainer }
-    private val authRepo by lazy { dependencies.authInfoRepository }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +40,8 @@ class HomeActivity : ComponentActivity() {
 
         setContent {
             BattleshipMobileTheme {
-
-                val authInfo =
-                    authRepo.authInfo ?: throw IllegalArgumentException() //TODO(mudar exceção)
+            //needed to recompose
+            val userId = homeViewModel.uid
 
                 val lobbyInfo = homeViewModel.lobbyInformationResult
 
@@ -65,13 +64,11 @@ class HomeActivity : ComponentActivity() {
                 }
 
                 HomeScreen(
-                    isLoggedIn = authRepo.authInfo != null,
+                    isLoggedIn = homeViewModel.isLoggedIn(),
                     onLoginButtonClick = { AuthenticationActivity.navigate(this) },
-                    onLogoutButtonClick = { authRepo.authInfo = null },
-                    onPlayButtonClick = {
-                        homeViewModel.enqueue(authInfo.token)
-                    },
-                    onRankingButtonClick = { },
+                    onLogoutButtonClick = { homeViewModel.logout() },
+                    onPlayButtonClick = { homeViewModel.enqueue() },
+                    onRankingButtonClick = { RankingActivity.navigate(this) },
                     onInfoButtonClick = { InfoActivity.navigate(this) }
                 )
             }

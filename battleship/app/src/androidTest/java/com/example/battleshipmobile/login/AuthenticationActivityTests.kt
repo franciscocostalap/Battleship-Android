@@ -3,7 +3,7 @@ package com.example.battleshipmobile.login
 import androidx.compose.ui.test.*
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.battleshipmobile.battleship.auth.AuthInfoRepository
+import com.example.battleshipmobile.battleship.auth.AuthInfoService
 import com.example.battleshipmobile.battleship.auth.AuthenticationActivity
 import com.example.battleshipmobile.battleship.auth.AuthenticationFormType
 import com.example.battleshipmobile.battleship.service.user.AuthInfo
@@ -15,7 +15,6 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,15 +34,15 @@ class AuthenticationActivityTests {
         (testRule.activityRule as PreserveDefaultDependencies).testApplication
     }
 
-    private val mockRepo: AuthInfoRepository = mockk(relaxed = true) {
-        every { authInfo } returns null
+    private val mockRepo: AuthInfoService = mockk(relaxed = true) {
+        every { uid } returns null
     }
 
     @Test
     fun auth_activity_starts_with_login_screen() {
 
         // Arrange
-        application.authInfoRepository = mockRepo
+        application.authInfoService = mockRepo
 
         // Assert
         ActivityScenario.launch(AuthenticationActivity::class.java).use {
@@ -60,7 +59,7 @@ class AuthenticationActivityTests {
     fun auth_screen_navigates_to_home_activity_after_registering_a_user() {
 
         // Arrange
-        application.authInfoRepository = mockRepo
+        application.authInfoService = mockRepo
         application.userService = mockk(relaxed = true) {
             coEvery { register(any()) } returns AuthInfo(0, "test")
         }
@@ -80,7 +79,7 @@ class AuthenticationActivityTests {
             testRule.waitForIdle()
 
             // Assert
-            verify { mockRepo.authInfo = AuthInfo(0, "test") }
+            verify { mockRepo.uid = AuthInfo(0, "test") }
             testRule.onNodeWithTag(TestTags.Home.Screen).assertExists()
             testRule.onNodeWithTag(TestTags.Auth.Screen).assertDoesNotExist()
         }
@@ -90,7 +89,7 @@ class AuthenticationActivityTests {
     fun login_screen_navigates_to_register_screen_when_auth_swap_link_is_clicked() {
 
         // Arrange
-        application.authInfoRepository = mockRepo
+        application.authInfoService = mockRepo
 
 
         ActivityScenario.launch(AuthenticationActivity::class.java).use {
@@ -115,7 +114,7 @@ class AuthenticationActivityTests {
     fun screen_navigates_to_login_screen_when_auth_swap_link_is_re_clicked() {
 
         // Arrange
-        application.authInfoRepository = mockRepo
+        application.authInfoService = mockRepo
 
 
         ActivityScenario.launch(AuthenticationActivity::class.java).use {

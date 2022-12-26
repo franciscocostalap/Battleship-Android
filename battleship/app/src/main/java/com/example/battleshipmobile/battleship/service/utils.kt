@@ -1,9 +1,13 @@
 package com.example.battleshipmobile.battleship.service
 
 import android.util.Log
+import com.example.battleshipmobile.battleship.http.HttpMethod
 import com.example.battleshipmobile.battleship.service.RelationType.*
 import com.example.battleshipmobile.utils.*
-import com.example.battleshipmobile.utils.HttpMethod.*
+import com.example.battleshipmobile.battleship.http.HttpMethod.*
+import com.example.battleshipmobile.battleship.http.UnresolvedActionException
+import com.example.battleshipmobile.battleship.http.handle
+import com.example.battleshipmobile.battleship.http.send
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -30,22 +34,25 @@ fun <T> ensureAction(
     sirenEntity: SirenEntity<T>,
     relation: String,
     rootUrl: String,
-    relationType: RelationType
-): Action =
-    if (relationType == ACTION) {
-        val sirenAction =
-            sirenEntity.actions?.find { it.name == relation } ?:
-            throw UnresolvedActionException(ACTION_NOT_FOUND + relation)
+    relationType: RelationType,
+    embededInfo: Boolean = false
+): Action {
+    val query = if(embededInfo) "?embedded=true" else ""
 
-        buildAction(rootUrl, sirenAction.href.toString(), sirenAction.method)
+    return if (relationType == ACTION) {
+        val sirenAction =
+            sirenEntity.actions?.find { it.name == relation } ?: throw UnresolvedActionException(
+                ACTION_NOT_FOUND + relation
+            )
+
+        buildAction(rootUrl, sirenAction.href.toString() + query, sirenAction.method)
     } else {
         val sirenLink =
-            sirenEntity.links?.find { it.rel.contains(relation) } ?:
-            throw UnresolvedActionException(LINK_NOT_FOUND + relation)
-
-        buildAction(rootUrl, sirenLink.href.toString())
+            sirenEntity.links?.find { it.rel.contains(relation) }
+                ?: throw UnresolvedActionException(LINK_NOT_FOUND + relation)
+        buildAction(rootUrl, sirenLink.href.toString() + query)
     }
-
+}
 /**
  * Builds an [Action]
  *
@@ -67,11 +74,16 @@ private fun buildAction(root: String, uri: String, method: String? = "GET"): Act
  *
  * @param action action to build the request from
  * @param body request body
- * @param userToken token of the user performing the action
+ * @param query query parameters
  * @return [Request]
  */
-fun buildRequest(action: Action, userToken: String? = null, body: String? = null): Request =
-    buildRequest(action.url, action.method, body, userToken)
+fun buildRequest(action: Action,  body: String? = null, query : Map<String,String>? = null): Request =
+    com.example.battleshipmobile.battleship.http.buildRequest(
+        action.url,
+        action.method,
+        body,
+        query
+    )
 
 /**
  * Builds a request and sends it using the [client]
@@ -79,18 +91,17 @@ fun buildRequest(action: Action, userToken: String? = null, body: String? = null
  * @param client HTTP client
  * @param jsonFormatter
  * @param action action to build the request from
- * @param userToken token of the user performing the action
  * @return [SirenEntity] response entity
  */
 suspend inline fun <reified T> buildAndSendRequest(
     client: OkHttpClient,
     jsonFormatter: Gson,
     action: Action,
-    userToken: String? = null,
-    body: String? = null
+    body: String? = null,
+    query : Map<String, String>? = null
 ): SirenEntity<T> {
-    val request = buildRequest(action, userToken, body)
-    Log.v("REQUEST", request.toString())
+    val request = buildRequest(action, body,query)
+    Log.v("APP REQUEST", request.toString())
 
     return request.send(client) {
         handle(

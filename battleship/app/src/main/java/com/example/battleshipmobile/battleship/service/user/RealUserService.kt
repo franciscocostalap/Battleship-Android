@@ -1,5 +1,8 @@
 package com.example.battleshipmobile.battleship.service.user
 
+import com.example.battleshipmobile.battleship.http.buildRequest
+import com.example.battleshipmobile.battleship.http.handle
+import com.example.battleshipmobile.battleship.http.send
 import com.example.battleshipmobile.battleship.service.Action
 import com.example.battleshipmobile.battleship.service.RelationType
 import com.example.battleshipmobile.battleship.service.buildAndSendRequest

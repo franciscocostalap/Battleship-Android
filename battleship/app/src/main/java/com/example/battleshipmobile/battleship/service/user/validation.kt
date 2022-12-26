@@ -1,5 +1,8 @@
 package com.example.battleshipmobile.battleship.service.user
 
+import android.util.Log
+import com.example.battleshipmobile.battleship.service.ID
+
 
 /**
  * Represents a username
@@ -77,8 +80,13 @@ data class Password(val value: String){
     }
 
     init {
-        require(validate(value).isEmpty())
+        require(validate(value).isEmpty()) //TODO: tava errado porque faltava aqui o ignore
     }
+}
+
+fun <T>doLog(body: () -> T) : T {
+    Log.v("MY_LOG", body().toString() )
+    return body()
 }
 
 /**
@@ -101,7 +109,7 @@ fun Password.Companion.validate(
 /**
  *
  */
-data class AuthInfo(val uid: Int, val token: String)
+data class AuthInfo(val uid: Int, val name: String)
 
 
 /**
@@ -112,6 +120,14 @@ data class AuthInfo(val uid: Int, val token: String)
 data class User(val username: Username, val password: Password)
 
 /**
+ * Represents the information of a user
+ * @param username the username of the user
+ */
+data class UserInfo(
+    val username: String,
+)
+
+/**
  * Instantiate a user with the given username and password as strings
  * @param username the username of the user
  * @param password the password of the user
@@ -120,4 +136,5 @@ data class User(val username: Username, val password: Password)
  * regarding its own validation rules
  */
 fun User(username: String, password: String) = User(Username(username), Password(password))
+//TODO: porque ter uma funçao que recebe um username e um password e retorna um user? em vez de chamares o construtor do user?
 

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Batalha Naval</string>
-    <string name="register">Registar</string>
-    <string name="login">Entrar</string>
     <string name="general_error">Ocorreu um erro</string>
     <string name="general_error_title">Erro</string>
     <string name="username_field_label">Nome de Utilizador</string>
@@ -21,7 +19,7 @@
     <string name="play_label">Jogar</string>
     <string name="ranking_label">Classificação</string>
     <string name="credits_label">Creditos</string>
-    <string name="logout">Sair</string>
+    <string name="sign_out">Sair</string>
     <string name="total_games_played_label">Total de jogos jogados</string>
     <string name="password_dont_match">Palavras-Chave têm de ser iguais</string>
     <string name="repeat_password_field_label">Repete a palavra-chave</string>

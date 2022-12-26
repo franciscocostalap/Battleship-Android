@@ -42,10 +42,10 @@ class  PreserveDefaultDependencies : TestRule {
     override fun apply(test: Statement, description: Description): Statement =
         object : Statement() {
             override fun evaluate() {
-                val defaultUserInfoRepo = testApplication.authInfoRepository
+                val defaultUserInfoRepo = testApplication.authInfoService
                 try { test.evaluate() }
                 finally {
-                    testApplication.authInfoRepository = defaultUserInfoRepo
+                    testApplication.authInfoService = defaultUserInfoRepo
                 }
             }
         }
@@ -63,3 +63,4 @@ fun createPreserveDefaultDependenciesComposeRule() =
             error("This rule does not provide an Activity. Launch and use the Activity yourself.")
         }
     )
+

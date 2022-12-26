@@ -18,6 +18,7 @@ val gray600 = Color(0xFF404040)
 
 val blueDark = Color(0xFF32292F)
 val blueMedium = Color(0xFF575366)
+val blueMedium300 = Color(0xFF6D6A7B)
 val blueNormal = Color(0xFF6E7DAB)
 val blueLight = Color(0xFF5762D5)
 val whitelight = Color(0xFFD1E3DD)

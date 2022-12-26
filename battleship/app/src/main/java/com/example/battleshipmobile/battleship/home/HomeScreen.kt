@@ -13,6 +13,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import com.example.battleshipmobile.R
@@ -92,7 +93,8 @@ private fun StatelessHomeScreen(
                 text = stringResource(R.string.welcome_message),
                 color = Color(62, 66, 68 ),  //put in theme
                 fontSize = MaterialTheme.typography.subtitle1.fontSize,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
             )
 
             Spacer(Modifier.size(8.dp))
@@ -102,9 +104,9 @@ private fun StatelessHomeScreen(
                 buttonWidth = LOGIN_BUTTON_WIDTH,
                 buttonHeight = BUTTONS_HEIGHT,
                 fontSize = 25.sp,    // pu
-                text = stringResource(R.string.login),
-                modifiers = Modifier
-                    .testTag(TestTags.Home.LoginButton)
+                text = stringResource(R.string.sign_in),
+                modifier = Modifier
+                    .testTag(TestTags.Home.SignInButton)
             )
         }
 
@@ -114,7 +116,7 @@ private fun StatelessHomeScreen(
                 buttonWidth = PLAY_BUTTON_WIDTH,
                 buttonHeight = BUTTONS_HEIGHT,
                 text = stringResource(R.string.play_label),
-                modifiers = Modifier
+                modifier = Modifier
                     .testTag(TestTags.Home.PlayButton)
             )
         }
@@ -125,8 +127,8 @@ private fun StatelessHomeScreen(
             buttonWidth = INFO_BUTTON_WIDTH,
             buttonHeight = BUTTONS_HEIGHT,
             text = stringResource(R.string.ranking_label),
-            modifiers = Modifier
-                .testTag(TestTags.Home.RankingButton)
+            modifier = Modifier
+                .testTag(TestTags.Home.RankingsButton)
         )
 
         TextButton(
@@ -134,7 +136,7 @@ private fun StatelessHomeScreen(
             buttonWidth = CREDITS_BUTTON_WIDTH,
             buttonHeight = BUTTONS_HEIGHT,
             text = stringResource(R.string.credits_label),
-            modifiers = Modifier
+            modifier = Modifier
                 .testTag(TestTags.Home.CreditsButton)
         )
 
@@ -145,8 +147,8 @@ private fun StatelessHomeScreen(
                 onClick = onLogoutClick,
                 buttonWidth = LOGIN_BUTTON_WIDTH,
                 buttonHeight = BUTTONS_HEIGHT,
-                text = stringResource(R.string.logout),
-                modifiers = Modifier
+                text = stringResource(R.string.sign_out),
+                modifier = Modifier
                     .testTag(TestTags.Home.LogoutButton)
             )
         }

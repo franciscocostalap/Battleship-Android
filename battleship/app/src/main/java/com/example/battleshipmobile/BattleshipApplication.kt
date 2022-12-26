@@ -1,16 +1,18 @@
 package com.example.battleshipmobile
 
 import android.app.Application
-import com.example.battleshipmobile.battleship.auth.AuthInfoRepository
-import com.example.battleshipmobile.battleship.auth.AuthInfoRepositorySharedPrefs
+import com.example.battleshipmobile.battleship.auth.AuthInfoService
 import com.example.battleshipmobile.battleship.service.lobby.LobbyService
 import com.example.battleshipmobile.battleship.service.lobby.RealLobbyService
+import com.example.battleshipmobile.battleship.service.ranking.RankingService
+import com.example.battleshipmobile.battleship.service.ranking.RankingServiceI
 import com.example.battleshipmobile.battleship.service.user.RealUserService
 import com.example.battleshipmobile.battleship.service.user.UserService
+import com.example.battleshipmobile.battleship.http.ResendCookiesJar
+import com.example.battleshipmobile.battleship.http.SharedPrefsCookieStore
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import okhttp3.Cache
-import okhttp3.OkHttpClient
+import okhttp3.*
 import java.net.URL
 
 
@@ -18,11 +20,12 @@ const val TAG = "BattleshipGameApp"
 
 interface DependenciesContainer{
     val userService: UserService
-    val authInfoRepository: AuthInfoRepository
+    val statisticsService: RankingServiceI
+    val authInfoService: AuthInfoService
     val lobbyService: LobbyService
 }
 
-private const val host = "https://fb11-95-92-100-136.eu.ngrok.io"
+private const val host = "http://192.168.1.252:8090"
 private const val root = "$host/api"
 private const val home = "$root/"
 private const val userHome = "$root/my"
@@ -30,8 +33,11 @@ private const val SIZE_50MB: Long = 50 * 1024 * 1024
 
 class BattleshipApplication : Application(), DependenciesContainer {
 
+    private val cookieStore = SharedPrefsCookieStore(this)
+
     private val httpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
+            .cookieJar(ResendCookiesJar(cookieStore))
             .cache(Cache(directory = cacheDir, maxSize = SIZE_50MB))
             .build()
     }
@@ -48,7 +54,12 @@ class BattleshipApplication : Application(), DependenciesContainer {
     override val lobbyService: LobbyService by lazy {
         RealLobbyService(httpClient, jsonEncoder, rootUrl = root, parentUrl = URL(userHome))
     }
+    override val statisticsService: RankingServiceI by lazy {
+        RankingService(httpClient,jsonEncoder, rootUrl = host, parentURL = URL(home)
+        )
+    }
 
-    override val authInfoRepository: AuthInfoRepository
-        get() = AuthInfoRepositorySharedPrefs(this)
+    override val authInfoService: AuthInfoService by lazy {
+        AuthInfoService(this, cookieStore)
+    }
 }

@@ -13,7 +13,6 @@ import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.battleship.home.HomeActivity
 import com.example.battleshipmobile.battleship.play.QueueState.*
 import com.example.battleshipmobile.battleship.service.ID
-import com.example.battleshipmobile.battleship.service.user.AuthInfo
 import com.example.battleshipmobile.ui.showToast
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.ui.views.TimedComposable
@@ -41,7 +40,7 @@ class QueueActivity : ComponentActivity() {
         }
     }
 
-    private val authRepo by lazy { dependencies.authInfoRepository }
+    private val authRepo by lazy { dependencies.authInfoService }
     private val dependencies by lazy { application as DependenciesContainer }
     private val queueViewModel by viewModels<QueueViewModel> {
         viewModelInit { QueueViewModel(dependencies.lobbyService) }
@@ -54,8 +53,8 @@ class QueueActivity : ComponentActivity() {
 
         setContent {
             BattleshipMobileTheme {
-                val auth = authRepo.authInfo
-                require(auth != null) { MUST_BE_AUTHENTICATED }                                //TODO() MUDAR
+
+                require(authRepo.hasAuthInfo() ) { MUST_BE_AUTHENTICATED }                                //TODO() MUDAR
 
                 val lobbyId = lobbyID
                 require(lobbyId != LOBBY_ID_DEFAULT_VALUE) { LOBBY_WAS_NOT_CREATED }
@@ -70,15 +69,14 @@ class QueueActivity : ComponentActivity() {
                         }
                     ) {
                         lobbyState = FULL
-                        QueueScreenContent(authInfo = auth)
+                        QueueScreenContent()
                         //Action on back pressed
                         BackHandler { showToast(CANT_PERFORM_BACK_ACTION) }
                     }
                 } else {
-                    QueueScreenContent(authInfo = auth)
+                    QueueScreenContent()
                     WaitOpponentToEnterLobby(
                         id = lobbyId,
-                        userToken = auth.token,
                         viewModel = queueViewModel,
                         lobbyStateOnOpponentJoin = FULL
                     )
@@ -91,24 +89,23 @@ class QueueActivity : ComponentActivity() {
     /**
      * Queue screen content
      *
-     * @param authInfo information about the authenticated user that is navigating.
      */
     @Composable
-    private fun QueueScreenContent(authInfo: AuthInfo) {
+    private fun QueueScreenContent() {
         QueueScreen(
             queueState = lobbyState,
             onBackClick = {
                 Log.v("QUEUE_ACTIVITY", "Back button was pressed")
-                onQueueCancel(authInfo)
+                onQueueCancel()
             },
             onCancelClick = {
                 Log.v("QUEUE_ACTIVITY", "Cancel button was pressed")
-                onQueueCancel(authInfo)
+                onQueueCancel()
             })
     }
 
-    private fun onQueueCancel(authInfo: AuthInfo){
-        queueViewModel.cancelQueue(lobbyID, authInfo.token)
+    private fun onQueueCancel(){
+        queueViewModel.cancelQueue(lobbyID)
         HomeActivity.navigate(this)
         finish()
     }
@@ -118,21 +115,18 @@ class QueueActivity : ComponentActivity() {
      * This effect will not be re-launched if the activity is recreated.
      *
      * @param id the lobby id
-     * @param userToken the user token
      * @param viewModel the queue view model
      * @param lobbyStateOnOpponentJoin the lobby state to be set when the opponent joins the lobby
      */
     @Composable
     fun Activity.WaitOpponentToEnterLobby(
         id: ID,
-        userToken: String,
         viewModel: QueueViewModel,
         lobbyStateOnOpponentJoin: QueueState
     ){
         LaunchedEffect(key1 = true){
             viewModel.waitForFullLobby(
                 id,
-                userToken,
                 onContinuation = {
                     lobbyState = lobbyStateOnOpponentJoin
                     //delay time to match the delay time of the opponent when he joins the lobby

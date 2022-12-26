@@ -117,7 +117,7 @@ fun TextButton(
     text: String,
     fontSize: TextUnit = FONT_SIZE,
     fontWeight: FontWeight = FontWeight.Bold,
-    modifiers : Modifier = Modifier
+    modifier : Modifier = Modifier
 ) {
     CustomBox(
         width = buttonWidth,
@@ -127,7 +127,7 @@ fun TextButton(
         borderColor = buttonBorderColour,
         borderWidth = buttonBorderWidth,
         cornerBoxesSize = BUTTON_CORNER_BOXES_SIZE,
-        modifier = modifiers
+        modifier = modifier
 
     ){
         Box(

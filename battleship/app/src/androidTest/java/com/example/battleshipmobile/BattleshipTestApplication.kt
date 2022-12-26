@@ -3,9 +3,10 @@ package com.example.battleshipmobile
 import android.app.Application
 import android.content.Context
 import androidx.test.runner.AndroidJUnitRunner
-import com.example.battleshipmobile.battleship.auth.AuthInfoRepository
-import com.example.battleshipmobile.battleship.service.lobby.LobbyInformation
+import com.example.battleshipmobile.battleship.service.ranking.RankingServiceI
+import com.example.battleshipmobile.battleship.auth.AuthInfoService
 import com.example.battleshipmobile.battleship.service.lobby.LobbyService
+import com.example.battleshipmobile.battleship.service.ranking.StatisticsEmbedded
 import com.example.battleshipmobile.battleship.service.user.AuthInfo
 import com.example.battleshipmobile.battleship.service.user.UserService
 import io.mockk.coEvery
@@ -20,14 +21,21 @@ class BattleshipTestApplication: DependenciesContainer, Application() {
         coEvery { register(any()) } returns AuthInfo(0, "testToken")
     }
 
-    override var authInfoRepository: AuthInfoRepository = mockk(relaxed = true) {
-            every { authInfo } returns AuthInfo(0, "testToken")
+    override var authInfoService: AuthInfoService = mockk(relaxed = true) {
+            every { uid } returns AuthInfo(0, "testToken")
         }
 
+    override val statisticsService: RankingServiceI = object : RankingServiceI {
+
+        override suspend fun getStatistics(embeddedPlayers: Boolean): StatisticsEmbedded {
+            TODO("Not yet implemented")
+        }
+    }
+
     override var lobbyService: LobbyService = mockk(relaxed = true){
-        coEvery { get(any(), any()) } returns LobbyInformation(0, null)
-        coEvery { enqueue(any()) } returns LobbyInformation(0, null)
-        coEvery { cancel(any(), any())}
+//        coEvery { get(any(), ) } returns LobbyInformation(0, null)
+//        coEvery { enqueue() } returns LobbyInformation(0, null)
+//        coEvery { cancel(any(), )}
     }
 }
 

@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.home.HomeActivity
+import com.example.battleshipmobile.battleship.service.user.AuthInfo
 import com.example.battleshipmobile.ui.ErrorAlert
 import com.example.battleshipmobile.utils.viewModelInit
 
@@ -26,7 +27,7 @@ class AuthenticationActivity : ComponentActivity() {
 
     private val dependencies by lazy { application as DependenciesContainer }
 
-    private val repo by lazy { dependencies.authInfoRepository }
+    private val repo by lazy { dependencies.authInfoService }
 
     private val viewModel by viewModels<AuthViewModel> {
         viewModelInit{ AuthViewModel(dependencies.userService) }
@@ -41,11 +42,10 @@ class AuthenticationActivity : ComponentActivity() {
             val retrievedAuthResult = viewModel.retrievedAuthInformation
             if(retrievedAuthResult != null){
                 retrievedAuthResult.onSuccess {
-                    repo.authInfo = it
-                    HomeActivity.navigate(this)
-                    finish()
+                    Log.v("LOGIN_ACTIVITY", "auth successful")
+                    repo.uid = it.uid
                 }.onFailure {
-                    Log.e("AUTH_ERROR", it.stackTraceToString())
+                    Log.e("LOGIN_ACTIVITY", "AUTH_ERROR: " + it.stackTraceToString())
                     ErrorAlert(
                         title = R.string.general_error_title,
                         message = R.string.general_error,
@@ -54,23 +54,33 @@ class AuthenticationActivity : ComponentActivity() {
                     )
                 }
             }
-            if (repo.authInfo == null)
+            if (!repo.hasAuthInfo())
                 AuthenticationScreen(
                     formType=viewModel.authFormType,
                     usernameLabel = R.string.username_field_label,
                     passwordLabel = R.string.password_field_label,
                     onAuthRequested = { user ->
                         val formType = viewModel.authFormType
-                        if(formType == AuthenticationFormType.Login)
+                        if(formType == AuthenticationFormType.Login) {
+                            Log.e("LOGIN_ACTIVITY", "Login requested")
                             viewModel.login(user)
-                        else if(formType == AuthenticationFormType.Register)
+                        }
+                        else if(formType == AuthenticationFormType.Register) {
+
+                            Log.e("LOGIN_ACTIVITY","Register requested")
                             viewModel.register(user)
+                        }
                     },
                     onAuthTypeSwapRequested ={
                         viewModel.swapFormType()
                     }
                 )
-            else error("Unexpected behaviour: authInfo is not null")
+            else {
+                Log.v("LOGIN_ACTIVITY", "auth successful")
+                HomeActivity.navigate(this)
+                Log.v("LOGIN_ACTIVITY", "navigating")
+                finish()
+            }
         }
     }
 }

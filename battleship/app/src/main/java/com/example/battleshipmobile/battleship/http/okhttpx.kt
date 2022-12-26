@@ -1,12 +1,15 @@
-package com.example.battleshipmobile.utils
+package com.example.battleshipmobile.battleship.http
 
+import android.content.Context
 import com.example.battleshipmobile.battleship.http.hypermedia.Problem
 import com.example.battleshipmobile.battleship.http.hypermedia.ProblemMediaType
 import android.util.Log
-import com.example.battleshipmobile.utils.HttpMethod.*
+import com.example.battleshipmobile.battleship.http.HttpMethod.*
+import com.example.battleshipmobile.utils.SirenMediaType
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import okhttp3.*
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
@@ -15,6 +18,7 @@ import java.lang.reflect.Type
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+
 
 /**
  * HTTP methods
@@ -45,29 +49,25 @@ class UnresolvedActionException(msg: String = "") : ApiException(msg)
  * @param url request URL
  * @param method HTTP method
  * @param body request body
- * @param token token of the user that requested the action
+ * @param queryMap query parameters
  * @return [Request]
  */
-fun buildRequest(url: URL, method: HttpMethod = GET, body: String? = null, token: String? = null): Request {
+fun buildRequest(url: URL, method: HttpMethod = GET, body: String? = null, queryMap : Map<String, String>? = null ): Request {
     val emptyBody = "{}"
     val bodyToSend = if(method != GET && body == null) emptyBody else body
+    val query = queryMap?.let { map ->
+        map.entries.joinToString("&") { (key, value) ->
+            "$key=$value"
+        }
+    }
+    val newURL = if(query != null) URL("$url?$query") else url
 
     return Request.Builder()
-        .url(url)
-        .addAuthHeaderIfNotNull(token)
+        .url(newURL)
         .method(method.name, bodyToSend?.toRequestBody("application/json".toMediaType()))
         .build()
 }
 
-/**
- * Adds an authorization header to the request if the token is not null
- * @param value token of the user or null if there is no need for authorization
- * @return [Request.Builder]
- */
-private fun Request.Builder.addAuthHeaderIfNotNull(value: String?): Request.Builder{
-    value ?: return this
-    return addHeader("Authorization", "Bearer $value")
-}
 
 /**
  * Handles an HTTP response using a json encoder [Gson]
@@ -115,8 +115,8 @@ suspend fun <T> Request.send(okHttpClient: OkHttpClient, handler: Response.() ->
 
             override fun onResponse(call: Call, response: Response) {
                 try {
-                    Log.v("RESPONSE STATUS", response.code.toString())
-                    Log.v("RESPONSE MESSAGE", response.message)
+                    Log.v("APP RESPONSE STATUS", response.code.toString())
+                    Log.v("APP RESPONSE MESSAGE", response.message)
                     continuation.resume(response.handler())
                 } catch (t: Throwable) {
                     continuation.resumeWithException(t)

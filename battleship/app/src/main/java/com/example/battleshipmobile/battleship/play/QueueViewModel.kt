@@ -19,22 +19,22 @@ class QueueViewModel(private val lobbyService: LobbyService): ViewModel() {
     private val flow = MutableStateFlow<LobbyInformation?>(null)
     val stateFlow: StateFlow<LobbyInformation?> = flow.asStateFlow()
 
-    private fun lobbyInformationFlow(lobbyID: ID, userToken: String) = flow{
-        var currentLobbyValue = fetchLobbyInfo(lobbyID, userToken)
+    private fun lobbyInformationFlow(lobbyID: ID) = flow{
+        var currentLobbyValue = fetchLobbyInfo(lobbyID)
 
         while(currentLobbyValue.gameId == null){
             emit(currentLobbyValue)
             delay(DELAY_TIME)
-            currentLobbyValue = fetchLobbyInfo(lobbyID, userToken)
+            currentLobbyValue = fetchLobbyInfo(lobbyID)
         }
     }
 
 
-    private suspend fun fetchLobbyInfo(lobbyID: ID, userToken: String): LobbyInformation {
+    private suspend fun fetchLobbyInfo(lobbyID: ID): LobbyInformation {
         stateFlow
         return coroutineScope {
             val result = async {
-                lobbyInformation = lobbyService.get(lobbyID, userToken)
+                lobbyInformation = lobbyService.get(lobbyID)
                 lobbyInformation
             }
             return@coroutineScope result.await() ?:
@@ -43,9 +43,9 @@ class QueueViewModel(private val lobbyService: LobbyService): ViewModel() {
     }
 
 
-    fun waitForFullLobby(lobbyID: ID, userToken: String, onContinuation: suspend ()-> Unit){
+    fun waitForFullLobby(lobbyID: ID, onContinuation: suspend ()-> Unit){
         viewModelScope.launch {
-            lobbyInformationFlow(lobbyID, userToken).collectLatest {
+            lobbyInformationFlow(lobbyID).collectLatest {
                 lobbyInformation ?: cancel()
                 lobbyInformation = it
             }
@@ -55,10 +55,10 @@ class QueueViewModel(private val lobbyService: LobbyService): ViewModel() {
         }
     }
 
-    fun cancelQueue(lobbyID: ID, userToken: String){
+    fun cancelQueue(lobbyID: ID){
         viewModelScope.launch {
             try{
-                Result.success(lobbyService.cancel(lobbyID, userToken))
+                Result.success(lobbyService.cancel(lobbyID))
                 lobbyInformation = null
             }catch (e: Exception){
                 Result.failure<LobbyInformation>(e)

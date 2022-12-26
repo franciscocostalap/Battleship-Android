@@ -12,9 +12,9 @@ object TestTags {
     }
 
     object Home{
-        const val RankingButton = "RankingButton"
+        const val RankingsButton = "RankingButton"
         const val CreditsButton = "CreditsButton"
-        const val LoginButton = "LoginButton"
+        const val SignInButton = "LoginButton"
         const val Screen = "HomeScreen"
         const val LogoutButton = "LogoutButton"
         const val PlayButton = "PlayButton"
