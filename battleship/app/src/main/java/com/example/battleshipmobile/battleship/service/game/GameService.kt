@@ -1,8 +1,8 @@
-package com.example.battleshipmobile.battleship.service.lobby
+package com.example.battleshipmobile.battleship.service.game
 
 import com.example.battleshipmobile.battleship.service.ID
 
-interface LobbyService {
+interface GameService {
     /**
      * Queues up a user to play returning the lobby information.
      *
@@ -24,4 +24,11 @@ interface LobbyService {
      * @param lobbyID the id of the lobby
      */
     suspend fun cancel(lobbyID: ID)
+
+    /**
+     * Places the given ships on the board.
+     *
+     * @param layout The ships to place on the board.
+     */
+    suspend fun placeShips(layout: ShipsInfoDTO)
 }

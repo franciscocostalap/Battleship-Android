@@ -7,11 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.battleshipmobile.battleship.auth.AuthInfoService
 import com.example.battleshipmobile.battleship.service.ID
-import com.example.battleshipmobile.battleship.service.lobby.LobbyInformation
-import com.example.battleshipmobile.battleship.service.lobby.LobbyService
+import com.example.battleshipmobile.battleship.service.game.LobbyInformation
+import com.example.battleshipmobile.battleship.service.game.GameService
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val lobbyService: LobbyService,private val authInfoRepository: AuthInfoService) : ViewModel() {
+class HomeViewModel(private val gameService: GameService, private val authInfoRepository: AuthInfoService) : ViewModel() {
 
 
     var lobbyInformationResult by mutableStateOf<Result<LobbyInformation>?>(null)
@@ -25,7 +25,7 @@ class HomeViewModel(private val lobbyService: LobbyService,private val authInfoR
     fun enqueue(){
         viewModelScope.launch {
            lobbyInformationResult =  try{
-               Result.success(lobbyService.enqueue())
+               Result.success(gameService.enqueue())
            }catch (e: Exception){
                Result.failure(e)
            }

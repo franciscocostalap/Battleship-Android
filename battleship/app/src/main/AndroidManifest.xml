@@ -18,7 +18,7 @@
         android:theme="@style/Theme.BattleshipMobile"
         tools:targetApi="31">
         <activity
-            android:name=".battleship.ranking.RankingActivity"
+            android:name=".battleship.layout_definition.LayoutDefinitionActivity"
             android:exported="false" />
         <activity
             android:name=".battleship.home.HomeActivity"

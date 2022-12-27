@@ -101,6 +101,19 @@ fun HomeScreen(
                 )
             }
 
+            if (isLoggedIn) {
+                Spacer(Modifier.size(70.dp))
+
+                TextButton(
+                    onClick = onLogoutRequested,
+                    buttonWidth = LOGIN_BUTTON_WIDTH,
+                    buttonHeight = BUTTONS_HEIGHT,
+                    text = stringResource(R.string.sign_out),
+                    modifier = Modifier
+                        .testTag(TestTags.Home.LogoutButton)
+                )
+            }
+
             Spacer(Modifier.size(70.dp))
             TextButton(
                 onClick = onRankingRequested,
@@ -119,19 +132,6 @@ fun HomeScreen(
                 modifier = Modifier
                     .testTag(TestTags.Home.CreditsButton)
             )
-
-            if (isLoggedIn) {
-                Spacer(Modifier.size(70.dp))
-
-                TextButton(
-                    onClick = onLogoutRequested,
-                    buttonWidth = LOGIN_BUTTON_WIDTH,
-                    buttonHeight = BUTTONS_HEIGHT,
-                    text = stringResource(R.string.sign_out),
-                    modifier = Modifier
-                        .testTag(TestTags.Home.LogoutButton)
-                )
-            }
 
             Spacer(Modifier.size(100.dp))
 

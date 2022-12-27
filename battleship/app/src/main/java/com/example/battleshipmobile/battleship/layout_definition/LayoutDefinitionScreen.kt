@@ -1,8 +1,10 @@
 package com.example.battleshipmobile.battleship.layout_definition
 
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -11,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.battleshipmobile.battleship.service.game.ShipsInfoDTO
 import com.example.battleshipmobile.battleship.service.model.Board
 import com.example.battleshipmobile.battleship.service.model.GameRules
 import com.example.battleshipmobile.battleship.service.model.Square
@@ -26,6 +29,7 @@ data class LayoutDefinitionHandlers(
     val onShipClicked: (ShipData) -> Unit = {},
     val onRotateClicked: () -> Unit = {},
     val onFleetResetClicked: () -> Unit = {},
+    val onSubmit: () -> Unit = {}
 )
 
 data class LayoutDefinitionScreenState(
@@ -50,6 +54,9 @@ fun LayoutDefinitionScreen(
                     onResetRequested = handlers.onFleetResetClicked,
                     isShipSelected = state.selectedShip != null
                 )
+                Button(onClick = { handlers.onSubmit() }) {
+                    Text("Submit")
+                }
             },
         ) { padding ->
             Column(modifier = Modifier.padding(padding)) {

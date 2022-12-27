@@ -1,6 +1,6 @@
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.battleshipmobile.battleship.auth.AuthInfoRepositorySharedPrefs
+
 import com.example.battleshipmobile.battleship.service.user.AuthInfo
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertNull

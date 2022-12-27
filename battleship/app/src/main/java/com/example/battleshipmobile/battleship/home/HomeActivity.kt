@@ -12,7 +12,6 @@ import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.auth.AuthenticationActivity
 import com.example.battleshipmobile.battleship.info.InfoActivity
 import com.example.battleshipmobile.battleship.play.QueueActivity
-import com.example.battleshipmobile.battleship.ranking.RankingActivity
 import com.example.battleshipmobile.ui.ErrorAlert
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.utils.viewModelInit
@@ -30,7 +29,7 @@ class HomeActivity : ComponentActivity() {
     }
 
     private val homeViewModel by viewModels<HomeViewModel> {
-        viewModelInit { HomeViewModel(dependencies.lobbyService, dependencies.authInfoService) }
+        viewModelInit { HomeViewModel(dependencies.gameService, dependencies.authInfoService) }
     }
     private val dependencies by lazy { application as DependenciesContainer }
 
@@ -49,7 +48,7 @@ class HomeActivity : ComponentActivity() {
                 if(lobbyInfo != null) {
                     Log.v("HOME_ACTIVITY", "Play button was pressed")
                     lobbyInfo.onSuccess {
-                        QueueActivity.navigate(this, it.lobbyId, it.gameId)
+                        QueueActivity.navigate(this, it.lobbyID, it.gameID)
                         finish()
                     }.onFailure {
                         Log.e("QUEUE_ERROR", it.stackTraceToString())
@@ -68,7 +67,7 @@ class HomeActivity : ComponentActivity() {
                     onLoginRequested = { AuthenticationActivity.navigate(this) },
                     onLogoutRequested = { homeViewModel.logout() },
                     onPlayRequested = { homeViewModel.enqueue() },
-                    onRankingRequested = { RankingActivity.navigate(this) },
+                    onRankingRequested = { /*RankingActivity.navigate(this)*/ },
                     onInfoRequested = { InfoActivity.navigate(this) }
                 )
             }
