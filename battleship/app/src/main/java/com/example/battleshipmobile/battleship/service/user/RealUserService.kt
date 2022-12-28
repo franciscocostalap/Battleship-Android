@@ -105,7 +105,7 @@ class RealUserService(
         require(homeSirenEntity != null) { HOME_ERR_MESSAGE }
 
         return ensureAction(
-            sirenEntity = homeSirenEntity,
+            parentSirenEntity = homeSirenEntity,
             relation = REGISTER_REL,
             rootUrl,
             relationType = RelationType.ACTION
@@ -124,7 +124,7 @@ class RealUserService(
         require(homeSirenEntity != null) { HOME_ERR_MESSAGE }
 
         return ensureAction(
-            sirenEntity = homeSirenEntity,
+            parentSirenEntity = homeSirenEntity,
             relation = LOGIN_REL,
             rootUrl,
             relationType = RelationType.ACTION

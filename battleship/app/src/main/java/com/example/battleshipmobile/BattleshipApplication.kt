@@ -2,15 +2,12 @@ package com.example.battleshipmobile
 
 import android.app.Application
 import com.example.battleshipmobile.battleship.auth.AuthInfoService
-import com.example.battleshipmobile.battleship.service.lobby.LobbyService
-import com.example.battleshipmobile.battleship.service.lobby.RealLobbyService
-import com.example.battleshipmobile.battleship.service.ranking.RankingService
-import com.example.battleshipmobile.battleship.service.ranking.RankingServiceI
+import com.example.battleshipmobile.battleship.service.game.GameService
+import com.example.battleshipmobile.battleship.service.game.RealGameService
 import com.example.battleshipmobile.battleship.service.user.RealUserService
 import com.example.battleshipmobile.battleship.service.user.UserService
 import com.example.battleshipmobile.battleship.http.ResendCookiesJar
 import com.example.battleshipmobile.battleship.http.SharedPrefsCookieStore
-import com.example.battleshipmobile.battleship.service.user.User
 import com.example.battleshipmobile.battleship.service.user.UserInfo
 import com.example.battleshipmobile.utils.SubEntity
 import com.example.battleshipmobile.utils.SubEntityDeserializer
@@ -26,10 +23,10 @@ interface DependenciesContainer{
     val userService: UserService
     val statisticsService: RankingServiceI
     val authInfoService: AuthInfoService
-    val lobbyService: LobbyService
+    val gameService: GameService
 }
 
-private const val host = "http://192.168.1.2:8090"
+private const val host = "http://192.168.1.252:8090"
 private const val root = "$host/api"
 private const val home = "$root/"
 private const val userHome = "$root/my"
@@ -59,9 +56,10 @@ class BattleshipApplication : Application(), DependenciesContainer {
         RealUserService(httpClient, jsonEncoder, rootUrl = root, parentUrl = URL(home))
     }
 
-    override val lobbyService: LobbyService by lazy {
-        RealLobbyService(httpClient, jsonEncoder, rootUrl = root, parentUrl = URL(userHome))
+    override val gameService: GameService by lazy {
+        RealGameService(httpClient, jsonEncoder, rootUrl = root, parentUrl = URL(userHome))
     }
+
     override val statisticsService: RankingServiceI by lazy {
         RankingService(httpClient,jsonEncoder, rootUrl = root, parentURL = URL(home)
         )

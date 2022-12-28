@@ -23,7 +23,7 @@ private const val ACTION_NOT_FOUND = "Entity has no action with the rel: "
 /**
  * Ensures that the action or link is present in the entity
  *
- * @param sirenEntity entity to check
+ * @param parentSirenEntity entity to check
  * @param relation relation to check
  * @param rootUrl api base url used for all endpoints
  * @param relationType type of connection to check: action or link
@@ -31,7 +31,7 @@ private const val ACTION_NOT_FOUND = "Entity has no action with the rel: "
  */
 
 fun <T> ensureAction(
-    sirenEntity: SirenEntity<T>,
+    parentSirenEntity: SirenEntity<T>,
     relation: String,
     rootUrl: String,
     relationType: RelationType,
@@ -41,14 +41,14 @@ fun <T> ensureAction(
 
     return if (relationType == ACTION) {
         val sirenAction =
-            sirenEntity.actions?.find { it.name == relation } ?: throw UnresolvedActionException(
+            parentSirenEntity.actions?.find { it.name == relation } ?: throw UnresolvedActionException(
                 ACTION_NOT_FOUND + relation
             )
 
         buildAction(rootUrl, sirenAction.href.toString() + query, sirenAction.method)
     } else {
         val sirenLink =
-            sirenEntity.links?.find { it.rel.contains(relation) }
+            parentSirenEntity.links?.find { it.rel.contains(relation) }
                 ?: throw UnresolvedActionException(LINK_NOT_FOUND + relation)
         buildAction(rootUrl, sirenLink.href.toString() + query)
     }

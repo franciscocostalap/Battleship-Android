@@ -3,10 +3,8 @@ package com.example.battleshipmobile
 import android.app.Application
 import android.content.Context
 import androidx.test.runner.AndroidJUnitRunner
-import com.example.battleshipmobile.battleship.service.ranking.RankingServiceI
 import com.example.battleshipmobile.battleship.auth.AuthInfoService
-import com.example.battleshipmobile.battleship.service.lobby.LobbyService
-import com.example.battleshipmobile.battleship.service.ranking.StatisticsEmbedded
+import com.example.battleshipmobile.battleship.service.game.GameService
 import com.example.battleshipmobile.battleship.service.user.AuthInfo
 import com.example.battleshipmobile.battleship.service.user.UserService
 import io.mockk.coEvery
@@ -32,7 +30,7 @@ class BattleshipTestApplication: DependenciesContainer, Application() {
         }
     }
 
-    override var lobbyService: LobbyService = mockk(relaxed = true){
+    override var gameService: GameService = mockk(relaxed = true){
 //        coEvery { get(any(), ) } returns LobbyInformation(0, null)
 //        coEvery { enqueue() } returns LobbyInformation(0, null)
 //        coEvery { cancel(any(), )}

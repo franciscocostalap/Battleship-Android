@@ -1,16 +1,33 @@
 package com.example.battleshipmobile.battleship.layout_definition
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import com.example.battleshipmobile.DependenciesContainer
+import com.example.battleshipmobile.battleship.service.ID
 import com.example.battleshipmobile.utils.viewModelInit
 
 class LayoutDefinitionActivity : ComponentActivity() {
 
+    companion object {
+
+        const val GAME_ID_EXTRA = "gameID"
+
+        fun navigate(origin: Activity,  gameID: ID) {
+            with(origin) {
+                val intent = Intent(this, LayoutDefinitionActivity::class.java)
+                intent.putExtra(GAME_ID_EXTRA, gameID)
+                startActivity(intent)
+            }
+        }
+    }
+    private val dependencies by lazy { application as DependenciesContainer }
     private val viewModel: LayoutDefinitionViewModel by viewModels {
             viewModelInit {
-                LayoutDefinitionViewModel()
+                LayoutDefinitionViewModel(dependencies.gameService)
             }
         }
 
@@ -28,7 +45,7 @@ class LayoutDefinitionActivity : ComponentActivity() {
                 onShipClicked = { shipData -> viewModel.selected = shipData },
                 onSquareClicked = { square ->
                     viewModel.selected?.let { selectedShipData ->
-                        viewModel.placeship(
+                        viewModel.placeShip(
                             initialSquare = square,
                             shipData = selectedShipData
                         )
@@ -40,6 +57,9 @@ class LayoutDefinitionActivity : ComponentActivity() {
                 onFleetResetClicked = {
                     viewModel.resetState()
                 },
+                onSubmit = {
+                    viewModel.submitLayout()
+                }
             )
 
             LayoutDefinitionScreen(

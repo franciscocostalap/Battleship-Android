@@ -11,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.*
 import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.battleship.home.HomeActivity
+import com.example.battleshipmobile.battleship.layout_definition.LayoutDefinitionActivity
 import com.example.battleshipmobile.battleship.play.QueueState.*
 import com.example.battleshipmobile.battleship.service.ID
 import com.example.battleshipmobile.ui.showToast
@@ -26,6 +27,7 @@ class QueueActivity : ComponentActivity() {
         const val LOBBY_ID_EXTRA = "lobbyID"
         const val GAME_ID_EXTRA = "gameID"
         private const val LOBBY_WAS_NOT_CREATED = "Lobby was not created"
+        private const val GAME_WAS_NOT_CREATED = "Game was not created"
         private const val MUST_BE_AUTHENTICATED = "You must be authenticated"
         private const val CANT_PERFORM_BACK_ACTION = "Game is starting, please wait"
         const val DELAY_TIME = 3000L
@@ -33,8 +35,8 @@ class QueueActivity : ComponentActivity() {
         fun navigate(origin: Activity, lobbyID: ID, gameID: ID?) {
             with(origin) {
                 val intent = Intent(this, QueueActivity::class.java)
-                intent.putExtra("lobbyID", lobbyID)
-                intent.putExtra("gameID", gameID)
+                intent.putExtra(LOBBY_ID_EXTRA, lobbyID)
+                intent.putExtra(GAME_ID_EXTRA, gameID)
                 startActivity(intent)
             }
         }
@@ -43,9 +45,9 @@ class QueueActivity : ComponentActivity() {
     private val authRepo by lazy { dependencies.authInfoService }
     private val dependencies by lazy { application as DependenciesContainer }
     private val queueViewModel by viewModels<QueueViewModel> {
-        viewModelInit { QueueViewModel(dependencies.lobbyService) }
+        viewModelInit { QueueViewModel(dependencies.gameService) }
     }
-    private var lobbyState by mutableStateOf(SEARCHING_OPPONENT)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,32 +55,44 @@ class QueueActivity : ComponentActivity() {
 
         setContent {
             BattleshipMobileTheme {
+                Log.v("QUEUE_ACTIVITY", "QueueActivity setContent")
+                require(authRepo.hasAuthInfo() ) { MUST_BE_AUTHENTICATED } //TODO() MUDAR
 
-                require(authRepo.hasAuthInfo() ) { MUST_BE_AUTHENTICATED }                                //TODO() MUDAR
+                if(gameID != GAME_ID_DEFAULT_VALUE)
+                    queueViewModel.lobbyState = FULL
 
+                val lobbyState = queueViewModel.lobbyState
                 val lobbyId = lobbyID
                 require(lobbyId != LOBBY_ID_DEFAULT_VALUE) { LOBBY_WAS_NOT_CREATED }
-                val gameId = gameID
 
-                if (gameId != GAME_ID_DEFAULT_VALUE) {
+                if(lobbyState == FULL){
+
+                    val gameId =
+                        if(gameID != GAME_ID_DEFAULT_VALUE)
+                            gameID
+                        else
+                            queueViewModel.lobbyInformation?.gameID
+
+                    require(gameId != null) { GAME_WAS_NOT_CREATED }
+
+                    Log.v("TIMED_COMPOSABLE", "Timeout Started")
                     TimedComposable(
                         time = DELAY_TIME,
                         onTimeout = {
-                            //PlaceShipActivity.navigate(this@QueueActivity, ...)
+                            Log.v("TIMED_COMPOSABLE", "Game is starting")
+                            LayoutDefinitionActivity.navigate(this, gameId)
                             finish()
                         }
                     ) {
-                        lobbyState = FULL
-                        QueueScreenContent()
+                        QueueScreenContent(lobbyState)
                         //Action on back pressed
                         BackHandler { showToast(CANT_PERFORM_BACK_ACTION) }
                     }
                 } else {
-                    QueueScreenContent()
+                    QueueScreenContent(lobbyState)
                     WaitOpponentToEnterLobby(
                         id = lobbyId,
                         viewModel = queueViewModel,
-                        lobbyStateOnOpponentJoin = FULL
                     )
                 }
                 return@BattleshipMobileTheme
@@ -91,7 +105,7 @@ class QueueActivity : ComponentActivity() {
      *
      */
     @Composable
-    private fun QueueScreenContent() {
+    private fun QueueScreenContent(lobbyState: QueueState) {
         QueueScreen(
             queueState = lobbyState,
             onBackClick = {
@@ -116,19 +130,17 @@ class QueueActivity : ComponentActivity() {
      *
      * @param id the lobby id
      * @param viewModel the queue view model
-     * @param lobbyStateOnOpponentJoin the lobby state to be set when the opponent joins the lobby
      */
     @Composable
     fun Activity.WaitOpponentToEnterLobby(
         id: ID,
         viewModel: QueueViewModel,
-        lobbyStateOnOpponentJoin: QueueState
     ){
+        //TODO() tratar a situação em que o pedido do estado do lobby é feito qnd se cancela a queue
         LaunchedEffect(key1 = true){
             viewModel.waitForFullLobby(
                 id,
                 onContinuation = {
-                    lobbyState = lobbyStateOnOpponentJoin
                     //delay time to match the delay time of the opponent when he joins the lobby
                     delay(DELAY_TIME)
                     //PlaceShipActivity.navigate(this@QueueActivity, ...)
