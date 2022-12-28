@@ -22,7 +22,7 @@ class BattleshipTestApplication: DependenciesContainer, Application() {
     }
 
     override var authInfoService: AuthInfoService = mockk(relaxed = true) {
-            every { uid } returns AuthInfo(0, "testToken")
+            every { uid } returns 0
         }
 
     override val statisticsService: RankingServiceI = object : RankingServiceI {

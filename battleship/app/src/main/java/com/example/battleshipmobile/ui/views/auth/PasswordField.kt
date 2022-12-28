@@ -1,5 +1,6 @@
 package com.example.battleshipmobile.ui.views
 
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -26,7 +27,8 @@ fun PasswordField(
     isError: Boolean=false,
     error: String="",
     onValueChange: (String) -> Unit,
-    onVisibilityToggle: () -> Unit = {}
+    onVisibilityToggle: () -> Unit = {},
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
     OutlinedTextFieldValidation(
         value = value,
@@ -50,6 +52,7 @@ fun PasswordField(
                 Icon(imageVector = image, description)
             }
         },
+        keyboardActions = keyboardActions,
         modifier=modifier.semantics { this[contentIsVisible] = isVisible },
         error = error
     )

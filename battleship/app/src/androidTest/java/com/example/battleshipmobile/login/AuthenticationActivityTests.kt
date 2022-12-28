@@ -79,7 +79,7 @@ class AuthenticationActivityTests {
             testRule.waitForIdle()
 
             // Assert
-            verify { mockRepo.uid = AuthInfo(0, "test") }
+            verify { mockRepo.uid = 0}
             testRule.onNodeWithTag(TestTags.Home.Screen).assertExists()
             testRule.onNodeWithTag(TestTags.Auth.Screen).assertDoesNotExist()
         }

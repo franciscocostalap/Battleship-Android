@@ -23,14 +23,13 @@ interface CookieStore {
  */
 class SharedPrefsCookieStore(private val context: Context) : CookieStore {
     private val prefs by lazy {
-        context.getSharedPreferences("AuthInfoPrefs", Context.MODE_PRIVATE)
+        context.getSharedPreferences("CookieStorePrefs", Context.MODE_PRIVATE)
     }
 
     override fun set(url: HttpUrl, cookies: List<Cookie>) {
         cookies.forEach { cookie ->
             prefs.edit().putString(url.host + " " + cookie.name, cookie.toString()).apply()
         }
-        Log.v("CookieStore", "Set cookies: ${cookies.joinToString()}")
     }
 
     override fun get(url: HttpUrl): List<Cookie> {
@@ -58,13 +57,12 @@ class SharedPrefsCookieStore(private val context: Context) : CookieStore {
         prefs.edit().clear().apply()
     }
 
-    override fun isNotEmpty(): Boolean {
-        Log.v("CookieStore", "isNotEmpty: ${prefs.all.isNotEmpty()}")
-        return prefs.all.isNotEmpty()
-    }
+    override fun isNotEmpty(): Boolean =
+        prefs.all.isNotEmpty()
 
-    override fun isEmpty(): Boolean {
-        return prefs.all.isEmpty()
-    }
+
+    override fun isEmpty(): Boolean =
+        prefs.all.isEmpty()
+
 
 }

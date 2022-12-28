@@ -10,6 +10,10 @@ import com.example.battleshipmobile.battleship.service.user.RealUserService
 import com.example.battleshipmobile.battleship.service.user.UserService
 import com.example.battleshipmobile.battleship.http.ResendCookiesJar
 import com.example.battleshipmobile.battleship.http.SharedPrefsCookieStore
+import com.example.battleshipmobile.battleship.service.user.User
+import com.example.battleshipmobile.battleship.service.user.UserInfo
+import com.example.battleshipmobile.utils.SubEntity
+import com.example.battleshipmobile.utils.SubEntityDeserializer
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.*
@@ -25,7 +29,7 @@ interface DependenciesContainer{
     val lobbyService: LobbyService
 }
 
-private const val host = "http://192.168.1.252:8090"
+private const val host = "http://192.168.1.2:8090"
 private const val root = "$host/api"
 private const val home = "$root/"
 private const val userHome = "$root/my"
@@ -44,6 +48,10 @@ class BattleshipApplication : Application(), DependenciesContainer {
 
     private val jsonEncoder: Gson by lazy {
         GsonBuilder()
+            .registerTypeHierarchyAdapter(
+                SubEntity::class.java,
+                SubEntityDeserializer<UserInfo>(UserInfo::class.java)
+            )
             .create()
     }
 
@@ -55,7 +63,7 @@ class BattleshipApplication : Application(), DependenciesContainer {
         RealLobbyService(httpClient, jsonEncoder, rootUrl = root, parentUrl = URL(userHome))
     }
     override val statisticsService: RankingServiceI by lazy {
-        RankingService(httpClient,jsonEncoder, rootUrl = host, parentURL = URL(home)
+        RankingService(httpClient,jsonEncoder, rootUrl = root, parentURL = URL(home)
         )
     }
 

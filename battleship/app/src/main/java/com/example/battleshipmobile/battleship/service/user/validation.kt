@@ -131,10 +131,10 @@ data class User(val username: Username, val password: Password)
 
 /**
  * Represents the information of a user
- * @param username the username of the user
+ * @param name the username of the user
  */
 data class UserInfo(
-    val username: String,
+    val name: String,
 )
 
 /**
