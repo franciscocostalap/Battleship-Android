@@ -8,6 +8,9 @@ import com.example.battleshipmobile.battleship.service.user.RealUserService
 import com.example.battleshipmobile.battleship.service.user.UserService
 import com.example.battleshipmobile.battleship.http.ResendCookiesJar
 import com.example.battleshipmobile.battleship.http.SharedPrefsCookieStore
+import com.example.battleshipmobile.battleship.service.ranking.RankingService
+import com.example.battleshipmobile.battleship.service.ranking.RankingServiceI
+import com.example.battleshipmobile.battleship.service.system_info.SysInfoService
 import com.example.battleshipmobile.battleship.service.user.UserInfo
 import com.example.battleshipmobile.utils.SubEntity
 import com.example.battleshipmobile.utils.SubEntityDeserializer
@@ -24,9 +27,10 @@ interface DependenciesContainer{
     val statisticsService: RankingServiceI
     val authInfoService: AuthInfoService
     val gameService: GameService
+    val systemInfoService : SysInfoService
 }
 
-private const val host = "http://192.168.1.252:8090"
+private const val host = "http://192.168.1.4:8090"
 private const val root = "$host/api"
 private const val home = "$root/"
 private const val userHome = "$root/my"
@@ -61,11 +65,14 @@ class BattleshipApplication : Application(), DependenciesContainer {
     }
 
     override val statisticsService: RankingServiceI by lazy {
-        RankingService(httpClient,jsonEncoder, rootUrl = root, parentURL = URL(home)
-        )
+        RankingService(httpClient, jsonEncoder, rootUrl = root, parentURL = URL(home))
     }
 
     override val authInfoService: AuthInfoService by lazy {
-        AuthInfoService(this, cookieStore)
+        AuthInfoService(this, cookieStore, host)
+    }
+
+    override val systemInfoService: SysInfoService by lazy {
+        SysInfoService(httpClient, jsonEncoder, rootUrl = root, parentURL = URL(home))
     }
 }

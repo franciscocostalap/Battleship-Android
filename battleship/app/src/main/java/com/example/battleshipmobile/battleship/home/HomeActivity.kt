@@ -12,6 +12,7 @@ import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.auth.AuthenticationActivity
 import com.example.battleshipmobile.battleship.info.InfoActivity
 import com.example.battleshipmobile.battleship.play.QueueActivity
+import com.example.battleshipmobile.battleship.ranking.RankingActivity
 import com.example.battleshipmobile.ui.ErrorAlert
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.utils.viewModelInit
@@ -39,7 +40,7 @@ class HomeActivity : ComponentActivity() {
 
         setContent {
             BattleshipMobileTheme {
-            //needed to recompose
+            //needed to recompose 
             val userId = homeViewModel.uid
 
                 val lobbyInfo = homeViewModel.lobbyInformationResult
@@ -51,7 +52,7 @@ class HomeActivity : ComponentActivity() {
                         QueueActivity.navigate(this, it.lobbyID, it.gameID)
                         finish()
                     }.onFailure {
-                        Log.e("QUEUE_ERROR", it.stackTraceToString())
+                        Log.e("HOME_ACTIVITY", it.stackTraceToString())
 
                         ErrorAlert(
                             title = R.string.general_error_title,
@@ -67,8 +68,8 @@ class HomeActivity : ComponentActivity() {
                     onLoginRequested = { AuthenticationActivity.navigate(this) },
                     onLogoutRequested = { homeViewModel.logout() },
                     onPlayRequested = { homeViewModel.enqueue() },
-                    onRankingRequested = { /*RankingActivity.navigate(this)*/ },
-                    onInfoRequested = { InfoActivity.navigate(this) }
+                    onRankingRequested = { RankingActivity.navigate(this) },
+                    onCreditsRequested = { InfoActivity.navigate(this) }
                 )
             }
         }

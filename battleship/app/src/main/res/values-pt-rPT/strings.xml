@@ -35,4 +35,8 @@
     <string name="strength_indicator_label">"Força: "</string>
     <string name="search_button">Pesquisar</string>
     <string name="search_player_label">Nome do utilizador</string>
+    <string name="username_is_too_long">Campo muito grande</string>
+    <string name="version_text">Versão:</string>
+    <string name="info_title">Informação</string>
+    <string name="authors">Autores:</string>
 </resources>

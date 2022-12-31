@@ -1,6 +1,7 @@
 package com.example.battleshipmobile.battleship.auth
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -15,21 +16,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.battleshipmobile.R
+import com.example.battleshipmobile.battleship.home.BATTLESHIP_IMAGE_SIZE
 import com.example.battleshipmobile.battleship.service.user.User
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.authType
 import com.example.battleshipmobile.ui.dismissKeyboard
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
+import com.example.battleshipmobile.ui.theme.HEADER_COLOR
 import com.example.battleshipmobile.ui.views.auth.AuthenticationForm
 
 enum class AuthenticationFormType{
@@ -63,6 +70,30 @@ fun AuthenticationScreen(
                 .semantics { this[authType] = formType }
                 .testTag(TestTags.Auth.Screen),
         ) {
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.bs_icon),
+                    contentDescription = "battleship icon",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(BATTLESHIP_IMAGE_SIZE)
+                )
+
+                Text(
+                    text = stringResource(R.string.app_name),
+                    color = HEADER_COLOR,
+                    fontSize = MaterialTheme.typography.h3.fontSize,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()

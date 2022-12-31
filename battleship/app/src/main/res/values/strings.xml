@@ -36,4 +36,8 @@
     <string name="strength_indicator_label">"Strength: "</string>
     <string name="search_button">Search</string>
     <string name="search_player_label">Player name</string>
+    <string name="username_is_too_long">Username is too long</string>
+    <string name="version_text">Version:</string>
+    <string name="info_title">Information</string>
+    <string name="authors">Authors:</string>
 </resources>

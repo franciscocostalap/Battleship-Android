@@ -21,6 +21,10 @@
             android:name=".battleship.layout_definition.LayoutDefinitionActivity"
             android:exported="false" />
         <activity
+            android:name=".battleship.ranking.RankingActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".battleship.home.HomeActivity"
             android:exported="true"
             android:theme="@style/Theme.BattleshipMobile" >

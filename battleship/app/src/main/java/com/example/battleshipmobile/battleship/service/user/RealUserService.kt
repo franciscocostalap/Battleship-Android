@@ -1,8 +1,5 @@
 package com.example.battleshipmobile.battleship.service.user
 
-import com.example.battleshipmobile.battleship.http.buildRequest
-import com.example.battleshipmobile.battleship.http.handle
-import com.example.battleshipmobile.battleship.http.send
 import com.example.battleshipmobile.battleship.service.Action
 import com.example.battleshipmobile.battleship.service.RelationType
 import com.example.battleshipmobile.battleship.service.buildAndSendRequest
@@ -75,23 +72,6 @@ class RealUserService(
     override suspend fun login(authenticator: User): AuthInfo =
         sendCredentials(authenticator, action = ensureLoginAction())
 
-    /**
-     * Fetches and sets the home if it's not already set
-     */
-    private suspend fun fetchHomeEntity() {
-        if (homeEntity != null) return
-
-        val request = buildRequest(parentUrl)
-
-        val responseResult = request.send(client) {
-            handle<SirenEntity<Nothing>>(
-                SirenEntity.getType<Unit>().type,
-                jsonFormatter
-            )
-        }
-
-        homeEntity = responseResult
-    }
 
     /**
      * Ensures that the register action exists and returns it.
@@ -100,7 +80,7 @@ class RealUserService(
      * @return [Action] Register url and method
      */
     private suspend fun ensureRegisterAction(): Action {
-        fetchHomeEntity()
+        homeEntity = super.fetchParentEntity(client, jsonFormatter, parentUrl,homeEntity)
         val homeSirenEntity = homeEntity
         require(homeSirenEntity != null) { HOME_ERR_MESSAGE }
 
@@ -119,7 +99,7 @@ class RealUserService(
      * @return [Action] Login url and method
      */
     private suspend fun ensureLoginAction(): Action {
-        fetchHomeEntity()
+        homeEntity = super.fetchParentEntity(client, jsonFormatter, parentUrl,homeEntity)
         val homeSirenEntity = homeEntity
         require(homeSirenEntity != null) { HOME_ERR_MESSAGE }
 

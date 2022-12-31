@@ -2,7 +2,7 @@ package com.example.battleshipmobile.battleship.service.ranking
 
 
 data class Statistics(
-    val nGames: Int,
+    val ngames: Int,
     val ranking: List<PlayerStatistics>
 ) : Ranking()
 

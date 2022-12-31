@@ -26,8 +26,7 @@ import com.example.battleshipmobile.ui.views.general.SlidingText
 @Composable
 fun LazyTable(modifier : Modifier = Modifier,
               headers : List<String>,
-              headersWeight : List<Float>,
-              rowsWeight : List<Float>, //unifiy this and above
+              cellsWeight : List<Float>, //unifiy this and above
               playerStats : List<PlayerStatisticsDTO>,
               width : Dp = 350.dp,
               height : Dp = 650.dp,
@@ -40,12 +39,11 @@ fun LazyTable(modifier : Modifier = Modifier,
               rowFontSize : TextUnit = 17.sp,
               dataListState : LazyListState = rememberLazyListState(),
 ){
-    require(headersWeight.size == headers.size && rowsWeight.size == headers.size) { "Headers and weights must have the same size" }
+    require(cellsWeight.size == headers.size) { "Headers and weights must have the same size" }
 
     StatelessLazyTable(
         headers = headers,
-        headersWeight = headersWeight,
-        rowsWeight = rowsWeight,
+        cellsWeight = cellsWeight,
         playerStats = playerStats,
         listState = dataListState,
         width = width,
@@ -66,9 +64,8 @@ fun LazyTable(modifier : Modifier = Modifier,
 @Composable
 fun StatelessLazyTable(
     modifier : Modifier = Modifier,
-    headers : List<String> ,
-    headersWeight : List<Float>,
-    rowsWeight : List<Float>,
+    headers : List<String>,
+    cellsWeight : List<Float>,
     playerStats : List<PlayerStatisticsDTO>,
     listState : LazyListState,
     width : Dp = 350.dp,
@@ -92,7 +89,7 @@ fun StatelessLazyTable(
         //header
         TableRow(
             boxesText = headers,
-            boxesWeight = headersWeight,
+            boxesWeight = cellsWeight,
             boxesBackground = headerBackgroundColor,
             boxesBorder = headerBorderColor,
             fontSize = headerFontSize,
@@ -116,7 +113,7 @@ fun StatelessLazyTable(
                         stat.totalGames.toString(),
                         stat.wins.toString()
                     ),
-                    boxesWeight = rowsWeight,
+                    boxesWeight = cellsWeight,
                     fontSize = rowFontSize,
                     modifier = Modifier.testTag(TestTags.Statistics.TableRow+index.toString()),
                     isVisible = listState.isItemVisible(index)

@@ -28,6 +28,7 @@ import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.dismissKeyboard
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.ui.theme.HEADER_COLOR
+import com.example.battleshipmobile.ui.views.general.BackButton
 import kotlinx.coroutines.launch
 
 @Composable
@@ -106,13 +107,14 @@ private fun StatelessRankingScreen(
             },
     ) {
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = stringResource(id = R.string.ranking_label),
             color = HEADER_COLOR,
             fontSize = MaterialTheme.typography.h3.fontSize,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(8.dp)
+
         )
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -131,8 +133,6 @@ private fun StatelessRankingScreen(
                 focusManager = focusManager
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
-//TODO: display a message if the list is empty
             LazyTable(
                 headers = listOf(
                     stringResource(R.string.rank_label),
@@ -140,8 +140,7 @@ private fun StatelessRankingScreen(
                     stringResource(R.string.games_label),
                     stringResource(R.string.wins_label)
                 ),
-                headersWeight = listOf(3f, 4f, 2f, 2f),
-                rowsWeight = listOf(3f, 4f, 2f, 2f),
+                cellsWeight = listOf(3f, 4f, 2f, 2f),
                 playerStats = gameStatistics.ranking,
                 modifier = Modifier.testTag(TestTags.Statistics.Table),
                 dataListState = tableLazyState,
@@ -149,14 +148,7 @@ private fun StatelessRankingScreen(
                 width = 350.dp,
             )
     }
-        Button(
-            onClick = onBackClick,
-            modifier = Modifier
-                .padding(10.dp)
-                .testTag(TestTags.Statistics.BackButton)
-        ) {
-            Text(text = stringResource(R.string.back_label))
-        }
+        BackButton(onBackClick = onBackClick)
     }
 
 

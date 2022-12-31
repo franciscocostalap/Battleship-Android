@@ -1,8 +1,10 @@
 package com.example.battleshipmobile.battleship.service.game
 
 import com.example.battleshipmobile.battleship.service.ID
+import com.example.battleshipmobile.battleship.service.system_info.AppService
 
-interface GameService {
+interface GameService : AppService {
+
     /**
      * Queues up a user to play returning the lobby information.
      *

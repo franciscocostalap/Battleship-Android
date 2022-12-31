@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.example.battleshipmobile.battleship.http.CookieStore
 import com.example.battleshipmobile.battleship.service.ID
+import okhttp3.HttpUrl.Companion.toHttpUrl
 
 
 /**
@@ -22,7 +23,12 @@ interface IAuthInfoService{
 /**
  * An auth information repository that stores the user information in the shared preferences.
  */
-class AuthInfoService(private val context: Context,private val cookieStore: CookieStore) : IAuthInfoService {
+class AuthInfoService(
+    private val context: Context,
+    private val cookieStore: CookieStore,
+    private val host : String
+
+    ) : IAuthInfoService {
 
     companion object{
         private const val ID_KEY = "ID"
@@ -43,7 +49,7 @@ class AuthInfoService(private val context: Context,private val cookieStore: Cook
 
     fun hasAuthInfo(): Boolean {
         Log.v("AuthInfoService", "Has auth info: ${uid}")
-        return  uid != null
+        return cookieStore[host.toHttpUrl()].isNotEmpty() && uid != null
     }
 
     /**

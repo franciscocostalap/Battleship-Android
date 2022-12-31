@@ -61,7 +61,7 @@ class RealGameService(
     }
 
     /**
-     * Gets the lobby information of the one that was requested.
+     * Gets the lobby information with the given lobbyID that was requested.
      *
      * @param lobbyID id of the lobby to get
      * @return [LobbyInformation]
@@ -103,23 +103,7 @@ class RealGameService(
         )
     }
 
-    /**
-     * Fetches and sets the user home entity if it's not already set
-     */
-    private suspend fun fetchUserHomeEntity() {
-        if (userHomeEntity != null) return
 
-        val request = buildRequest(parentUrl)
-
-        val responseResult = request.send(client) {
-            handle<SirenEntity<Nothing>>(
-                SirenEntity.getType<Unit>().type,
-                jsonFormatter
-            )
-        }
-
-        userHomeEntity = responseResult
-    }
 
     /**
      * Fetches and sets the game state entity
@@ -131,7 +115,7 @@ class RealGameService(
         val gameID = gameState.gameID ?:
                         throw IllegalStateException(GAME_NOT_STARTED)
 
-        val request = buildRequest(URL("$rootUrl/game/$gameID/state"))
+        val request = buildRequest(URL("$rootUrl/game/$gameID/state")) //TODO: remove hardcoding
 
         val responseResult = request.send(client) {
             handle<SirenEntity<GameStateInfo>>(
@@ -169,7 +153,12 @@ class RealGameService(
     * @return [Action] Queue url and method
      */
     private suspend fun ensureQueueAction(): Action {
-        fetchUserHomeEntity()
+        userHomeEntity = super.fetchParentEntity(
+            client,
+            jsonFormatter,
+            parentUrl,
+            userHomeEntity
+        )
         val userHomeSirenEntity = userHomeEntity
         require(userHomeSirenEntity != null) { USER_HOME_ERR_MESSAGE }
 

@@ -33,7 +33,8 @@ import com.example.battleshipmobile.ui.views.PasswordField
 
 private val usernameErrorLabels = mapOf(
     Username.Validation.EMPTY to R.string.field_is_blank,
-    Username.Validation.TOO_SHORT to R.string.username_is_too_short
+    Username.Validation.TOO_SHORT to R.string.username_is_too_short,
+    Username.Validation.TOO_LONG to R.string.username_is_too_long
 )
 
 private val passwordErrorLabels = mapOf(
@@ -41,13 +42,6 @@ private val passwordErrorLabels = mapOf(
     Password.Validation.TOO_SHORT to R.string.password_is_too_short,
 )
 
-/**
- * Defines which
- */
-data class IgnoredValidation(
-    val username: Set<Username.Validation> = emptySet(),
-    val password: Set<Password.Validation> = emptySet()
-)
 
 /**
  * Composable that displays an Authentication form.
@@ -56,8 +50,6 @@ data class IgnoredValidation(
  *
  * @param onSubmitRequested Callback that is called with a [User] object defined as parameters
  * when the user clicks the submit button. It is where the validation is made.
- *
- * @param ignoredValidation Defines which validations you may want to ignore for username or password.
  *
  */
 @Composable

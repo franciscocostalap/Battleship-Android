@@ -110,3 +110,33 @@ suspend inline fun <reified T> buildAndSendRequest(
         )
     }
 }
+
+/**
+ * Extracts the strings between the : and / in the template
+ * Could be one or multiple strings
+ * Example: the given URI: /api/games/1 and the template: /api/games/:gameID
+ * will return the object {gameID: "1"}
+ *
+ * @param uri The URI to extract the values from.
+ * @param template The template to extract the values from.
+ * @returns An object with the extracted values.
+ */
+fun extractValues(uri: String, template: String): Map<String, String> {
+    val uriParts = uri.split("/")
+    val templateParts = template.split("/")
+
+    val values = mutableMapOf<String, String>()
+
+    for (i in uriParts.indices) {
+        if (templateParts[i].startsWith(":")) {
+            values[templateParts[i].substring(1)] = uriParts[i]
+        }
+    }
+
+    return values
+}
+
+fun SirenEntity<*>.filterEmbeddedEntitiesFor(rel : String) =
+    this.entities
+        ?.filterIsInstance<EmbeddedEntity<*>>()
+        ?.filter { (it.rel[0] == rel) } ?: throw IllegalStateException("No embedded entities in response")

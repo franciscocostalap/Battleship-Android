@@ -1,6 +1,8 @@
 package com.example.battleshipmobile.battleship.service.user
 
-interface UserService{
+import com.example.battleshipmobile.battleship.service.system_info.AppService
+
+interface UserService : AppService{
 
     /**
      * Registers a new user returning it's authentication information

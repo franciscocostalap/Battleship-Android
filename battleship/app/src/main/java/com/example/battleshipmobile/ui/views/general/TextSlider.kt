@@ -33,7 +33,7 @@ fun SlidingText(
 
         scroll.animateScrollTo(
             scroll.maxValue,
-            animationSpec = tween(10000, 400, easing = CubicBezierEasing(0f,0f,0f,0f))
+            animationSpec = tween(4000, 20, easing = CubicBezierEasing(0f,0f,0f,0f))
         )
 
         //reset the loop
