@@ -1,4 +1,4 @@
-package com.example.battleshipmobile.battleship.components
+package com.example.battleshipmobile.ui.views.general
 
 
 import androidx.compose.foundation.background
@@ -21,12 +21,11 @@ import androidx.compose.ui.unit.sp
 import com.example.battleshipmobile.battleship.service.ranking.PlayerStatisticsDTO
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.isItemVisible
-import com.example.battleshipmobile.ui.views.general.SlidingText
 
 @Composable
 fun LazyTable(modifier : Modifier = Modifier,
               headers : List<String>,
-              cellsWeight : List<Float>, //unifiy this and above
+              cellsWeight : List<Float>,
               playerStats : List<PlayerStatisticsDTO>,
               width : Dp = 350.dp,
               height : Dp = 650.dp,

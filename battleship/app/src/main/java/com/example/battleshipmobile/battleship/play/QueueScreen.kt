@@ -10,12 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.battleshipmobile.battleship.components.TextButton
 import com.example.battleshipmobile.battleship.play.QueueState.*
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.ui.views.BackPressHandler
 import com.example.battleshipmobile.ui.views.LoadingIndicator
+import com.example.battleshipmobile.ui.views.general.CustomTextButton
 
 private val SPACER_DIM = 50.dp
 const val MAX_NUM_PLAYERS = 2
@@ -62,7 +62,7 @@ fun QueueScreen(
                     modifier = Modifier.testTag(TestTags.Lobby.StatusMessage)
                 )
                 Spacer(modifier = Modifier.height(SPACER_DIM))
-                TextButton(
+                CustomTextButton(
                     onClick = onCancelClick,
                     buttonWidth = INFO_BUTTON_WIDTH,
                     buttonHeight = BUTTON_HEIGHT,

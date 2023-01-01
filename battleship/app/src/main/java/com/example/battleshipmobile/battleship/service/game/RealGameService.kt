@@ -116,7 +116,7 @@ class RealGameService(
                         throw IllegalStateException(GAME_NOT_STARTED)
 
         val request = buildRequest(URL("$rootUrl/game/$gameID/state")) //TODO: remove hardcoding
-
+//TODO: add HTTP CACHING on all services
         val responseResult = request.send(client) {
             handle<SirenEntity<GameStateInfo>>(
                 SirenEntity.getType<GameStateInfo>().type,

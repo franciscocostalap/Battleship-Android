@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.battleshipmobile.R
-import com.example.battleshipmobile.battleship.components.LazyTable
+import com.example.battleshipmobile.ui.views.general.LazyTable
 import com.example.battleshipmobile.battleship.service.ranking.PlayerStatisticsDTO
 import com.example.battleshipmobile.battleship.service.ranking.StatisticsEmbedded
 import com.example.battleshipmobile.ui.TestTags

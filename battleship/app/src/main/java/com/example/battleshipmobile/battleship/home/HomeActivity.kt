@@ -37,7 +37,6 @@ class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.v("HOME_ACTIVITY", "HomeActivity onCreate")
-
         setContent {
             BattleshipMobileTheme {
             //needed to recompose 
