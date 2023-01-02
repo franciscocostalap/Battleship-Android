@@ -13,7 +13,6 @@ import java.lang.reflect.Type
 import java.net.URI
 
 
-
 private const val APPLICATION_TYPE = "application"
 private const val SIREN_SUBTYPE = "vnd.siren+json"
 
@@ -30,7 +29,6 @@ val SirenMediaType = "$APPLICATION_TYPE/$SIREN_SUBTYPE".toMediaType()
  * @return the resulting siren link
  */
 fun selfLink(uri: String) = SirenLink(rel = listOf("self"), href = URI(uri))
-
 
 
 /**
@@ -69,7 +67,7 @@ data class SirenAction(
 
 data class SirenEntity<T>(
     @SerializedName("class") val clazz: List<String>? = null,
-    val properties: T? =null,
+    val properties: T? = null,
     val entities: List<SubEntity>? = null,
     val links: List<SirenLink>? = null,
     val actions: List<SirenAction>? = null,
@@ -77,7 +75,7 @@ data class SirenEntity<T>(
 ) {
     companion object {
         inline fun <reified T> getType(): TypeToken<SirenEntity<T>> =
-            object : TypeToken<SirenEntity<T>>() { }
+            object : TypeToken<SirenEntity<T>>() {}
     }
 }
 
@@ -99,7 +97,7 @@ data class EmbeddedLink(
 data class EmbeddedEntity<T>(
     val rel: List<String>,
     @SerializedName("class") val clazz: List<String>? = null,
-    val properties: T? =null,
+    val properties: T? = null,
     val entities: List<SubEntity>? = null,
     val links: List<SirenLink>? = null,
     val actions: List<SirenAction>? = null,
@@ -107,7 +105,7 @@ data class EmbeddedEntity<T>(
 ) : SubEntity() {
     companion object {
         inline fun <reified T> getType(): TypeToken<EmbeddedEntity<T>> =
-            object : TypeToken<EmbeddedEntity<T>>() { }
+            object : TypeToken<EmbeddedEntity<T>>() {}
     }
 }
 
@@ -137,9 +135,13 @@ class SubEntityDeserializer<T>(private val propertiesType: Type) : JsonDeseriali
                 actions = entity.getAsListOf("actions", SirenAction::class.java, context),
                 title = entity.get("title")?.asString
             )
-        }
-        else {
-            context.deserialize(entity, EmbeddedLink::class.java)
+        } else {
+            EmbeddedLink(
+                rel = entity.getAsListOfString("rel") ?: emptyList(),
+                href = URI(entity.get("href").asString),
+                clazz = entity.getAsListOfString("class"),
+                title = entity.get("title")?.asString
+            )
         }
     }
 }
@@ -155,3 +157,5 @@ private fun <T> JsonObject.getAsListOf(
     getAsJsonArray(propertyName)?.map {
         context.deserialize<T>(it, type)
     }
+
+object NoEntitySiren

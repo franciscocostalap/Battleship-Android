@@ -6,7 +6,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.battleshipmobile.battleship.play.QueueActivity
+import com.example.battleshipmobile.battleship.play.lobby.QueueActivity
 import com.example.battleshipmobile.battleship.service.ID
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.utils.PreserveDefaultDependencies

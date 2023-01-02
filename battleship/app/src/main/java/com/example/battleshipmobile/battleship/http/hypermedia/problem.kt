@@ -17,4 +17,7 @@ data class Problem(
     val title : String? = null,
     val detail : String? = null,
     val instance : String? = null,
+    val status: Int? = null // HTTP status code, originally not defined in the problem media type
 ): Throwable()
+
+

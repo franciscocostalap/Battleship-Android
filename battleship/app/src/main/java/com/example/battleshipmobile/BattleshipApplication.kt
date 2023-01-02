@@ -2,15 +2,23 @@ package com.example.battleshipmobile
 
 import android.app.Application
 import com.example.battleshipmobile.battleship.auth.AuthInfoService
+import com.example.battleshipmobile.battleship.http.ResendCookiesJar
+import com.example.battleshipmobile.battleship.http.SharedPrefsCookieStore
+import com.example.battleshipmobile.battleship.service.dto.BoardDTO
+import com.example.battleshipmobile.battleship.service.dto.GameStateInfoDTO
+import com.example.battleshipmobile.battleship.service.dto.OutputUserDTO
 import com.example.battleshipmobile.battleship.service.game.GameService
 import com.example.battleshipmobile.battleship.service.game.RealGameService
 import com.example.battleshipmobile.battleship.service.user.RealUserService
 import com.example.battleshipmobile.battleship.service.user.UserService
-import com.example.battleshipmobile.battleship.http.ResendCookiesJar
-import com.example.battleshipmobile.battleship.http.SharedPrefsCookieStore
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.example.battleshipmobile.utils.NoEntitySiren
+import com.example.battleshipmobile.utils.SubEntity
+import com.example.battleshipmobile.utils.SubEntityDeserializer
+import com.google.gson.*
+
+
 import okhttp3.*
+
 import java.net.URL
 
 
@@ -27,7 +35,7 @@ class RankingServiceI {
 
 }
 
-private const val host = "https://f29b-217-129-147-107.eu.ngrok.io"
+private const val host = "https://8913-217-129-147-107.eu.ngrok.io"
 private const val root = "$host/api"
 private const val home = "$root/"
 private const val userHome = "$root/my"
@@ -46,6 +54,22 @@ class BattleshipApplication : Application(), DependenciesContainer {
 
     private val jsonEncoder: Gson by lazy {
         GsonBuilder()
+            .registerTypeHierarchyAdapter(
+                SubEntity::class.java,
+                SubEntityDeserializer<OutputUserDTO>(OutputUserDTO::class.java)
+            )
+            .registerTypeHierarchyAdapter(
+                SubEntity::class.java,
+                SubEntityDeserializer<GameStateInfoDTO>(GameStateInfoDTO::class.java)
+            )
+            .registerTypeHierarchyAdapter(
+                SubEntity::class.java,
+                SubEntityDeserializer<NoEntitySiren>(NoEntitySiren::class.java)
+            )
+            .registerTypeHierarchyAdapter(
+                SubEntity::class.java,
+                SubEntityDeserializer<BoardDTO>(BoardDTO::class.java)
+            )
             .create()
     }
 
