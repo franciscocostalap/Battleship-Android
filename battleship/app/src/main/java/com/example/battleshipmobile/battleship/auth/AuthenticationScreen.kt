@@ -30,7 +30,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.battleshipmobile.R
-import com.example.battleshipmobile.battleship.home.BATTLESHIP_IMAGE_SIZE
 import com.example.battleshipmobile.battleship.service.user.User
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.authType
@@ -38,6 +37,7 @@ import com.example.battleshipmobile.ui.dismissKeyboard
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.ui.theme.HEADER_COLOR
 import com.example.battleshipmobile.ui.views.auth.AuthenticationForm
+import com.example.battleshipmobile.ui.views.home.BATTLESHIP_IMAGE_SIZE
 
 enum class AuthenticationFormType{
     Login,

@@ -4,7 +4,7 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.*
-import com.example.battleshipmobile.battleship.components.CustomProgressBar
+import com.example.battleshipmobile.ui.views.general.CustomProgressBar
 import kotlinx.coroutines.delay
 
 /**

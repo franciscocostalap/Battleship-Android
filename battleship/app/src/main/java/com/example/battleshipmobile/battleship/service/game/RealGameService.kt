@@ -46,6 +46,8 @@ class RealGameService(
         private const val ILLEGAL_GAME_STATE = "Game state must be PLACING_SHIPS"
     }
 
+    //TODO use caching
+
     /**
      * Siren node entities
      */

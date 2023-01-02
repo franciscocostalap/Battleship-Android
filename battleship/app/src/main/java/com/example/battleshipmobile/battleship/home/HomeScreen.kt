@@ -16,10 +16,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import com.example.battleshipmobile.R
+import com.example.battleshipmobile.ui.views.general.CustomTextButton
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.theme.HEADER_COLOR
-import com.example.battleshipmobile.ui.views.general.CustomTextButton
 import com.example.battleshipmobile.ui.views.home.BattleShipImage
 
 private val INFO_BUTTON_WIDTH = 250.dp

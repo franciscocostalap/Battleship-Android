@@ -1,4 +1,4 @@
-package com.example.battleshipmobile.battleship.components
+package com.example.battleshipmobile.ui.views.general
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.*
@@ -81,29 +81,6 @@ fun CustomBox(
             size = cornerBoxesSize
         )
     }
-}
-
-@Composable
-private fun BoxScope.AlignedBox(
-    backgroundColor : Color = BUTTON_CORNER_BOXES_COLOR,
-    borderColor : Color = BUTTON_BORDER_COLOR,
-    size: Dp = BUTTON_CORNER_BOXES_SIZE,
-    cornerRadius: Dp = BUTTON_BORDER_WIDTH,
-    alignment : Alignment,
-) {
-
-    Box(
-        modifier =
-        Modifier
-            .align(alignment)
-            .height(size)
-            .width(size)
-            .background(backgroundColor)
-            .border(
-                width = cornerRadius,
-                color = borderColor,
-            )
-    )
 }
 
 @Composable
