@@ -19,12 +19,14 @@ import com.example.battleshipmobile.ui.views.auth.StrengthLevel
 data class Username(val value: String){
     companion object{
         const val MIN_LENGTH = 3
+        const val MAX_LENGTH = 30
     }
 
     enum class Validation(val validate: (String) -> Boolean){
         EMPTY({ it.isBlank() }),
         NO_WHITESPACE_TABS({ it.contains(Regex(" ")) }),
-        TOO_SHORT({ it.length < MIN_LENGTH })
+        TOO_SHORT({ it.length < MIN_LENGTH }),
+        TOO_LONG({ it.length > MAX_LENGTH })
     }
 
     init {
@@ -43,11 +45,10 @@ data class Username(val value: String){
  */
 fun Username.Companion.validate(
     value: String,
-    ignore: Set<Username.Validation> = emptySet()
 ): Set<Username.Validation> =
     Username.Validation
         .values()
-        .filter { it !in ignore && it.validate(value) }
+        .filter { it.validate(value) }
         .toSet()
 
 /**
@@ -65,7 +66,8 @@ fun Username.Companion.validate(
 data class Password(val value: String){
 
     companion object{
-        const val MIN_LENGTH = 8
+        const val MIN_LENGTH = 5
+        const val MIN_LENGTH_FOR_STRENGH = 8
 
         private val SPECIAL_CHARACTERS = setOf('!', '@', '#', '$', '%', '^', '&', '*', '(', ')',
             '-', '_', '+', '=', '{', '}', '[', ']', '|', ':', ';', '<', '>', '?', '/', '.')
@@ -76,7 +78,7 @@ data class Password(val value: String){
 
         private fun calculateStrenghtScore(value: String): Int {
             var score = 0
-            if (value.length >= MIN_LENGTH) score++
+            if (value.length >= MIN_LENGTH_FOR_STRENGH) score++
             if (value.any { it.isDigit() }) score++
             if (value.any { it.isUpperCase() }) score++
             if (value.any { it.isLowerCase() }) score++
@@ -110,9 +112,8 @@ data class Password(val value: String){
  */
 fun Password.Companion.validate(
     value: String,
-    ignore: Set<Password.Validation> = emptySet()
 ): Set<Password.Validation> = Password.Validation.values()
-        .filter { it !in ignore && it.validate(value) }
+        .filter { it.validate(value) }
         .toSet()
 
 
@@ -131,10 +132,10 @@ data class User(val username: Username, val password: Password)
 
 /**
  * Represents the information of a user
- * @param username the username of the user
+ * @param name the username of the user
  */
 data class UserInfo(
-    val username: String,
+    val name: String,
 )
 
 /**

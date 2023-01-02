@@ -107,6 +107,7 @@ fun <T> Response.handle(bodyType: Type, jsonEncoder: Gson): T {
 suspend fun <T> Request.send(okHttpClient: OkHttpClient, handler: Response.() -> T): T =
 
     suspendCoroutine { continuation ->
+        Log.v("APP REQUEST", this.method + ": " + this.url)
         okHttpClient.newCall(request = this).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 continuation.resumeWithException(e)

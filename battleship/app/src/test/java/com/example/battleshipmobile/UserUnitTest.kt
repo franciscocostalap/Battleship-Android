@@ -68,12 +68,12 @@ class UserUnitTest {
     }
 
     @Test
-    fun `Empty Password with gives all errors except ignored`(){
-        val passwordValidation = Password.validate("",
-            ignore = setOf(Password.Validation.EMPTY, Password.Validation.TOO_SHORT)
+    fun `Empty Password with gives all errors `(){
+        val passwordValidation = Password.validate("",)
+        val expected = setOf(
+            Password.Validation.EMPTY,
+            Password.Validation.TOO_SHORT,
         )
-        val expected = emptySet<Password.Validation>()
-
         assertEquals(expected, passwordValidation)
     }
 

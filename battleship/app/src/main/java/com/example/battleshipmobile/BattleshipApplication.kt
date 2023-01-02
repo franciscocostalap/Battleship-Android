@@ -3,14 +3,20 @@ package com.example.battleshipmobile
 import android.app.Application
 import com.example.battleshipmobile.battleship.auth.AuthInfoService
 import com.example.battleshipmobile.battleship.http.ResendCookiesJar
-import com.example.battleshipmobile.battleship.http.SharedPrefsCookieStore
-import com.example.battleshipmobile.battleship.service.dto.BoardDTO
-import com.example.battleshipmobile.battleship.service.dto.GameStateInfoDTO
-import com.example.battleshipmobile.battleship.service.dto.OutputUserDTO
 import com.example.battleshipmobile.battleship.service.game.GameService
 import com.example.battleshipmobile.battleship.service.game.RealGameService
 import com.example.battleshipmobile.battleship.service.user.RealUserService
 import com.example.battleshipmobile.battleship.service.user.UserService
+import com.example.battleshipmobile.battleship.http.ResendCookiesJar
+import com.example.battleshipmobile.battleship.http.SharedPrefsCookieStore
+import com.example.battleshipmobile.battleship.service.ranking.RankingService
+import com.example.battleshipmobile.battleship.service.ranking.RankingServiceI
+import com.example.battleshipmobile.battleship.service.system_info.SysInfoService
+import com.example.battleshipmobile.battleship.service.user.UserInfo
+import com.example.battleshipmobile.utils.SubEntity
+import com.example.battleshipmobile.utils.SubEntityDeserializer
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.example.battleshipmobile.utils.NoEntitySiren
 import com.example.battleshipmobile.utils.SubEntity
 import com.example.battleshipmobile.utils.SubEntityDeserializer
@@ -18,7 +24,6 @@ import com.google.gson.*
 
 
 import okhttp3.*
-
 import java.net.URL
 
 
@@ -29,13 +34,10 @@ interface DependenciesContainer{
     val statisticsService: RankingServiceI
     val authInfoService: AuthInfoService
     val gameService: GameService
+    val systemInfoService : SysInfoService
 }
 
-class RankingServiceI {
-
-}
-
-private const val host = "https://8913-217-129-147-107.eu.ngrok.io"
+private const val host = "http://192.168.1.4:8090"
 private const val root = "$host/api"
 private const val home = "$root/"
 private const val userHome = "$root/my"
@@ -82,11 +84,14 @@ class BattleshipApplication : Application(), DependenciesContainer {
     }
 
     override val statisticsService: RankingServiceI by lazy {
-        RankingServiceI()
-        /*RankingService(httpClient,jsonEncoder, rootUrl = host, parentURL = URL(home))*/
+        RankingService(httpClient, jsonEncoder, rootUrl = root, parentURL = URL(home))
     }
 
     override val authInfoService: AuthInfoService by lazy {
-        AuthInfoService(this, cookieStore)
+        AuthInfoService(this, cookieStore, host)
+    }
+
+    override val systemInfoService: SysInfoService by lazy {
+        SysInfoService(httpClient, jsonEncoder, rootUrl = root, parentURL = URL(home))
     }
 }

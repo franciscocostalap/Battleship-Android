@@ -1,8 +1,10 @@
 package com.example.battleshipmobile.battleship.auth
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -11,24 +13,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.battleshipmobile.R
-import com.example.battleshipmobile.battleship.service.user.Password
+import com.example.battleshipmobile.battleship.home.BATTLESHIP_IMAGE_SIZE
 import com.example.battleshipmobile.battleship.service.user.User
-import com.example.battleshipmobile.battleship.service.user.Username
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.authType
+import com.example.battleshipmobile.ui.dismissKeyboard
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
+import com.example.battleshipmobile.ui.theme.HEADER_COLOR
 import com.example.battleshipmobile.ui.views.auth.AuthenticationForm
-import com.example.battleshipmobile.ui.views.auth.IgnoredValidation
 
 enum class AuthenticationFormType{
     Login,
@@ -41,8 +50,9 @@ fun AuthenticationScreen(
     @StringRes usernameLabel: Int,
     @StringRes passwordLabel: Int,
     onAuthTypeSwapRequested: () -> Unit,
-    onAuthRequested: (User) -> Unit
-) {
+    onAuthRequested: (User) -> Unit,
+    focusManager: FocusManager = LocalFocusManager.current,
+    ) {
     BattleshipMobileTheme {
         val accountText = when(formType){
             AuthenticationFormType.Login -> R.string.dont_have_an_account
@@ -60,8 +70,38 @@ fun AuthenticationScreen(
                 .semantics { this[authType] = formType }
                 .testTag(TestTags.Auth.Screen),
         ) {
+
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.bs_icon),
+                    contentDescription = "battleship icon",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(BATTLESHIP_IMAGE_SIZE)
+                )
+
+                Text(
+                    text = stringResource(R.string.app_name),
+                    color = HEADER_COLOR,
+                    fontSize = MaterialTheme.typography.h3.fontSize,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pointerInput(Unit) {
+                        detectTapGestures(onTap = {
+                            dismissKeyboard(focusManager)
+                        })
+                    },
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -83,7 +123,8 @@ fun AuthenticationScreen(
                         passwordLabel = passwordLabel,
                         submitLabel = submitLabel,
                         showPasswordStrength = formType == AuthenticationFormType.Register,
-                        onSubmitRequested = onAuthRequested
+                        onSubmitRequested = onAuthRequested,
+                        focusManager = focusManager,
                     )
                 }
             }

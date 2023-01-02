@@ -17,7 +17,6 @@ class HomeViewModel(private val gameService: GameService, private val authInfoRe
     var lobbyInformationResult by mutableStateOf<Result<LobbyInformationDTO>?>(null)
     private set
 
-    //needed mostly fore
     var uid by mutableStateOf<ID?>(null)
     private set
 

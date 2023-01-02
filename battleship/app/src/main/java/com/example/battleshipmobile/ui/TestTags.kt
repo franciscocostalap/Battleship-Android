@@ -25,8 +25,11 @@ object TestTags {
     }
 
     object Statistics{
+        const val SearchButton = "SearchButton"
+        const val SearchField = "SearchField"
         const val Table = "Table"
         const val BackButton = "BackButton"
+        const val TableRow = "TableRow"
         const val Screen = "StatisticsScreen"
     }
     object Lobby{

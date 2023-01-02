@@ -107,10 +107,11 @@ private fun BoxScope.AlignedBox(
 }
 
 @Composable
-fun TextButton(
+fun CustomTextButton(
     onClick: () -> Unit,
     buttonWidth: Dp,
     buttonHeight : Dp,
+    modifier : Modifier = Modifier,
     buttonPadding: Dp = BUTTON_PADDING,
     buttonBackgroundColour: Color = BACKGROUND_BUTTON_COLOR,
     buttonBorderColour: Color = BUTTON_BORDER_COLOR,
@@ -119,8 +120,8 @@ fun TextButton(
     text: String,
     fontSize: TextUnit = FONT_SIZE,
     fontWeight: FontWeight = FontWeight.Bold,
-    modifier : Modifier = Modifier
-) {
+
+    ) {
     CustomBox(
         width = buttonWidth,
         height = buttonHeight,
@@ -177,4 +178,28 @@ fun CustomProgressBar(progress: Float){
             )
         }
     }
+}
+
+
+@Composable
+private fun BoxScope.AlignedBox(
+    backgroundColor : Color = BUTTON_CORNER_BOXES_COLOR,
+    borderColor : Color = BUTTON_BORDER_COLOR,
+    size: Dp = BUTTON_CORNER_BOXES_SIZE,
+    cornerRadius: Dp = BUTTON_BORDER_WIDTH,
+    alignment : Alignment,
+) {
+
+    Box(
+        modifier =
+        Modifier
+            .align(alignment)
+            .height(size)
+            .width(size)
+            .background(backgroundColor)
+            .border(
+                width = cornerRadius,
+                color = borderColor,
+            )
+    )
 }
