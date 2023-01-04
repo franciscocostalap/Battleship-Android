@@ -11,7 +11,7 @@ import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.auth.AuthenticationActivity
 import com.example.battleshipmobile.battleship.info.InfoActivity
-import com.example.battleshipmobile.battleship.play.QueueActivity
+import com.example.battleshipmobile.battleship.play.lobby.QueueActivity
 import com.example.battleshipmobile.battleship.ranking.RankingActivity
 import com.example.battleshipmobile.ui.ErrorAlert
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme

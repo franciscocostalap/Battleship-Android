@@ -18,7 +18,7 @@
         android:theme="@style/Theme.BattleshipMobile"
         tools:targetApi="31">
         <activity
-            android:name=".battleship.layout_definition.LayoutDefinitionActivity"
+            android:name=".battleship.play.layout_definition.LayoutDefinitionActivity"
             android:exported="false" />
         <activity
             android:name=".battleship.ranking.RankingActivity"
@@ -41,7 +41,7 @@
             android:name=".battleship.auth.AuthenticationActivity"
             android:exported="false"/>
         <activity
-            android:name=".battleship.play.QueueActivity"
+            android:name=".battleship.play.lobby.QueueActivity"
             android:exported="false"
             android:theme="@style/Theme.BattleshipMobile"/>
     </application>

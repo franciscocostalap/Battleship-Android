@@ -1,6 +1,5 @@
 package com.example.battleshipmobile.battleship.http
 
-import android.content.Context
 import com.example.battleshipmobile.battleship.http.hypermedia.Problem
 import com.example.battleshipmobile.battleship.http.hypermedia.ProblemMediaType
 import android.util.Log
@@ -9,7 +8,6 @@ import com.example.battleshipmobile.utils.SirenMediaType
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import okhttp3.*
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
@@ -88,7 +86,8 @@ fun <T> Response.handle(bodyType: Type, jsonEncoder: Gson): T {
             throw UnexpectedResponseException(this)
         }
     } else if (this.code in errorHttpRange && actualContentType != null && actualContentType == ProblemMediaType) {
-        throw jsonEncoder.fromJson(actualBody, Problem::class.java)
+        val problem = jsonEncoder.fromJson(actualBody, Problem::class.java)
+        throw problem.copy(status = this.code)
     } else {
         throw UnexpectedResponseException(this)
     }

@@ -3,7 +3,7 @@ package com.example.battleshipmobile.battleship.service.user
 import com.example.battleshipmobile.battleship.service.Action
 import com.example.battleshipmobile.battleship.service.RelationType
 import com.example.battleshipmobile.battleship.service.buildAndSendRequest
-import com.example.battleshipmobile.battleship.service.dto.UserDTO
+import com.example.battleshipmobile.battleship.service.dto.InputUserDTO
 import com.example.battleshipmobile.battleship.service.ensureAction
 import com.example.battleshipmobile.utils.*
 import com.google.gson.Gson
@@ -44,7 +44,7 @@ class RealUserService(
      * @return [AuthInfo] user id and token
      */
     private suspend fun sendCredentials(credentials: User, action: Action): AuthInfo {
-        val body = jsonFormatter.toJson(UserDTO(credentials))
+        val body = jsonFormatter.toJson(InputUserDTO(credentials))
 
         val result = buildAndSendRequest<AuthInfo>(
             client,

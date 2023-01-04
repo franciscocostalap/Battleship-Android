@@ -18,6 +18,8 @@ import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 const val SQUARE_BASE_SIDE = 180
 const val SQUARE_SHRINK_FACTOR = 0.5
 const val SQUARE_BORDER_WIDTH = 1
+val GRAY_4 = Color( 206, 212, 218)
+val GRAY_6 = Color( 134, 142, 150)
 
 @Composable
 fun BoardView(
@@ -43,23 +45,28 @@ fun BoardView(
 }
 
 fun squareSide(side: Int): Double {
-    return (SQUARE_BASE_SIDE / (SQUARE_SHRINK_FACTOR * side))
+    return  SQUARE_BASE_SIDE / (SQUARE_SHRINK_FACTOR * side)
+
 }
 
 @Composable
-fun SquareView(type: SquareType, boardSide: Int, onClick: () -> Unit = {}) {
+fun SquareView(
+    type: SquareType,
+    boardSide: Int,
+    onClick: () -> Unit = {}
+) {
 
     val background = when (type) {
-        SquareType.Shot -> Color.Gray
-        SquareType.ShipPart -> Color.White
-        SquareType.Water -> Color.Blue
+        SquareType.Shot -> GRAY_6
+        SquareType.ShipPart -> INDIGO_7
+        SquareType.Water -> GRAY_4
         SquareType.Hit -> Color.Red
     }
 
     val side = squareSide(boardSide).dp
 
     val boxModifier = Modifier
-        .border(SQUARE_BORDER_WIDTH.dp, Color.Black)
+        .border(SQUARE_BORDER_WIDTH.dp, GRAY_8)
         .width(side)
         .height(side)
         .clickable(onClick = onClick)

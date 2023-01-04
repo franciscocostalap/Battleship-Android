@@ -1,22 +1,21 @@
 package com.example.battleshipmobile.ui.views.game
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Rotate90DegreesCcw
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -29,6 +28,14 @@ data class ShipData(
     val ship: Ship
 )
 
+val INDIGO_7 = Color( 66, 99, 235)
+val GRAY_8 = Color( 52, 58, 64)
+private val CONTROL_BUTTON_SPACER_DP = 2.dp
+private val ICON_BUTTON_PADDING = 16.dp
+private val ICON_BUTTON_SIZE = 42.dp
+private const val NUM_OF_BUTTONS = 3
+
+
 @Composable
 fun FleetCompositionView(
     availableShips: List<ShipData>,
@@ -36,11 +43,14 @@ fun FleetCompositionView(
     onShipSelected: (ShipData) -> Unit = {}
 ) {
     val availableShipsBySize = availableShips.groupBy { it.ship.size }
+    val height = ICON_BUTTON_SIZE.times(NUM_OF_BUTTONS) + CONTROL_BUTTON_SPACER_DP.times(NUM_OF_BUTTONS-1) + ICON_BUTTON_PADDING.times(2).times(
+        NUM_OF_BUTTONS)
     LazyColumn(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier.padding(16.dp).height(height)
     ) {
+
         items(availableShipsBySize.toList()) { (_, shipsPerSize) ->
             LazyRow {
                 items(shipsPerSize) { shipData ->
@@ -65,34 +75,51 @@ fun FleetCompositionView(
 fun FleetCompositionControls(
     onRotateRequested: () -> Unit = {},
     onResetRequested: () -> Unit = {},
-    isShipSelected: Boolean
+    onSubmitRequested: () -> Unit = {}
 ){
     Column{
-        IconButton(
+        FleetCompositionControlButton(
             onClick = onRotateRequested,
-            modifier = Modifier
-                .padding(16.dp)
-                .testTag(TestTags.LayoutDefinition.RotateButton)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Rotate90DegreesCcw,
-                contentDescription = "Rotate Selected Ship",
-                tint = MaterialTheme.colors.primary
-            )
-        }
-        Spacer(modifier = Modifier.height(2.dp))
-        IconButton(
+            testTag = TestTags.LayoutDefinition.RotateButton,
+            description = "Rotate Selected Ship",
+            imageVector = Icons.Default.Rotate90DegreesCcw
+        )
+        Spacer(modifier = Modifier.height(CONTROL_BUTTON_SPACER_DP))
+        FleetCompositionControlButton(
             onClick = onResetRequested,
-            modifier = Modifier
-                .padding(16.dp)
-                .testTag(TestTags.LayoutDefinition.ResetFleetButton)
-        ) {
-            Icon(
-                imageVector = Icons.Default.RestartAlt,
-                contentDescription = "Reset Fleet",
-                tint = MaterialTheme.colors.primary
-            )
-        }
+            testTag = TestTags.LayoutDefinition.ResetFleetButton,
+            description = "Reset Fleet",
+            imageVector = Icons.Default.RestartAlt
+        )
+        Spacer(modifier = Modifier.height(CONTROL_BUTTON_SPACER_DP))
+        FleetCompositionControlButton(
+            onClick = onSubmitRequested,
+            testTag = "", //TODO()
+            description = "Submit layout",
+            imageVector = Icons.Default.Done
+        )
+    }
+}
+
+@Composable
+fun FleetCompositionControlButton(
+    onClick: () -> Unit,
+    testTag: String,
+    description: String,
+    imageVector: ImageVector
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier
+            .padding(ICON_BUTTON_PADDING)
+            .background(color = GRAY_8)
+            .testTag(testTag)
+    ) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = description,
+            tint = Color.White
+        )
     }
 }
 
@@ -100,7 +127,7 @@ fun FleetCompositionControls(
 fun ShipView(shipData: ShipData, squareSize: Dp, onClick: () -> Unit, isSelected: Boolean = false) {
 
     val selectedModifier = if (isSelected) {
-        Modifier.border(2.dp, Color.Red)
+        Modifier.border(5.dp, Color.Black)
     } else {
         Modifier
     }
@@ -112,8 +139,8 @@ fun ShipView(shipData: ShipData, squareSize: Dp, onClick: () -> Unit, isSelected
             Box(
                 modifier = Modifier
                     .size(squareSize)
-                    .border(2.dp, Color.Black)
-                    .background(color = MaterialTheme.colors.secondary)
+                    .border(2.dp, GRAY_8)
+                    .background(color = INDIGO_7)
             )
         }
     }
