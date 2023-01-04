@@ -1,7 +1,7 @@
 package com.example.battleshipmobile.battleship.service.game
 
+import com.example.battleshipmobile.battleship.service.AppService
 import com.example.battleshipmobile.battleship.service.ID
-import com.example.battleshipmobile.battleship.service.system_info.AppService
 
 interface GameService : AppService {
 

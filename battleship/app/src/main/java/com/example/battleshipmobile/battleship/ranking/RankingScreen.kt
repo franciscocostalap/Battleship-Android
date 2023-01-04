@@ -1,5 +1,6 @@
 package com.example.battleshipmobile.battleship.ranking
 
+import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Alignment
@@ -14,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -87,7 +89,7 @@ fun RankingScreen(
 }
 
 @Composable
-private fun StatelessRankingScreen(
+private fun LandscapeRankingScreen(
     onBackClick : () -> Unit,
     gameStatistics : StatisticsEmbedded,
     userSearchValue : String,
@@ -95,7 +97,82 @@ private fun StatelessRankingScreen(
     onTextSubmit : () -> Unit = {},
     tableLazyState : LazyListState,
     focusManager: FocusManager = LocalFocusManager.current,
-) {
+){
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    dismissKeyboard(focusManager)
+                })
+            },
+    ) {
+
+
+        Text(
+            text = stringResource(id = R.string.ranking_label),
+            color = HEADER_COLOR,
+            fontSize = MaterialTheme.typography.h3.fontSize,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(8.dp)
+
+        )
+
+
+        Row() {
+            Column(modifier = Modifier
+                .fillMaxHeight()
+                .padding(start = 32.dp, end = 32.dp)
+            ) {
+                LazyTable(
+                    headers = listOf(
+                        stringResource(R.string.rank_label),
+                        stringResource(R.string.player_label),
+                        stringResource(R.string.games_label),
+                        stringResource(R.string.wins_label)
+                    ),
+                    cellsWeight = listOf(3f, 4f, 2f, 2f),
+                    playerStats = gameStatistics.ranking,
+                    modifier = Modifier.testTag(TestTags.Statistics.Table),
+                    dataListState = tableLazyState,
+                    height = 550.dp,
+                    width = 350.dp,
+                )
+            }
+
+
+            Column(
+                modifier = Modifier
+                    .width(350.dp)
+                    .fillMaxHeight()
+            ) {
+                Text(text = stringResource(R.string.total_games_played_label) + ": ${gameStatistics.nGames}")
+
+                SearchComponent(
+                    userSearchValue = userSearchValue,
+                    userSearchOnChange = userSearchOnChange,
+                    onTextSubmit = onTextSubmit,
+                    focusManager = focusManager
+                )
+
+                BackButton(onBackClick = onBackClick)
+            }
+        }
+
+    }
+}
+
+@Composable
+private fun PortraitRankingScreen(
+    onBackClick : () -> Unit,
+    gameStatistics : StatisticsEmbedded,
+    userSearchValue : String,
+    userSearchOnChange : (String) -> Unit,
+    onTextSubmit : () -> Unit = {},
+    tableLazyState : LazyListState,
+    focusManager: FocusManager = LocalFocusManager.current,
+){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -147,9 +224,49 @@ private fun StatelessRankingScreen(
                 height = 550.dp,
                 width = 350.dp,
             )
-    }
+        }
         BackButton(onBackClick = onBackClick)
     }
+}
+
+@Composable
+private fun StatelessRankingScreen(
+    onBackClick : () -> Unit,
+    gameStatistics : StatisticsEmbedded,
+    userSearchValue : String,
+    userSearchOnChange : (String) -> Unit,
+    onTextSubmit : () -> Unit = {},
+    tableLazyState : LazyListState,
+    focusManager: FocusManager = LocalFocusManager.current,
+    screenConfiguration : Configuration = LocalConfiguration.current,
+) {
+    when (screenConfiguration.orientation) {
+        Configuration.ORIENTATION_LANDSCAPE -> {
+            LandscapeRankingScreen(
+                onBackClick = onBackClick,
+                gameStatistics = gameStatistics,
+                userSearchValue = userSearchValue,
+                userSearchOnChange = userSearchOnChange,
+                onTextSubmit = onTextSubmit,
+                tableLazyState = tableLazyState,
+                focusManager = focusManager,
+            )
+        }
+        else -> {
+            PortraitRankingScreen(
+                onBackClick = onBackClick,
+                gameStatistics = gameStatistics,
+                userSearchValue = userSearchValue,
+                userSearchOnChange = userSearchOnChange,
+                onTextSubmit = onTextSubmit,
+                tableLazyState = tableLazyState,
+                focusManager = focusManager,
+            )
+        }
+    }
+
+
+
 
 
 }
@@ -163,8 +280,8 @@ private fun SearchComponent(
     focusManager: FocusManager,
 ) {
     Row(
-        modifier = Modifier.
-        height(75.dp)
+        modifier = Modifier
+            .height(75.dp)
             .fillMaxWidth()
     ){
         Box(

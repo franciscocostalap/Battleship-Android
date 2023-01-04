@@ -80,7 +80,7 @@ class RealUserService(
      * @return [Action] Register url and method
      */
     private suspend fun ensureRegisterAction(): Action {
-        homeEntity = super.fetchParentEntity(client, jsonFormatter, parentUrl,homeEntity)
+        homeEntity = super.fetchParentEntity(client, jsonFormatter, parentUrl, homeEntity)
         val homeSirenEntity = homeEntity
         require(homeSirenEntity != null) { HOME_ERR_MESSAGE }
 

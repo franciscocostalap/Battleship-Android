@@ -1,5 +1,7 @@
 package com.example.battleshipmobile.battleship.service.system_info
 
+import com.example.battleshipmobile.battleship.service.AppService
+
 
 interface ISystemInfoService : AppService {
 

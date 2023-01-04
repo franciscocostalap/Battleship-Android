@@ -30,7 +30,7 @@ interface DependenciesContainer{
     val systemInfoService : SysInfoService
 }
 
-private const val host = "http://192.168.1.4:8090"
+private const val host = "http://192.168.1.119:8090"
 private const val root = "$host/api"
 private const val home = "$root/"
 private const val userHome = "$root/my"

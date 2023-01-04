@@ -1,6 +1,6 @@
 package com.example.battleshipmobile.battleship.service.ranking
 
-import com.example.battleshipmobile.battleship.service.system_info.AppService
+import com.example.battleshipmobile.battleship.service.AppService
 
 interface RankingServiceI : AppService {
 

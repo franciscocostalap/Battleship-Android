@@ -61,7 +61,7 @@ fun InfoScreen(
                         .fillMaxSize()
                         .padding(16.dp),
                 ) {
-                    Text(
+                    Text(//TODO: CORES DO TITOLU E VERSAO QUANDO ESTA LANDSCAPE
                         text = stringResource(id = R.string.info_title),
                         style = MaterialTheme.typography.h3,
                         textAlign = TextAlign.Center,

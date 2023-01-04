@@ -7,11 +7,21 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
 import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.home.HomeActivity
 import com.example.battleshipmobile.battleship.service.user.AuthInfo
 import com.example.battleshipmobile.ui.ErrorAlert
+import com.example.battleshipmobile.ui.TestTags
+import com.example.battleshipmobile.ui.authType
+import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.utils.viewModelInit
 
 class AuthenticationActivity : ComponentActivity() {
@@ -77,6 +87,14 @@ class AuthenticationActivity : ComponentActivity() {
                 )
             else {
                 Log.v("LOGIN_ACTIVITY", "auth successful")
+                BattleshipMobileTheme {  //theme and surface just for the background color
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colors.background)
+                            .testTag(TestTags.Auth.Screen),
+                    ) {}
+                }
                 HomeActivity.navigate(this)
                 Log.v("LOGIN_ACTIVITY", "navigating")
                 finish()

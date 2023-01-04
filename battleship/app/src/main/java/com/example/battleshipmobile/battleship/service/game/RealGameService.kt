@@ -27,6 +27,7 @@ class RealGameService(
     companion object {
         private const val QUEUE_REL = "queue"
         private const val CANCEL_QUEUE_REL = "cancelQueue"
+        private const val LOBBY_STATE_REL = "lobby-state"
         private const val LAYOUT_DEFINITION_REL = "layout-definition"
         private const val SELF = "self"
         private const val USER_HOME_ERR_MESSAGE = "User home is not set"
@@ -140,7 +141,7 @@ class RealGameService(
 
         return ensureAction(
             parentSirenEntity = lobbyInformationSirenEntity,
-            relation = SELF,
+            relation = LOBBY_STATE_REL,
             rootUrl,
             relationType = RelationType.LINK
         )
