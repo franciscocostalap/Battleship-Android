@@ -266,10 +266,15 @@ class RealGameService(
     private fun ensureLobbyStateLink(): Action{
         val lobbyInformationSirenEntity = lobbyStateEntity
         require(lobbyInformationSirenEntity != null) { QUEUE_ERR_MESSAGE }
+        val relation = if(lobbyInformationSirenEntity.links?.find{ link ->
+                link.rel.firstOrNull{ it == LOBBY_STATE_REL } != null } != null)
+            LOBBY_STATE_REL
+        else
+            SELF
 
         return ensureAction(
             parentSirenEntity = lobbyInformationSirenEntity,
-            relation = LOBBY_STATE_REL,
+            relation = relation,
             rootUrl,
             relationType = RelationType.LINK
         )
