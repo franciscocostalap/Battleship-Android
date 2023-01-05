@@ -1,6 +1,10 @@
 package com.example.battleshipmobile.ui
 
 object TestTags {
+    object LoadingScreen {
+        const val Screen = "LoadingScreen"
+
+    }
 
     object Auth{
         const val Screen = "AuthScreen"

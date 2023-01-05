@@ -1,4 +1,4 @@
-package com.example.battleshipmobile.ui
+package com.example.battleshipmobile.ui.views.general
 
 
 import androidx.annotation.StringRes
@@ -17,16 +17,17 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.battleshipmobile.R
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 
 @Composable
 fun ErrorAlert(
-    @StringRes title: Int,
-    @StringRes message: Int,
-    @StringRes buttonText: Int,
+    @StringRes title: Int = R.string.general_error_title,
+    @StringRes message: Int = R.string.general_error,
+    @StringRes buttonText: Int = R.string.ok,
     onDismiss: () -> Unit = { }
 ) {
-    ErrorAlertImpl(
+    AlertImpl(
         title = stringResource(id = title),
         message = stringResource(id = message),
         buttonText = stringResource(id = buttonText),
@@ -35,7 +36,7 @@ fun ErrorAlert(
 }
 
 @Composable
-private fun ErrorAlertImpl(
+private fun AlertImpl(
     title: String,
     message: String,
     buttonText: String,
@@ -68,7 +69,7 @@ private fun ErrorAlertImpl(
 @Composable
 private fun ErrorAlertImplPreview() {
     BattleshipMobileTheme {
-        ErrorAlertImpl(
+        AlertImpl(
             title = "Error accessing server",
             message = "Could not ...",
             buttonText = "OK",

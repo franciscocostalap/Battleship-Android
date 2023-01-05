@@ -1,14 +1,9 @@
 package com.example.battleshipmobile.battleship.service.system_info
 
-import com.example.battleshipmobile.battleship.http.buildRequest
-import com.example.battleshipmobile.battleship.http.handle
-import com.example.battleshipmobile.battleship.http.send
 import com.example.battleshipmobile.battleship.service.Action
 import com.example.battleshipmobile.battleship.service.RelationType
 import com.example.battleshipmobile.battleship.service.buildAndSendRequest
 import com.example.battleshipmobile.battleship.service.ensureAction
-import com.example.battleshipmobile.battleship.service.ranking.RankingService
-import com.example.battleshipmobile.battleship.service.ranking.Statistics
 import com.example.battleshipmobile.utils.SirenEntity
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
@@ -20,6 +15,7 @@ class SysInfoService(
     private val rootUrl: String,
     private val parentURL: URL
 ) : ISystemInfoService {
+
      var homeEntity: SirenEntity<Nothing>? = null
 
     companion object{
@@ -27,6 +23,12 @@ class SysInfoService(
         private const val INFO_REL = "system-info"
     }
 
+    /**
+     * Ensures that the SystemInfo Action is present in the home entity
+     * Requires that the home was fetched first.
+     *
+     * @return [Action] the action or link url and method
+     */
     private suspend fun ensureSysInfoLink(): Action {
         homeEntity = super.fetchParentEntity(client,jsonFormatter,parentURL,homeEntity)
 
@@ -38,7 +40,7 @@ class SysInfoService(
             relation = INFO_REL,
             rootUrl = rootUrl,
             relationType = RelationType.LINK,
-            embededInfo = false
+            embeddedInfo = false
         )
     }
 

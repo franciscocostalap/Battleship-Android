@@ -12,7 +12,9 @@ import androidx.activity.viewModels
 import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.TAG
-import com.example.battleshipmobile.ui.ErrorAlert
+import com.example.battleshipmobile.battleship.home.HomeActivity
+import com.example.battleshipmobile.ui.views.general.ErrorAlert
+import com.example.battleshipmobile.ui.views.LoadingScreen
 import com.example.battleshipmobile.utils.viewModelInit
 
 
@@ -39,6 +41,7 @@ class InfoActivity : ComponentActivity() {
         setContent {
             val sysInfoResult = infoViewModel.sysInfoResult
             val sysInfo = infoViewModel.sysInfo
+
             if(sysInfoResult != null){
                 sysInfoResult.onSuccess {
                     Log.v(ACTIVITY_TAG, "InfoActivity onSuccess")
@@ -49,7 +52,10 @@ class InfoActivity : ComponentActivity() {
                         title = R.string.general_error_title,
                         message = R.string.general_error,
                         buttonText = R.string.ok,
-                        onDismiss = { infoViewModel.clearStatisticsResult() }
+                        onDismiss = {
+                            HomeActivity.navigate(this)
+                            finish()
+                        }
                     )
                 }
             }else{
@@ -57,12 +63,16 @@ class InfoActivity : ComponentActivity() {
                 infoViewModel.getSystemInfo()
             }
 
-            InfoScreen(
-                onBackClick = { finish() },
-                onSendClick = { email -> openSendEmail(email) },
-                info = sysInfo,
-                isLoading = sysInfo == null
-            )
+            if(sysInfo != null){
+                InfoScreen(
+                    onBackClick = { finish() },
+                    onSendClick = { email -> openSendEmail(email) },
+                    info = sysInfo,
+                )
+            }else{
+                LoadingScreen()
+            }
+
         }
     }
 

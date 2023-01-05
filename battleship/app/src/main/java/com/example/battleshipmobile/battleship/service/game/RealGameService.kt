@@ -23,13 +23,13 @@ import java.net.URL
  * @property client Http client
  * @property jsonFormatter
  * @property rootUrl api base url used for all endpoints
- * @property parentUrl url that gives access to the requested resources with its siren actions/links
+ * @property parentURL url that gives access to the requested resources with its siren actions/links
  */
 class RealGameService(
     private val client: OkHttpClient,
     private val jsonFormatter: Gson,
     private val rootUrl: String,
-    private val parentUrl: URL
+    private val parentURL: URL
 ) : GameService {
 
     companion object {
@@ -217,25 +217,6 @@ class RealGameService(
         lobbyProducerScope?.close() //TODO change how to get the scope
     }
 
-
-    /**
-     * Fetches and sets the user home entity if it's not already set
-     */
-    private suspend fun fetchUserHomeEntity() {
-        if (userHomeEntity != null) return
-
-        val request = buildRequest(parentUrl)
-
-        val responseResult = request.send(client) {
-            handle<SirenEntity<Nothing>>(
-                SirenEntity.getType<Unit>().type,
-                jsonFormatter
-            )
-        }
-
-        userHomeEntity = responseResult
-    }
-
     /**
      * Fetches and sets the game state entity
      */
@@ -325,7 +306,8 @@ class RealGameService(
     * @return [Action] Queue url and method
      */
     private suspend fun ensureQueueAction(): Action {
-        fetchUserHomeEntity()
+        userHomeEntity = super.fetchParentEntity(client,jsonFormatter,parentURL,userHomeEntity)
+
         val userHomeSirenEntity = userHomeEntity
         require(userHomeSirenEntity != null) { USER_HOME_ERR_MESSAGE }
 

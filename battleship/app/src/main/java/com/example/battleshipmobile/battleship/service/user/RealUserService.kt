@@ -15,13 +15,13 @@ import java.net.URL
  * @property client Http client
  * @property jsonFormatter
  * @property rootUrl api base url used in all endpoints
- * @property parentUrl url that gives access to the requested resources with its siren actions/links
+ * @property parentURL url that gives access to the requested resources with its siren actions/links
  */
 class RealUserService(
     private val client: OkHttpClient,
     private val jsonFormatter: Gson,
     private val rootUrl: String,
-    private val parentUrl: URL
+    private val parentURL: URL
 ) : UserService {
 
     companion object {
@@ -80,7 +80,7 @@ class RealUserService(
      * @return [Action] Register url and method
      */
     private suspend fun ensureRegisterAction(): Action {
-        homeEntity = super.fetchParentEntity(client, jsonFormatter, parentUrl, homeEntity)
+        homeEntity = super.fetchParentEntity(client, jsonFormatter, parentURL, homeEntity)
         val homeSirenEntity = homeEntity
         require(homeSirenEntity != null) { HOME_ERR_MESSAGE }
 
@@ -99,7 +99,7 @@ class RealUserService(
      * @return [Action] Login url and method
      */
     private suspend fun ensureLoginAction(): Action {
-        homeEntity = super.fetchParentEntity(client, jsonFormatter, parentUrl,homeEntity)
+        homeEntity = super.fetchParentEntity(client, jsonFormatter, parentURL,homeEntity)
         val homeSirenEntity = homeEntity
         require(homeSirenEntity != null) { HOME_ERR_MESSAGE }
 

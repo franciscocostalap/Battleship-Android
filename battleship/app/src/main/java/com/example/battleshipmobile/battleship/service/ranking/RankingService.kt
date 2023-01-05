@@ -37,7 +37,7 @@ class RankingService(
             relation = STATISTICS_REL,
             rootUrl = rootUrl,
             relationType = RelationType.LINK,
-            embededInfo = true
+            embeddedInfo = true
         )
     }
 

@@ -13,7 +13,7 @@ import com.example.battleshipmobile.battleship.auth.AuthenticationActivity
 import com.example.battleshipmobile.battleship.info.InfoActivity
 import com.example.battleshipmobile.battleship.play.lobby.QueueActivity
 import com.example.battleshipmobile.battleship.ranking.RankingActivity
-import com.example.battleshipmobile.ui.ErrorAlert
+import com.example.battleshipmobile.ui.views.general.ErrorAlert
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.utils.viewModelInit
 
@@ -27,7 +27,10 @@ class HomeActivity : ComponentActivity() {
                 startActivity(intent)
             }
         }
+        private const val TAG = "HomeActivity"
+
     }
+
 
     private val homeViewModel by viewModels<HomeViewModel> {
         viewModelInit { HomeViewModel(dependencies.gameService, dependencies.authInfoService) }
@@ -46,12 +49,12 @@ class HomeActivity : ComponentActivity() {
 
                 // Recomposition triggered by lobby information mutable state
                 if(lobbyInfo != null) {
-                    Log.v("HOME_ACTIVITY", "Play button was pressed")
+                    Log.v(TAG, "Play button was pressed")
                     lobbyInfo.onSuccess {
                         QueueActivity.navigate(this, it.lobbyID, it.gameID)
                         finish()
                     }.onFailure {
-                        Log.e("HOME_ACTIVITY", it.stackTraceToString())
+                        Log.e(TAG, it.stackTraceToString())
 
                         ErrorAlert(
                             title = R.string.general_error_title,
@@ -61,7 +64,6 @@ class HomeActivity : ComponentActivity() {
                         )
                     }
                 }
-
                 HomeScreen(
                     isLoggedIn = homeViewModel.isLoggedIn(),
                     onLoginRequested = { AuthenticationActivity.navigate(this) },

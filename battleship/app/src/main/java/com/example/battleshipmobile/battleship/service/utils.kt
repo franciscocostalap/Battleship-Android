@@ -35,9 +35,9 @@ fun <T> ensureAction(
     relation: String,
     rootUrl: String,
     relationType: RelationType,
-    embededInfo: Boolean = false
+    embeddedInfo: Boolean = false
 ): Action {
-    val query = if(embededInfo) "?embedded=true" else ""
+    val query = if(embeddedInfo) "?embedded=true" else ""
 
     return if (relationType == ACTION) {
         val sirenAction =

@@ -9,15 +9,17 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.R
-import com.example.battleshipmobile.ui.ErrorAlert
+import com.example.battleshipmobile.battleship.home.HomeActivity
+import com.example.battleshipmobile.ui.views.general.ErrorAlert
 import com.example.battleshipmobile.ui.showToast
+import com.example.battleshipmobile.ui.views.LoadingScreen
 import com.example.battleshipmobile.utils.viewModelInit
 
 
 class RankingActivity: ComponentActivity() {
 
     companion object{
-
+        private const val RANKING_ACTIVITY = "RankingActivity"
         fun navigate(origin: Activity){
             with(origin){
                 val intent = Intent(this, RankingActivity::class.java)
@@ -35,38 +37,49 @@ class RankingActivity: ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.v("RANKING_ACTIVITY", "RankingActivity onCreate")
+        Log.v(RANKING_ACTIVITY, "RankingActivity onCreate")
 
         setContent {
 
             val statisticsResult = rankingViewModel.statisticsResult
-            val statistics = rankingViewModel.statistics
+
             if(statisticsResult != null){
                 statisticsResult.onSuccess {
-                    Log.v("RANKING_ACTIVITY", "RankingActivity onSuccess")
+                    Log.v(RANKING_ACTIVITY, "RankingActivity onSuccess")
                     rankingViewModel.statistics = it
 
                 }.onFailure {
-                    Log.e("RANKING_ACTIVITY", it.stackTraceToString())
+                    Log.e(RANKING_ACTIVITY, it.stackTraceToString())
                     ErrorAlert(
                         title = R.string.general_error_title,
                         message = R.string.general_error,
                         buttonText = R.string.ok,
-                        onDismiss = { rankingViewModel.clearStatisticsResult() }
+                        onDismiss = {
+                            HomeActivity.navigate(this)
+                            finish()
+                        }
                     )
                 }
             }else{
-                Log.v("RANKING_ACTIVITY", "Fetching statistics")
+                Log.v(RANKING_ACTIVITY, "Fetching statistics")
                 rankingViewModel.getStatistics()
             }
+            val statistics = rankingViewModel.statistics
 
-            RankingScreen(
-                onBackClick = { finish() },
-                gameStatistics = statistics,
-                onSearchError = {
-                    showToast("User $it not found")
-                }
-            )
+            if(statistics != null){
+                RankingScreen(
+                    onBackClick = { finish() },
+                    gameStatistics = statistics,
+                    onSearchError = {
+                        showToast("User $it not found")
+                    }
+                )
+            }else{
+                LoadingScreen()
+            }
+
+
+
         }
     }
 }

@@ -7,28 +7,32 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.battleshipmobile.battleship.http.hypermedia.Problem
-import com.example.battleshipmobile.battleship.service.dto.GameRulesDTO
-import com.example.battleshipmobile.battleship.service.dto.GameStateInfoDTO
-import com.example.battleshipmobile.battleship.service.dto.ShipDTO
-import com.example.battleshipmobile.battleship.service.dto.ShipsInfoDTO
-import com.example.battleshipmobile.battleship.service.game.*
+import com.example.battleshipmobile.battleship.service.dto.*
+import com.example.battleshipmobile.battleship.service.game.GameService
 import com.example.battleshipmobile.battleship.service.model.*
 import com.example.battleshipmobile.battleship.service.model.GameRules.FleetComposition
-import com.example.battleshipmobile.battleship.service.model.State.*
+import com.example.battleshipmobile.battleship.service.model.State.PLAYING
 import com.example.battleshipmobile.ui.views.game.ShipData
 import com.example.battleshipmobile.utils.minutesToMillis
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class LayoutDefinitionViewModel(private val gameService: GameService) : ViewModel() {
 
-    var availableShips: List<ShipData> by mutableStateOf(fakeGameRules().fleetComposition.toList())
+    var availableShips: List<ShipData>? by mutableStateOf(null)
     private set
+
     private var placedShips: List<ShipDTO> by mutableStateOf(emptyList())
     var selected: ShipData? by mutableStateOf(null)
     var isTimedOut: Boolean by mutableStateOf(false)
+    private set
     var gameRules: GameRulesDTO? by mutableStateOf(null)
     var board: Board? by mutableStateOf(null)
+    var isSubmittingDisabled : Boolean by mutableStateOf(false)
 
     private val _playingGameState = MutableStateFlow<GameStateInfoDTO?>(null)
     val playingGameState = _playingGameState.asStateFlow()
@@ -45,25 +49,6 @@ class LayoutDefinitionViewModel(private val gameService: GameService) : ViewMode
             }
     }
 
-    private fun fakeGameRules(): GameRules {
-        return GameRules(
-            boardSide = 10,
-            layoutDefinitionTime = minutesToMillis(10),
-            playTimeout = minutesToMillis(10),
-            shotsPerTurn = 1,
-            fleetComposition = FleetComposition(
-                name = "Default",
-                composition = mapOf(
-                    1 to 1,
-                    2 to 1,
-                    3 to 1,
-                    4 to 1,
-                    5 to 1,
-                )
-            )
-        )
-    }
-
     fun placeShip(initialSquare: Square, shipData: ShipData) {
         val currentBoard = board ?: throw IllegalStateException("Board is not initialized")
         val newBoard = currentBoard.placeShip(initialSquare, shipData.ship)
@@ -71,7 +56,8 @@ class LayoutDefinitionViewModel(private val gameService: GameService) : ViewMode
         if (newBoard != board) {
             board = newBoard
             selected = null
-            availableShips = availableShips.filter { it.id != shipData.id }
+            val ships = requireNotNull(availableShips)
+            availableShips = ships.filter { it.id != shipData.id }
             placedShips = placedShips + ShipDTO(
                 initialSquare,
                 shipData.ship.size,
@@ -85,8 +71,8 @@ class LayoutDefinitionViewModel(private val gameService: GameService) : ViewMode
             gameService.getGameRules()
         }
         gameRules = result.await()
-        val currentGameRules = gameRules ?: throw IllegalStateException("Game rules are null")
-        board = Board.empty(currentGameRules.boardSide)
+        resetAvailableShips()
+        clearBoard()
     }
 
     fun rotateSelected() {
@@ -100,40 +86,45 @@ class LayoutDefinitionViewModel(private val gameService: GameService) : ViewMode
     }
 
     fun resetState() {
-        availableShips = fakeGameRules().fleetComposition.toList()
-        board = Board.empty(fakeGameRules().boardSide)
+        clearBoard()
+        resetAvailableShips()
         placedShips = emptyList()
     }
 
-    fun submitLayout() {
+    fun submitLayout() : Boolean {
         viewModelScope.launch {
-            val result = async {
-                gameService.placeShips(ShipsInfoDTO(placedShips))
+            try {
+                val result = async {
+                    gameService.placeShips(ShipsInfoDTO(placedShips))
+                }
+                result.await()
+            }catch (e: Throwable) {
+                if(e is CancellationException) throw e
+                Log.e("SUBMIT_LAYOUT", e.message ?: "Unknown error")
+                throw e
             }
-            result.await()
+        }.invokeOnCompletion {
+            if(it == null) isSubmittingDisabled = true
+            else isSubmittingDisabled = false
         }
+        isSubmittingDisabled = true
+        return true
     }
 
     fun onTimeout() {
-        viewModelScope.launch {
-            val result = async {
-                try {
-                    gameService.placeShips(ShipsInfoDTO(placedShips))
-                } catch (problem: Problem) {
-                    if (problem.status == 400) {
-                        Log.v(
-                            "LayoutDefinitionViewModel",
-                            "Layout definition timed out with error 400"
-                        )
-                    }
-                } finally {
-                    isTimedOut = true
-                }
-
-            }
-            result.await()
-        }
+        isTimedOut = true
     }
+
+    private fun clearBoard() {
+        val currentGameRules = gameRules ?: throw IllegalStateException("Game rules are null")
+        board = Board.empty(currentGameRules.boardSide)
+    }
+
+    private fun resetAvailableShips() {
+        val currentGameRules = gameRules ?: throw IllegalStateException("Game rules are null")
+        availableShips = (currentGameRules.shipRules.toFleetComposition()).toList()
+    }
+
 }
 
 fun FleetComposition.toList(): List<ShipData> {

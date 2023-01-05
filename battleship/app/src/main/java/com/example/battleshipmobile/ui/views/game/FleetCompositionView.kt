@@ -75,28 +75,34 @@ fun FleetCompositionView(
 fun FleetCompositionControls(
     onRotateRequested: () -> Unit = {},
     onResetRequested: () -> Unit = {},
-    onSubmitRequested: () -> Unit = {}
+    onSubmitRequested: () -> Unit = {},
+    isSubmitEnabled: Boolean = true,
+    isResetEnabled: Boolean = true,
+    isRotateEnabled: Boolean = true
 ){
     Column{
         FleetCompositionControlButton(
             onClick = onRotateRequested,
             testTag = TestTags.LayoutDefinition.RotateButton,
             description = "Rotate Selected Ship",
-            imageVector = Icons.Default.Rotate90DegreesCcw
+            imageVector = Icons.Default.Rotate90DegreesCcw,
+            isEnabled = isRotateEnabled
         )
         Spacer(modifier = Modifier.height(CONTROL_BUTTON_SPACER_DP))
         FleetCompositionControlButton(
             onClick = onResetRequested,
             testTag = TestTags.LayoutDefinition.ResetFleetButton,
             description = "Reset Fleet",
-            imageVector = Icons.Default.RestartAlt
+            imageVector = Icons.Default.RestartAlt,
+            isEnabled = isResetEnabled
         )
         Spacer(modifier = Modifier.height(CONTROL_BUTTON_SPACER_DP))
         FleetCompositionControlButton(
             onClick = onSubmitRequested,
             testTag = "", //TODO()
             description = "Submit layout",
-            imageVector = Icons.Default.Done
+            imageVector = Icons.Default.Done,
+            isEnabled = isSubmitEnabled
         )
     }
 }
@@ -106,14 +112,17 @@ fun FleetCompositionControlButton(
     onClick: () -> Unit,
     testTag: String,
     description: String,
-    imageVector: ImageVector
+    imageVector: ImageVector,
+    isEnabled: Boolean = true
 ) {
+    //TODO: change Background color depending on enabled/disabled
     IconButton(
         onClick = onClick,
         modifier = Modifier
             .padding(ICON_BUTTON_PADDING)
             .background(color = GRAY_8)
-            .testTag(testTag)
+            .testTag(testTag),
+        enabled = isEnabled
     ) {
         Icon(
             imageVector = imageVector,

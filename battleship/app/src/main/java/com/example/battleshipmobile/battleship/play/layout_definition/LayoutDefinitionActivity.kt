@@ -11,7 +11,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.battleshipmobile.DependenciesContainer
+import com.example.battleshipmobile.R
+import com.example.battleshipmobile.battleship.home.HomeActivity
 import com.example.battleshipmobile.battleship.service.ID
+import com.example.battleshipmobile.ui.showToast
+import com.example.battleshipmobile.ui.views.LoadingScreen
+import com.example.battleshipmobile.ui.views.general.ErrorAlert
 import com.example.battleshipmobile.utils.viewModelInit
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -46,12 +51,16 @@ class LayoutDefinitionActivity : ComponentActivity() {
             if (gameRules == null)
                 viewModel.getGameRules()
             val board = viewModel.board
+            val availableShips = viewModel.availableShips
+            val isSubmittingDisabled = viewModel.isSubmittingDisabled
+            val isTimedOut = viewModel.isTimedOut
 
-            if (gameRules != null && board != null) {
+            if (gameRules != null && board != null && availableShips != null) {
                 val screenState = LayoutDefinitionScreenState(
                     board = board,
-                    availableShips = viewModel.availableShips,
+                    availableShips = availableShips,
                     selectedShip = viewModel.selected,
+                    isSubmittingDisabled = isSubmittingDisabled,
                 )
 
                 val screenHandlers = LayoutDefinitionHandlers(
@@ -69,6 +78,7 @@ class LayoutDefinitionActivity : ComponentActivity() {
                     },
                     onFleetResetClicked = {
                         viewModel.resetState()
+                        showToast("Fleet reset.")
                     },
                     onSubmit = {
                         viewModel.submitLayout()
@@ -77,15 +87,27 @@ class LayoutDefinitionActivity : ComponentActivity() {
                         viewModel.onTimeout()
                     }
                 )
+                if(isTimedOut) {
+                    ErrorAlert(
+                        title = R.string.timeout_title,
+                        message = R.string.timeout_placeships_message,
+                        onDismiss = {
+                            HomeActivity.navigate(this)
+                            finish()
+                        }
+                    )
+                }
 
                 LayoutDefinitionScreen(
                     state = screenState,
                     handlers = screenHandlers,
                     timeToDefineLayout = gameRules.layoutDefinitionTimeout
                 )
+            }else{
+                LoadingScreen()
             }
+
         }
-        //TODO else loading
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {

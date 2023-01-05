@@ -40,4 +40,6 @@
     <string name="version_text">Version:</string>
     <string name="info_title">Information</string>
     <string name="authors">Authors:</string>
+    <string name="timeout_title">Timeout</string>
+    <string name="timeout_placeships_message">The time to place ships is over.</string>
 </resources>
