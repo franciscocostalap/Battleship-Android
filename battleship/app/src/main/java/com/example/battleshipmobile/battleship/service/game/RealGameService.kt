@@ -6,6 +6,10 @@ import com.example.battleshipmobile.battleship.http.send
 import com.example.battleshipmobile.battleship.play.shotDefinition.GameTurn
 import com.example.battleshipmobile.battleship.service.*
 import com.example.battleshipmobile.battleship.service.dto.*
+import com.example.battleshipmobile.battleship.service.lobby.LobbyInformation
+import com.example.battleshipmobile.battleship.service.model.Board
+import com.example.battleshipmobile.battleship.service.model.GameRules
+import com.example.battleshipmobile.battleship.service.model.GameStateInfo
 import com.example.battleshipmobile.battleship.service.model.State.*
 import com.example.battleshipmobile.utils.*
 import com.google.gson.Gson
@@ -70,7 +74,7 @@ class RealGameService(
      * Queues up a user to play returning the lobby information.
      * @return [LobbyInformationDTO]
      */
-    override suspend fun enqueue(): LobbyInformationDTO {
+    override suspend fun enqueue(): LobbyInformation {
         val result = buildAndSendRequest<LobbyInformationDTO>(
             client,
             jsonFormatter,
@@ -83,14 +87,15 @@ class RealGameService(
         if (gameID != null)
             fetchGameState()
 
-        return result.properties ?: throw IllegalStateException(PROPERTIES_REQUIRED)
+        return result.properties?.toLobbyInformation()
+            ?: throw IllegalStateException(PROPERTIES_REQUIRED)
     }
 
     /**
      * Gets the lobby information of the one that was requested.
      * @return [LobbyInformationDTO]
      */
-    override suspend fun getLobbyInformation(): LobbyInformationDTO {
+    override suspend fun getLobbyInformation(): LobbyInformation {
         val result = buildAndSendRequest<LobbyInformationDTO>(
         client,
         jsonFormatter,
@@ -98,19 +103,19 @@ class RealGameService(
         )
 
         lobbyStateEntity = result
-        val lobbyInformation = result.properties ?: throw IllegalStateException(PROPERTIES_REQUIRED)
+        val lobbyInformationDTO = result.properties ?: throw IllegalStateException(PROPERTIES_REQUIRED)
 
-        if(lobbyInformation.gameID != null)
+        if(lobbyInformationDTO.gameID != null)
             fetchGameState()
 
-        return lobbyInformation
+        return lobbyInformationDTO.toLobbyInformation()
     }
 
 
     /**
      * Gets the game state information of the game that was requested.
      */
-    override suspend fun getGameStateInfo(): GameStateInfoDTO {
+    override suspend fun getGameStateInfo(): GameStateInfo {
         val result = buildAndSendRequest<GameStateInfoDTO>(
             client,
             jsonFormatter,
@@ -120,19 +125,21 @@ class RealGameService(
         //Update the game state entity with the new game state since it may be different
         gameStateEntity = result
 
-        return result.properties ?: throw IllegalStateException(PROPERTIES_REQUIRED)
+        return result.properties?.toGameStateInfo()
+            ?: throw IllegalStateException(PROPERTIES_REQUIRED)
     }
 
 
     /**
      * Gets the game rules of the game
      */
-    override suspend fun getGameRules(): GameRulesDTO =
+    override suspend fun getGameRules(): GameRules =
         buildAndSendRequest<GameRulesDTO>(
             client,
             jsonFormatter,
             relation = ensureGameRulesLink(),
-        ).properties ?: throw IllegalStateException(PROPERTIES_REQUIRED)
+        ).properties?.toGameRules()
+            ?: throw IllegalStateException(PROPERTIES_REQUIRED)
 
     /**
      * The user quits from the requested lobby
@@ -165,7 +172,7 @@ class RealGameService(
      * @whichFleet which fleet to get the board from
      * @return [BoardDTO]
      */
-    override suspend fun getBoard(whichFleet: GameTurn): BoardDTO{
+    override suspend fun getBoard(whichFleet: GameTurn): Board{
         val relationKey = when(whichFleet){
             GameTurn.MY -> MY_FLEET_REL
             GameTurn.OPPONENT -> OPPONENT_FLEET_REL
@@ -189,7 +196,7 @@ class RealGameService(
             relation = embeddedLink
         )
 
-        return result.properties ?: throw IllegalStateException(PROPERTIES_REQUIRED)
+        return result.properties?.toBoard() ?: throw IllegalStateException(PROPERTIES_REQUIRED)
     }
 
     /**
@@ -197,7 +204,7 @@ class RealGameService(
      * @param shotsDefinitionDTO list of shots to be made
      * @return [BoardDTO] the new board after the shots
      */
-    override suspend fun makeShots(shotsDefinitionDTO: ShotsDefinitionDTO): BoardDTO{
+    override suspend fun makeShots(shotsDefinitionDTO: ShotsDefinitionDTO): Board{
         val body = jsonFormatter.toJson(shotsDefinitionDTO)
         val result = buildAndSendRequest<Unit>(
             client,
@@ -206,7 +213,9 @@ class RealGameService(
             body = body
         )
 
-        return result.getEmbeddedBoardEntity()
+        return result
+            .getEmbeddedBoardDTO()
+            .toBoard()
     }
 
 
@@ -215,13 +224,13 @@ class RealGameService(
      *
      * @return the flow of the game state
      */
-    override suspend fun pollGameStateInfo(): Flow<GameStateInfoDTO> {
+    override suspend fun pollGameStateInfo(): Flow<GameStateInfo> {
         return callbackFlow {
             try {
                 val startingGameState = gameStateEntity?.properties
                 require(startingGameState != null) { GAME_STATE_ERR_MSG }
                 if(startingGameState.state != PLACING_SHIPS)
-                    trySend(startingGameState)
+                    trySend(startingGameState.toGameStateInfo())
 
                 do{
                     val gameState = getGameStateInfo()
@@ -242,14 +251,14 @@ class RealGameService(
      *
      * @return the flow of the lobby information
      */
-    override suspend fun pollLobbyInformation(): Flow<LobbyInformationDTO> {
+    override suspend fun pollLobbyInformation(): Flow<LobbyInformation> {
         return callbackFlow {
             try {
                 //Fast path
                 val startingLobbyState = lobbyStateEntity?.properties
                 require (startingLobbyState != null) { QUEUE_ERR_MESSAGE }
                 if(startingLobbyState.gameID != null)
-                    trySend(startingLobbyState)
+                    trySend(startingLobbyState.toLobbyInformation())
 
                 do{
                     val lobbyInformation = getLobbyInformation()
@@ -448,7 +457,7 @@ class RealGameService(
     /**
      * Ensures that the board embedded entity is available in the shots definition entity
      */
-    private fun SirenEntity<Unit>.getEmbeddedBoardEntity(): BoardDTO {
+    private fun SirenEntity<Unit>.getEmbeddedBoardDTO(): BoardDTO {
         val entity = entities?.find { subEntity ->
             subEntity as EmbeddedEntity<*>
             subEntity.rel.any { it == FLEET_REL }
