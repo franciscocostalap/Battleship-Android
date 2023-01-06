@@ -1,6 +1,8 @@
 package com.example.battleshipmobile.battleship.service.user
 
 import com.example.battleshipmobile.battleship.service.Relation
+import com.example.battleshipmobile.battleship.service.RelationType
+import com.example.battleshipmobile.battleship.service.buildAndSendRequest
 import com.example.battleshipmobile.battleship.service.dto.InputUserDTO
 import com.example.battleshipmobile.utils.*
 import com.example.battleshipmobile.battleship.service.ensureRelation
@@ -41,7 +43,7 @@ class RealUserService(
      * @param action
      * @return [AuthInfo] user id and token
      */
-    private suspend fun sendCredentials(credentials: User, action: Relation): AuthInfo {
+    private suspend fun sendCredentials(credentials: User, relation: Relation): AuthInfo {
         val body = jsonFormatter.toJson(InputUserDTO(credentials))
 
         val result = buildAndSendRequest<AuthInfo>(
@@ -60,7 +62,7 @@ class RealUserService(
      * @return [AuthInfo] user id and token
      */
     override suspend fun register(user: User): AuthInfo =
-        sendCredentials(user, action = ensureRegisterAction())
+        sendCredentials(user, relation = ensureRegisterAction())
 
     /**
      * Authenticates an already existing user returning it's authentication information
@@ -68,7 +70,7 @@ class RealUserService(
      * @return [AuthInfo] user id and token
      */
     override suspend fun login(authenticator: User): AuthInfo =
-        sendCredentials(authenticator, action = ensureLoginAction())
+        sendCredentials(authenticator, relation = ensureLoginAction())
 
 
     /**
@@ -94,7 +96,7 @@ class RealUserService(
      * Ensures that the register action exists and returns it.
      * Requires that the home was previously fetched.
      *
-     * @return [Action] Login url and method
+     * @return [Relation] Login url and method
      */
     private suspend fun ensureLoginAction(): Relation {
         homeEntity = super.fetchParentEntity(client, jsonFormatter, parentURL,homeEntity)

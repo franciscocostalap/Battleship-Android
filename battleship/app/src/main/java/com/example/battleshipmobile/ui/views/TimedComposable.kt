@@ -1,9 +1,6 @@
 package com.example.battleshipmobile.ui.views
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import kotlinx.coroutines.delay
 
 /**
@@ -20,14 +17,14 @@ fun TimedComposable(
     onTimeout: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
-    val state = remember { mutableStateOf(true) }
-    LaunchedEffect(key1 = true) {
+    var show by remember { mutableStateOf(true) }
+    LaunchedEffect(key1=true) {
         delay(time)
-        state.value = false
+        show = false
         onTimeout()
     }
 
-    if (state.value) {
+    if (show) {
         content()
     }
 }

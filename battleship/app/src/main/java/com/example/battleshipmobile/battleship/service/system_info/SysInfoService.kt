@@ -23,7 +23,6 @@ class SysInfoService(
         private const val INFO_REL = "system-info"
     }
 
-    private suspend fun ensureSysInfoLink(): Relation {
     /**
      * Ensures that the SystemInfo Action is present in the home entity
      * Requires that the home was fetched first.
@@ -52,7 +51,7 @@ class SysInfoService(
         val request = buildAndSendRequest<SystemInfo>(
             client,
             jsonFormatter,
-            relation =ensureSysInfoLink(),
+            relation = ensureSysInfoLink(),
         )
         return request.properties ?: throw IllegalStateException("No properties in response")
     }

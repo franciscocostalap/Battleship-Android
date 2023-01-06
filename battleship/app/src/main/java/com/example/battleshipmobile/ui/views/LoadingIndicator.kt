@@ -34,6 +34,7 @@ fun LoadingIndicator(
     strokeWidth: Dp = ProgressIndicatorDefaults.StrokeWidth
 ) {
 
+    // TODO: Consider the use of CircularProgressIndicator built in composable.
 
     //-*-*-*-*-*-*- animation -*-*-*-*-*-*-
 

@@ -61,23 +61,24 @@ class QueueActivity : ComponentActivity() {
         setContent {
             BattleshipMobileTheme {
                 Log.v("QUEUE_ACTIVITY", "QueueActivity setContent")
-                require(authRepo.hasAuthInfo() ) { MUST_BE_AUTHENTICATED } //TODO() ter erros especificos?
+                check(authRepo.hasAuthInfo()) { MUST_BE_AUTHENTICATED } //TODO() ter erros especificos?
 
                 //Second player to join
-                if(gameID != GAME_ID_DEFAULT_VALUE)
-                    viewModel.lobby = Queue(FULL, gameID)
+                val gameID = gameIDExtra
+                if (gameID != null)
+                    viewModel.startGame(gameID)
 
                 val lobby = viewModel.lobby
-                val lobbyId = lobbyID
-                require(lobbyId != LOBBY_ID_DEFAULT_VALUE) { LOBBY_WAS_NOT_CREATED }
+                val lobbyId = lobbyIDExtra
+                require(lobbyId != NO_LOBBY_EXTRA) { LOBBY_WAS_NOT_CREATED }
 
-                if(lobby.state == FULL){
+                if (lobby.state == FULL) {
                     TimedComposable(
                         time = DELAY_TIME,
                         onTimeout = {
-                            val gameID = viewModel.lobby.gameID
-                            require(gameID != null) { GAME_WAS_NOT_CREATED }
-                            LayoutDefinitionActivity.navigate(this)
+                            val currentGameID = viewModel.lobby.gameID
+                            require(currentGameID != null) { GAME_WAS_NOT_CREATED }
+                            LayoutDefinitionActivity.navigate(this, currentGameID)
                             finish()
                         }
                     ) {
@@ -86,19 +87,28 @@ class QueueActivity : ComponentActivity() {
                     }
                 } else {
                     //First player to join
-                    QueueScreenContent(lobby.state)
+                    QueueScreenContent(
+                        lobbyState = lobby.state,
+                        onQueueCancel = {
+                            viewModel.leaveLobby()
+                            HomeActivity.navigate(this)
+                            finish()
+                        }
+                    )
                 }
                 return@BattleshipMobileTheme
             }
         }
 
-        if(gameID == GAME_ID_DEFAULT_VALUE){
+        if (gameIDExtra == null) {
+            // First player to join needs to create the lobby and wait for the second player
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
                     viewModel.enterLobby()
-                    viewModel.pendingMatch.collectLatest {
-                        if(it != null){
-                            viewModel.lobby = Queue(FULL, it.gameID)
+                    viewModel.pendingMatch.collectLatest { lobbyInfo ->
+                        val receivedGameID = lobbyInfo?.gameID
+                        receivedGameID?.let {
+                            viewModel.startGame(it)
                         }
                     }
                 }
@@ -111,7 +121,8 @@ class QueueActivity : ComponentActivity() {
      *
      */
     @Composable
-    private fun QueueScreenContent(lobbyState: QueueState) {
+    private fun QueueScreenContent(lobbyState: QueueState, onQueueCancel: () -> Unit = { }) {
+
         QueueScreen(
             queueState = lobbyState,
             onBackClick = {
@@ -124,22 +135,19 @@ class QueueActivity : ComponentActivity() {
             })
     }
 
-    private fun onQueueCancel(){
-        viewModel.leaveLobby()
-        HomeActivity.navigate(this)
-        finish()
-    }
 
-    val LOBBY_ID_DEFAULT_VALUE = -1
-    private val GAME_ID_DEFAULT_VALUE = -1
+    private val NO_GAME_EXTRA = -1
+    private val NO_LOBBY_EXTRA = -1
 
-    private val lobbyID: ID
-        get() =
-            intent.getIntExtra(LOBBY_ID_EXTRA, LOBBY_ID_DEFAULT_VALUE)
+    private val lobbyIDExtra: ID?
+        get() = intent
+            .getIntExtra(LOBBY_ID_EXTRA, NO_LOBBY_EXTRA)
+            .takeIf { it != NO_LOBBY_EXTRA }
 
-    private val gameID: ID
-        get() =
-            intent.getIntExtra(GAME_ID_EXTRA, GAME_ID_DEFAULT_VALUE)
+    private val gameIDExtra: ID?
+        get() = intent
+            .getIntExtra(GAME_ID_EXTRA, NO_GAME_EXTRA)
+            .takeIf { it != NO_GAME_EXTRA }
 
 }
 

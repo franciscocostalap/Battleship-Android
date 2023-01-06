@@ -1,5 +1,6 @@
 package com.example.battleshipmobile.battleship.service.ranking
 
+import android.util.Log
 import com.example.battleshipmobile.battleship.service.*
 import com.example.battleshipmobile.battleship.service.user.UserInfo
 import com.example.battleshipmobile.utils.*

@@ -23,6 +23,8 @@
         <activity
             android:name=".battleship.ranking.RankingActivity"
             android:exported="false" />
+        <activity android:name=".battleship.play.shotDefinition.ShotsDefinitionActivity"
+            android:exported="false"/>
 
         <activity
             android:name=".battleship.home.HomeActivity"

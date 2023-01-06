@@ -32,8 +32,6 @@ fun ProgressTimer(
         )
     )
 
-    CustomProgressBar(progress = size)
-
     LaunchedEffect(key1 = true){
         while(!isOver) {
             if (remainingTime == 0L) {
@@ -48,4 +46,6 @@ fun ProgressTimer(
             progress = newProgress.coerceAtLeast(0F)
         }
     }
+
+    CustomProgressBar(progress = size)
 }
