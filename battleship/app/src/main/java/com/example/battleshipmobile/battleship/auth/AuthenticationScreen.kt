@@ -1,8 +1,6 @@
 package com.example.battleshipmobile.battleship.auth
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -16,10 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -37,7 +33,6 @@ import com.example.battleshipmobile.ui.dismissKeyboard
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.ui.theme.HEADER_COLOR
 import com.example.battleshipmobile.ui.views.auth.AuthenticationForm
-import com.example.battleshipmobile.ui.views.home.BATTLESHIP_IMAGE_SIZE
 import com.example.battleshipmobile.ui.views.home.BattleShipImage
 
 enum class AuthenticationFormType{

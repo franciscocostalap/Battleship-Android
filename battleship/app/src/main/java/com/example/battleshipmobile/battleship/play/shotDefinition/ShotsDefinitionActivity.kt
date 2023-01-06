@@ -102,11 +102,12 @@ class ShotsDefinitionActivity : ComponentActivity() {
                 )
             }
             BackPressHandler {
-                onBackClicked()
+                onGameLeave()
             }
         }
     }
-    private fun onBackClicked() {
+    private fun onGameLeave() {
+        viewModel.onLeave()
         HomeActivity.navigate(this)
         finish()
     }

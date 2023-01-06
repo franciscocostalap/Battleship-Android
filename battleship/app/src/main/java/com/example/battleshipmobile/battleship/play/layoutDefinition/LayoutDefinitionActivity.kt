@@ -58,7 +58,7 @@ class LayoutDefinitionActivity : ComponentActivity() {
             val availableShips = viewModel.availableShips
             val isSubmittingDisabled = viewModel.isSubmittingDisabled
             val isTimedOut = viewModel.isTimedOut
-            LoadingContent(isLoading = gameRules != null && board != null && availableShips != null){
+            LoadingContent(isLoading = gameRules == null || board == null || availableShips == null){
                 check(gameRules != null && board != null && availableShips != null)
                 val screenState = LayoutDefinitionScreenState(
                     board = board,
@@ -112,6 +112,7 @@ class LayoutDefinitionActivity : ComponentActivity() {
                 viewModel.playingGameState.collectLatest {
                     if (it != null) {
                         Log.v("LAYOUT_DEFINITION", "State changed to ${it.state}")
+                        viewModel.onLeave()
                         ShotsDefinitionActivity.navigate(this@LayoutDefinitionActivity)
                     }
                 }
@@ -119,6 +120,7 @@ class LayoutDefinitionActivity : ComponentActivity() {
         }
     }
     private fun onBackClicked() {
+        viewModel.onLeave()
         HomeActivity.navigate(this)
         finish()
     }

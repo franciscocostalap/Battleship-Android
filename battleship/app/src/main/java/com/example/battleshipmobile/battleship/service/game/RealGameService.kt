@@ -191,7 +191,7 @@ class RealGameService(
             require(state != CANCELLED && state != PLACING_SHIPS) { MUST_BE_PLACING_SHIPS }
 
         val embeddedLink = currentGameStateEntity.ensureEmbeddedBoardLink(relationKey)
-        //TODO board no backend esta embedded link, pq n embedded entity?? ja q queremos as properties logo, excusa-se fazer outra request.
+
 
         val result = buildAndSendRequest<BoardDTO>(
             client,
@@ -283,6 +283,7 @@ class RealGameService(
      */
     override suspend fun cancelPollMyBoard() {
         myBoardProducerScope?.close()
+        myBoardProducerScope = null
     }
 
     /**
@@ -290,6 +291,7 @@ class RealGameService(
      */
     override suspend fun cancelPollingGameState() {
         gameStateProducerScope?.close()
+        gameStateProducerScope = null
     }
 
     /**
@@ -297,6 +299,7 @@ class RealGameService(
      */
     override fun cancelLobbyPolling(){
         lobbyProducerScope?.close()
+        lobbyProducerScope = null
     }
 
     /**
@@ -473,18 +476,4 @@ class RealGameService(
         return Relation(URL(rootUrl + entity.href))
     }
 
-    /**
-     * Ensures that the board embedded entity is available in the shots definition entity
-     */
-    private fun SirenEntity<Unit>.getEmbeddedBoardDTO(): BoardDTO {
-        val entity = entities?.find { subEntity ->
-            subEntity as EmbeddedEntity<*>
-            subEntity.rel.any { it == FLEET_REL }
-        }
-
-        require(entity != null) { BOARD_EMBEDDED_ENTITY_REQUIRED }
-
-        entity as EmbeddedEntity<*>
-        return entity.properties as BoardDTO? ?: throw IllegalStateException(PROPERTIES_REQUIRED)
-    }
 }

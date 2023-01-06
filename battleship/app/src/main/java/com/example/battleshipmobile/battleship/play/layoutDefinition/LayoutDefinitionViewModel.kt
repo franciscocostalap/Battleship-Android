@@ -38,15 +38,17 @@ class LayoutDefinitionViewModel(private val gameService: GameService) : ViewMode
     val playingGameState = _playingGameState.asStateFlow()
 
 
-    fun startLayoutDefinitionPhase() = viewModelScope.launch {
-        gameService
-            .pollGameStateInfo()
-            .collectLatest {
-                Log.v("GAME_STATE_INFO", it.toString())
-                if(it.state == PLAYING) {
-                    _playingGameState.value = it
+    fun startLayoutDefinitionPhase() {
+        viewModelScope.launch {
+            gameService
+                .pollGameStateInfo()
+                .collectLatest {
+                    Log.v("GAME_STATE_INFO", it.toString())
+                    if(it.state == PLAYING) {
+                        _playingGameState.value = it
+                    }
                 }
-            }
+        }
     }
 
     fun placeShip(initialSquare: Square, shipData: ShipData) {
@@ -112,6 +114,12 @@ class LayoutDefinitionViewModel(private val gameService: GameService) : ViewMode
 
     fun onTimeout() {
         isTimedOut = true
+        onLeave()
+    }
+    fun onLeave(){
+        viewModelScope.launch {
+            gameService.cancelPollingGameState()
+        }
     }
 
     private fun clearBoard() {

@@ -75,7 +75,7 @@ class RankingService(
 
             val values = extractValues(embeddedUri.toString(), userInfoURI.toString())["userID"]?.toInt()
             val id = values ?: throw IllegalStateException("No userID in embedded entity")
-            id to entity.properties as OutputUserDTO
+            id to entity.properties as UserInfo
         }
 
         val ranking = statistics.ranking.map { rankingEntry ->

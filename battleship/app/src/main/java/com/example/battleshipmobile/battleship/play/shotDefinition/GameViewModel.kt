@@ -146,7 +146,10 @@ class GameViewModel(
 
     fun onTimeout() {
         isTimedOut = true
+        onLeave()
+    }
 
+    fun onLeave(){
         viewModelScope.launch {
             if (turn != MY) gameService.cancelPollMyBoard()
         }
