@@ -4,22 +4,21 @@ import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.battleshipmobile.battleship.play.lobby.QueueState.*
 import com.example.battleshipmobile.battleship.service.ID
 import com.example.battleshipmobile.battleship.service.dto.LobbyInformationDTO
 import com.example.battleshipmobile.battleship.service.game.GameService
+import com.example.battleshipmobile.battleship.service.lobby.LobbyInformation
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import okhttp3.internal.wait
 
 class QueueViewModel(private val gameService: GameService): ViewModel() {
 
-    var lobbyInformationResult by mutableStateOf<Result<LobbyInformationDTO>?>(null)
+    var lobbyInformationResult by mutableStateOf<Result<LobbyInformation>?>(null)
         private set
     var lobby by mutableStateOf<Queue?>(null)
     private var lobbyMonitor : Job? = null
 
-    private val _pendingMatch = MutableStateFlow<LobbyInformationDTO?>(null)
+    private val _pendingMatch = MutableStateFlow<LobbyInformation?>(null)
 
     val pendingMatch = _pendingMatch.asStateFlow()
 

@@ -86,6 +86,7 @@ class LayoutDefinitionActivity : ComponentActivity() {
                     },
                     onSubmit = {
                         viewModel.submitLayout()
+                        showToast("Fleet submitted.")
                     },
                     onTimeout = {
                         viewModel.onTimeout()
@@ -108,7 +109,7 @@ class LayoutDefinitionActivity : ComponentActivity() {
                 LayoutDefinitionScreen(
                     state = screenState,
                     handlers = screenHandlers,
-                    timeToDefineLayout = gameRules.layoutDefinitionTimeout
+                    timeToDefineLayout = gameRules.layoutDefinitionTime
                 )
             }else{
                 LoadingScreen()

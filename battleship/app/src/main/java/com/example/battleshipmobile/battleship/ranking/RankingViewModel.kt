@@ -16,10 +16,6 @@ class RankingViewModel(private val userService: RankingServiceI) : ViewModel() {
 
     var statistics by mutableStateOf<StatisticsEmbedded?>(null)
 
-    fun clearStatisticsResult(){
-        statisticsResult = null
-    }
-
 
     fun getStatistics() {
         viewModelScope.launch {

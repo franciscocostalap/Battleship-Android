@@ -68,7 +68,7 @@ class RealGameService(
     /**
      * flow producer scope to allow cancelling
      */
-     private var lobbyProducerScope: ProducerScope<LobbyInformationDTO>? = null
+     private var lobbyProducerScope: ProducerScope<LobbyInformation>? = null
 
     /**
      * Queues up a user to play returning the lobby information.
