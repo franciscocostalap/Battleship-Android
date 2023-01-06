@@ -3,10 +3,12 @@ package com.example.battleshipmobile.ui.views.general
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
@@ -16,7 +18,8 @@ import androidx.compose.ui.unit.sp
 fun SlidingText(
     text: String,
     fontSize: TextUnit = 20.sp,
-    isVisible: Boolean = false
+    isVisible: Boolean = false,
+    fontColor : Color = Color.White,
 ) {
     val scroll = rememberScrollState(0)
     val shouldAnimate = rememberSaveable {
@@ -46,7 +49,8 @@ fun SlidingText(
         fontSize = fontSize,
         overflow = TextOverflow.Ellipsis,
         maxLines = 1,
-        modifier = Modifier.horizontalScroll(scroll, false)
+        modifier = Modifier.horizontalScroll(scroll, false),
+        color = fontColor
     )
 
 

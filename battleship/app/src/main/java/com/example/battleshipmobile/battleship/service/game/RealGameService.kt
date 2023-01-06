@@ -1,7 +1,5 @@
 package com.example.battleshipmobile.battleship.service.game
 
-import android.app.GameState
-import android.util.Log
 import com.example.battleshipmobile.battleship.http.buildRequest
 import com.example.battleshipmobile.battleship.http.handle
 import com.example.battleshipmobile.battleship.http.send
@@ -212,17 +210,12 @@ class RealGameService(
      */
     override suspend fun makeShots(shotsDefinitionDTO: ShotsDefinitionDTO): Board{
         val body = jsonFormatter.toJson(shotsDefinitionDTO)
-
-        Log.v("MAKE_SHOTS", "Body: $body")
-
         val result = buildAndSendRequest<Unit>(
             client,
             jsonFormatter,
             relation = ensureShotDefinitionAction(embedded = true),
             body = body
         )
-
-        Log.v("makeShots", "result: $result")
 
         return result
             .getEmbeddedBoardDTO()
@@ -259,6 +252,7 @@ class RealGameService(
      */
     override suspend fun pollLobbyInformation(): Flow<LobbyInformation> {
         return callbackFlow {
+            lobbyProducerScope = this
             this.use{
                 //Fast path
                 val startingLobbyState = lobbyStateEntity?.properties

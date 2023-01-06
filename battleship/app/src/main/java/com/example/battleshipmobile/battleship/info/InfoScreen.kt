@@ -37,8 +37,8 @@ fun InfoScreen(
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colors.background)
-                .testTag(TestTags.Info.Screen)
+                .testTag(TestTags.Info.Screen),
+            color = MaterialTheme.colors.background
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -117,7 +117,6 @@ fun SocialCard(
     modifier: Modifier = Modifier,
     height : Dp = 100.dp,
     contentColor : Color = MaterialTheme.colors.primaryVariant,
-
     onClick: () -> Unit = {},
 
 ) {

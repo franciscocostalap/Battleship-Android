@@ -1,10 +1,13 @@
 package com.example.battleshipmobile.battleship.play
 
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -32,11 +35,17 @@ fun QueueScreen(
     onBackClick:  () -> Unit = {},
     onCancelClick: () -> Unit= {}
 ) {
+    var isBackEnabled by rememberSaveable { mutableStateOf(true) }
+
+    val onCancelButtonClick = {
+        isBackEnabled = false
+        onCancelClick()
+    }
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.background)
             .testTag(TestTags.Lobby.Screen),
+        color = MaterialTheme.colors.background
     ) {
         val numPlayers = if (queueState == SEARCHING_OPPONENT) 1 else 2
 
@@ -64,7 +73,7 @@ fun QueueScreen(
                 )
                 Spacer(modifier = Modifier.height(SPACER_DIM))
                 CustomTextButton(
-                    onClick = onCancelClick,
+                    onClick = onCancelButtonClick,
                     buttonWidth = INFO_BUTTON_WIDTH,
                     buttonHeight = BUTTON_HEIGHT,
                     text = "Cancel",

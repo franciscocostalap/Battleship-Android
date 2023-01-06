@@ -64,8 +64,8 @@ fun RankingScreen(
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colors.background)
-                .testTag(TestTags.Statistics.Screen)
+                .testTag(TestTags.Statistics.Screen),
+            color = MaterialTheme.colors.background
         ) {
             StatelessRankingScreen(
                 onBackClick = onBackClick,
@@ -77,6 +77,44 @@ fun RankingScreen(
 
             )
 
+        }
+    }
+}
+
+
+@Composable
+private fun StatelessRankingScreen(
+    onBackClick : () -> Unit,
+    gameStatistics : StatisticsEmbedded,
+    userSearchValue : String,
+    userSearchOnChange : (String) -> Unit,
+    onTextSubmit : () -> Unit = {},
+    tableLazyState : LazyListState,
+    focusManager: FocusManager = LocalFocusManager.current,
+    screenConfiguration : Configuration = LocalConfiguration.current,
+) {
+    when (screenConfiguration.orientation) {
+        Configuration.ORIENTATION_LANDSCAPE -> {
+            LandscapeRankingScreen(
+                onBackClick = onBackClick,
+                gameStatistics = gameStatistics,
+                userSearchValue = userSearchValue,
+                userSearchOnChange = userSearchOnChange,
+                onTextSubmit = onTextSubmit,
+                tableLazyState = tableLazyState,
+                focusManager = focusManager,
+            )
+        }
+        else -> {
+            PortraitRankingScreen(
+                onBackClick = onBackClick,
+                gameStatistics = gameStatistics,
+                userSearchValue = userSearchValue,
+                userSearchOnChange = userSearchOnChange,
+                onTextSubmit = onTextSubmit,
+                tableLazyState = tableLazyState,
+                focusManager = focusManager,
+            )
         }
     }
 }
@@ -222,47 +260,6 @@ private fun PortraitRankingScreen(
     }
 }
 
-@Composable
-private fun StatelessRankingScreen(
-    onBackClick : () -> Unit,
-    gameStatistics : StatisticsEmbedded,
-    userSearchValue : String,
-    userSearchOnChange : (String) -> Unit,
-    onTextSubmit : () -> Unit = {},
-    tableLazyState : LazyListState,
-    focusManager: FocusManager = LocalFocusManager.current,
-    screenConfiguration : Configuration = LocalConfiguration.current,
-) {
-    when (screenConfiguration.orientation) {
-        Configuration.ORIENTATION_LANDSCAPE -> {
-            LandscapeRankingScreen(
-                onBackClick = onBackClick,
-                gameStatistics = gameStatistics,
-                userSearchValue = userSearchValue,
-                userSearchOnChange = userSearchOnChange,
-                onTextSubmit = onTextSubmit,
-                tableLazyState = tableLazyState,
-                focusManager = focusManager,
-            )
-        }
-        else -> {
-            PortraitRankingScreen(
-                onBackClick = onBackClick,
-                gameStatistics = gameStatistics,
-                userSearchValue = userSearchValue,
-                userSearchOnChange = userSearchOnChange,
-                onTextSubmit = onTextSubmit,
-                tableLazyState = tableLazyState,
-                focusManager = focusManager,
-            )
-        }
-    }
-
-
-
-
-
-}
 
 
 @Composable
@@ -305,7 +302,11 @@ private fun SearchComponent(
                 .weight(0.1f)
                 .align(Alignment.CenterVertically)
                 .fillMaxHeight(0.6f)
-                .testTag(TestTags.Statistics.SearchButton)
+                .testTag(TestTags.Statistics.SearchButton),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = MaterialTheme.colors.primary,
+                contentColor = MaterialTheme.colors.onPrimary
+            )
         ) {
             Text(text = stringResource(R.string.search_button),maxLines = 1)
         }

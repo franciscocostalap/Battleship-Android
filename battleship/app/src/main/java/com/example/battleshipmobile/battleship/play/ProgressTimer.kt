@@ -1,11 +1,18 @@
 package com.example.battleshipmobile.battleship.play
 
+import android.util.Log
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.*
-import com.example.battleshipmobile.ui.views.general.CustomProgressBar
+import androidx.compose.runtime.saveable.rememberSaveable
+import com.example.battleshipmobile.ui.views.game.CustomProgressBar
 import kotlinx.coroutines.delay
+
+enum class Orientation {
+    HORIZONTAL,
+    VERTICAL
+}
 
 /**
  *  Displays a progress timer bar that counts down from timeout to 0
@@ -17,19 +24,19 @@ import kotlinx.coroutines.delay
 fun ProgressTimer(
     timeout: Long,
     onTimeout: () -> Unit,
-) {
-    var progress by remember { mutableStateOf(1.0F) }
-    val timeoutSeconds = timeout / 1000
-    var remainingTime by remember { mutableStateOf(timeoutSeconds) }
-    var isOver by remember { mutableStateOf(false) }
+    orientation : Orientation = Orientation.HORIZONTAL,
 
-    val size by animateFloatAsState(
-        targetValue = progress,
-        tween(
-            durationMillis = 1000,
-            delayMillis = 200,
-            easing = LinearOutSlowInEasing
-        )
+) {
+    var progress by rememberSaveable { mutableStateOf(1.0F) }
+    val timeoutSeconds = timeout / 1000
+
+    var remainingTime by rememberSaveable { mutableStateOf(timeoutSeconds) }
+    var isOver by rememberSaveable { mutableStateOf(false) }
+
+
+    StatelessProgressBar(
+        progress = progress,
+        orientation = orientation
     )
 
     LaunchedEffect(key1 = true){
@@ -46,6 +53,20 @@ fun ProgressTimer(
             progress = newProgress.coerceAtLeast(0F)
         }
     }
+}
 
-    CustomProgressBar(progress = size)
+@Composable
+fun StatelessProgressBar(
+    progress : Float,
+    orientation: Orientation = Orientation.HORIZONTAL
+){
+    val size by animateFloatAsState(
+        targetValue = progress,
+        tween(
+            durationMillis = 1000,
+            delayMillis = 200,
+            easing = LinearOutSlowInEasing
+        )
+    )
+    CustomProgressBar(progress = size, orientation = orientation)
 }

@@ -15,11 +15,13 @@ private val DarkColorPalette = darkColors(
 )
 
 private val DarkBlueColorPalette = darkColors(
-        primary = blueLight,
+        primary = HEADER_COLOR,
+        onPrimary = gray150,
         primaryVariant = gray400,
-        background = blueMedium,
-        surface = blueNormal,
-        secondary = blueMedium300
+        background = blueNormal,
+        secondary = blueMedium300,
+        secondaryVariant = blueMedium200,
+        onBackground = HEADER_COLOR
 )
 
 private val LightColorPalette = lightColors(

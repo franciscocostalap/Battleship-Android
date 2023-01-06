@@ -13,14 +13,16 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.battleshipmobile.DependenciesContainer
+import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.home.HomeActivity
 import com.example.battleshipmobile.battleship.play.QueueScreen
 import com.example.battleshipmobile.battleship.play.layoutDefinition.LayoutDefinitionActivity
 import com.example.battleshipmobile.battleship.play.lobby.QueueState.*
-import com.example.battleshipmobile.battleship.service.ID
 import com.example.battleshipmobile.ui.showToast
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
+import com.example.battleshipmobile.ui.views.LoadingScreen
 import com.example.battleshipmobile.ui.views.TimedComposable
+import com.example.battleshipmobile.ui.views.general.ErrorAlert
 import com.example.battleshipmobile.utils.viewModelInit
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -36,12 +38,11 @@ class QueueActivity : ComponentActivity() {
         private const val MUST_BE_AUTHENTICATED = "You must be authenticated"
         private const val CANT_PERFORM_BACK_ACTION = "Game is starting, please wait"
         const val DELAY_TIME = 3000L
+        private const val TAG = "QUEUE_ACTIVITY"
 
-        fun navigate(origin: Activity, lobbyID: ID, gameID: ID?) {
+        fun navigate(origin: Activity) {
             with(origin) {
                 val intent = Intent(this, QueueActivity::class.java)
-                intent.putExtra(LOBBY_ID_EXTRA, lobbyID)
-                intent.putExtra(GAME_ID_EXTRA, gameID)
                 startActivity(intent)
             }
         }
@@ -56,60 +57,96 @@ class QueueActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.v("QUEUE_ACTIVITY", "QueueActivity onCreate")
+        Log.v(TAG, "QueueActivity onCreate")
 
         setContent {
             BattleshipMobileTheme {
-                Log.v("QUEUE_ACTIVITY", "QueueActivity setContent")
-                check(authRepo.hasAuthInfo()) { MUST_BE_AUTHENTICATED } //TODO() ter erros especificos?
+                Log.v(TAG, "QueueActivity setContent")
+                require(authRepo.hasAuthInfo()) { MUST_BE_AUTHENTICATED }
 
-                //Second player to join
-                val gameID = gameIDExtra
-                if (gameID != null)
-                    viewModel.startGame(gameID)
-
+                val lobbyInfoResult = viewModel.lobbyInformationResult
                 val lobby = viewModel.lobby
-                val lobbyId = lobbyIDExtra
-                require(lobbyId != NO_LOBBY_EXTRA) { LOBBY_WAS_NOT_CREATED }
 
-                if (lobby.state == FULL) {
-                    TimedComposable(
-                        time = DELAY_TIME,
-                        onTimeout = {
-                            val currentGameID = viewModel.lobby.gameID
-                            require(currentGameID != null) { GAME_WAS_NOT_CREATED }
-                            LayoutDefinitionActivity.navigate(this, currentGameID)
-                            finish()
+                // Recomposition triggered by lobby information mutable state
+                if (lobbyInfoResult != null && lobby == null) {
+                    Log.v(TAG, "Getting information from lobby result")
+                    lobbyInfoResult.onSuccess { lobbyInfo ->
+                        if(lobbyInfo.gameID == null){
+                            viewModel.lobby = Queue(
+                                state = SEARCHING_OPPONENT,
+                                lobbyID = lobbyInfo.lobbyID,
+                            )
                         }
-                    ) {
-                        QueueScreenContent(lobby.state)
-                        BackHandler { showToast(CANT_PERFORM_BACK_ACTION) }
+                    }.onFailure {
+                        Log.e(TAG, it.stackTraceToString())
+
+                        ErrorAlert(
+                            title = R.string.general_error_title,
+                            message = R.string.general_error,
+                            buttonText = R.string.ok,
+                            onDismiss = {
+                                HomeActivity.navigate(this)
+                                finish()
+                            }
+                        )
                     }
-                } else {
-                    //First player to join
-                    QueueScreenContent(
-                        lobbyState = lobby.state,
-                        onQueueCancel = {
-                            viewModel.leaveLobby()
-                            HomeActivity.navigate(this)
-                            finish()
-                        }
-                    )
                 }
-                return@BattleshipMobileTheme
+
+                if (lobby != null) {
+                    Log.d(TAG, "Lobby: $lobby")
+
+                    if (lobby.state == FULL) {
+
+                        TimedComposable(
+                            timeToWait = DELAY_TIME,
+                            onTimeout = {
+                                val gameID = lobby.gameID
+                                require(gameID != null) { GAME_WAS_NOT_CREATED }
+                                LayoutDefinitionActivity.navigate(this, gameID)
+                                finish()
+                            }
+                        ) {
+                            QueueScreenContent(
+                                lobby.state,
+                                onQueueCancel = {
+                                    viewModel.leaveLobby()
+                                    HomeActivity.navigate(this)
+                                    finish()
+                                }
+                            )
+
+                            BackHandler { showToast(CANT_PERFORM_BACK_ACTION) }
+                        }
+
+                    } else {
+                        //First player to join
+                        QueueScreenContent(
+                            lobby.state,
+                            onQueueCancel = {
+                                viewModel.leaveLobby()
+                                HomeActivity.navigate(this)
+                                finish()
+                            }
+                        )
+                    }
+                }else{
+                    LoadingScreen()
+                }
             }
         }
 
-        if (gameIDExtra == null) {
-            // First player to join needs to create the lobby and wait for the second player
-            lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.enterLobby()
-                    viewModel.pendingMatch.collectLatest { lobbyInfo ->
-                        val receivedGameID = lobbyInfo?.gameID
-                        receivedGameID?.let {
-                            viewModel.startGame(it)
-                        }
+
+        lifecycleScope.launch {
+            Log.v(TAG, "Creating lobby")
+            viewModel.enterLobby()
+
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.waitForMatch()
+                Log.v(TAG, "starting to collect")
+                viewModel.pendingMatch.collectLatest {
+                    if (it != null) {
+                        Log.v(TAG, "Match found")
+                        viewModel.lobby = Queue(FULL, gameID = it.gameID, lobbyID = it.lobbyID)
                     }
                 }
             }
@@ -126,28 +163,15 @@ class QueueActivity : ComponentActivity() {
         QueueScreen(
             queueState = lobbyState,
             onBackClick = {
-                Log.v("QUEUE_ACTIVITY", "Back button was pressed")
+                Log.v(TAG, "Back button was pressed")
                 onQueueCancel()
             },
             onCancelClick = {
-                Log.v("QUEUE_ACTIVITY", "Cancel button was pressed")
+                Log.v(TAG, "Cancel button was pressed")
                 onQueueCancel()
             })
     }
 
-
-    private val NO_GAME_EXTRA = -1
-    private val NO_LOBBY_EXTRA = -1
-
-    private val lobbyIDExtra: ID?
-        get() = intent
-            .getIntExtra(LOBBY_ID_EXTRA, NO_LOBBY_EXTRA)
-            .takeIf { it != NO_LOBBY_EXTRA }
-
-    private val gameIDExtra: ID?
-        get() = intent
-            .getIntExtra(GAME_ID_EXTRA, NO_GAME_EXTRA)
-            .takeIf { it != NO_GAME_EXTRA }
 
 }
 

@@ -31,8 +31,8 @@ fun LoadingScreen() {
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colors.background)
-                .testTag(TestTags.LoadingScreen.Screen)
+                .testTag(TestTags.LoadingScreen.Screen),
+            color = MaterialTheme.colors.background
         ) {
             Box(
                 modifier = Modifier

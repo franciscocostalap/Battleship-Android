@@ -33,42 +33,23 @@ class HomeActivity : ComponentActivity() {
 
 
     private val homeViewModel by viewModels<HomeViewModel> {
-        viewModelInit { HomeViewModel(dependencies.gameService, dependencies.authInfoService) }
+        viewModelInit { HomeViewModel(dependencies.authInfoService) }
     }
     private val dependencies by lazy { application as DependenciesContainer }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.v("HOME_ACTIVITY", "HomeActivity onCreate")
+        Log.v(TAG, "HomeActivity onCreate")
         setContent {
             BattleshipMobileTheme {
             //needed to recompose 
             val userId = homeViewModel.uid
 
-                val lobbyInfo = homeViewModel.lobbyInformationResult
-
-                // Recomposition triggered by lobby information mutable state
-                if(lobbyInfo != null) {
-                    Log.v(TAG, "Play button was pressed")
-                    lobbyInfo.onSuccess {
-                        QueueActivity.navigate(this, it.lobbyID, it.gameID)
-                        finish()
-                    }.onFailure {
-                        Log.e(TAG, it.stackTraceToString())
-
-                        ErrorAlert(
-                            title = R.string.general_error_title,
-                            message = R.string.general_error,
-                            buttonText = R.string.ok,
-                            onDismiss = { homeViewModel.setLobbyInfoToNull() }
-                        )
-                    }
-                }
                 HomeScreen(
                     isLoggedIn = homeViewModel.isLoggedIn(),
                     onLoginRequested = { AuthenticationActivity.navigate(this) },
                     onLogoutRequested = { homeViewModel.logout() },
-                    onPlayRequested = { homeViewModel.enqueue() },
+                    onPlayRequested = { QueueActivity.navigate(this) },
                     onRankingRequested = { RankingActivity.navigate(this) },
                     onCreditsRequested = { InfoActivity.navigate(this) }
                 )

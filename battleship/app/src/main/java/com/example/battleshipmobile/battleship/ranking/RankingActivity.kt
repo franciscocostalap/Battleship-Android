@@ -19,7 +19,7 @@ import com.example.battleshipmobile.utils.viewModelInit
 class RankingActivity: ComponentActivity() {
 
     companion object{
-        private const val RANKING_ACTIVITY = "RankingActivity"
+        private const val TAG = "RankingActivity"
         fun navigate(origin: Activity){
             with(origin){
                 val intent = Intent(this, RankingActivity::class.java)
@@ -37,7 +37,7 @@ class RankingActivity: ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.v(RANKING_ACTIVITY, "RankingActivity onCreate")
+        Log.v(TAG, "RankingActivity onCreate")
 
         setContent {
 
@@ -45,11 +45,11 @@ class RankingActivity: ComponentActivity() {
 
             if(statisticsResult != null){
                 statisticsResult.onSuccess {
-                    Log.v(RANKING_ACTIVITY, "RankingActivity onSuccess")
+                    Log.v(TAG, "RankingActivity onSuccess")
                     rankingViewModel.statistics = it
 
                 }.onFailure {
-                    Log.e(RANKING_ACTIVITY, it.stackTraceToString())
+                    Log.e(TAG, it.stackTraceToString())
                     ErrorAlert(
                         title = R.string.general_error_title,
                         message = R.string.general_error,
@@ -61,7 +61,7 @@ class RankingActivity: ComponentActivity() {
                     )
                 }
             }else{
-                Log.v(RANKING_ACTIVITY, "Fetching statistics")
+                Log.v(TAG, "Fetching statistics")
                 rankingViewModel.getStatistics()
             }
             val statistics = rankingViewModel.statistics
@@ -77,8 +77,6 @@ class RankingActivity: ComponentActivity() {
             }else{
                 LoadingScreen()
             }
-
-
 
         }
     }

@@ -30,11 +30,11 @@ class LayoutDefinitionViewModel(private val gameService: GameService) : ViewMode
     var selected: ShipData? by mutableStateOf(null)
     var isTimedOut: Boolean by mutableStateOf(false)
     private set
-    var gameRules: GameRulesDTO? by mutableStateOf(null)
+    var gameRules: GameRules? by mutableStateOf(null)
     var board: Board? by mutableStateOf(null)
     var isSubmittingDisabled : Boolean by mutableStateOf(false)
 
-    private val _playingGameState = MutableStateFlow<GameStateInfoDTO?>(null)
+    private val _playingGameState = MutableStateFlow<GameStateInfo?>(null)
     val playingGameState = _playingGameState.asStateFlow()
 
 
@@ -122,7 +122,7 @@ class LayoutDefinitionViewModel(private val gameService: GameService) : ViewMode
 
     private fun resetAvailableShips() {
         val currentGameRules = gameRules ?: throw IllegalStateException("Game rules are null")
-        availableShips = (currentGameRules.shipRules.toFleetComposition()).toList()
+        availableShips = currentGameRules.fleetComposition.toList()
     }
 
 }

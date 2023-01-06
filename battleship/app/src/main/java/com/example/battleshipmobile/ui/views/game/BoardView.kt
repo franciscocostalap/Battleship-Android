@@ -80,7 +80,7 @@ fun SquareView(
 @Composable
 fun EmptyBoardPreview() {
     val board = Board(
-        5,
+        10,
         emptyList(),
         emptyList(),
         emptyList()
