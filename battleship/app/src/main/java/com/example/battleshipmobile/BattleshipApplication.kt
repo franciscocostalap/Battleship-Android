@@ -64,7 +64,7 @@ class BattleshipApplication : Application(), DependenciesContainer {
             )
             .registerTypeHierarchyAdapter(
                 SubEntity::class.java,
-                SubEntityDeserializer<UserInfo>(UserInfo::class.java)
+                SubEntityDeserializer<OutputUserDTO>(OutputUserDTO::class.java)
             )
             .registerTypeHierarchyAdapter(
                 SubEntity::class.java,

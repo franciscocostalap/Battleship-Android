@@ -88,6 +88,7 @@ class GameViewModel(
     fun handleShot(square: Square) {
         if(turn != MY) return
 
+
         val shotRules = checkNotNull(shotsDefinitionRules){
             "Shots definition rules should be initialized by now."
         }
@@ -95,12 +96,16 @@ class GameViewModel(
         val opponentBoard = checkNotNull(boards?.opponentBoard){
             "Opponent board should be initialized by now."
         }
+        if(opponentBoard.shots.contains(square)) return
+        if(opponentBoard.hits.contains(square)) return
+
         val shotsObservation = opponentBoard.aimedShots
         val newAimedShots = when{
             shotsObservation.contains(square) -> shotsObservation - square
             shotsObservation.size < shotRules.shotsPerTurn -> shotsObservation + square
             else -> shotsObservation
         }
+
 
         val newOpponentBoard = opponentBoard.copy(aimedShots = newAimedShots)
         boards = boards?.copy(opponentBoard = newOpponentBoard)
@@ -112,6 +117,7 @@ class GameViewModel(
         viewModelScope.launch {
             val newOpponentBoard = gameService.makeShots(ShotsDefinitionDTO(shots))
             boards = boards?.copy(opponentBoard = newOpponentBoard)
+            timerResetToggle = !timerResetToggle
             changeTurn()
         }
     }
@@ -129,6 +135,7 @@ class GameViewModel(
             myBoardFlow.collectLatest { myBoardState ->
                 if(myBoardState != boards?.myBoard){
                     boards = boards?.copy(myBoard = myBoardState)
+                    timerResetToggle = !timerResetToggle
                     changeTurn()
                     gameService.cancelPollMyBoard()
                 }
@@ -138,6 +145,10 @@ class GameViewModel(
 
     fun onTimeout() {
         isTimedOut = true
+
+        viewModelScope.launch {
+            if (turn != MY) gameService.cancelPollMyBoard()
+        }
     }
 
 }

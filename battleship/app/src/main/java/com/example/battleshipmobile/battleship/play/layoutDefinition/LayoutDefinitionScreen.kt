@@ -61,15 +61,18 @@ fun LayoutDefinitionScreen(
             )
     }
 
-    TimerLogic(
-        timeToDefineLayout,
-        onProgressChange = {
-            timerProgress = it
-        },
-        onTimeout = {
-            handlers.onTimeout()
-        }
-    )
+    key(null) {
+        TimerLogic(
+            timeToDefineLayout,
+            onProgressChange = {
+                timerProgress = it
+            },
+            onTimeout = {
+                handlers.onTimeout()
+            }
+        )
+    }
+
 }
 
 

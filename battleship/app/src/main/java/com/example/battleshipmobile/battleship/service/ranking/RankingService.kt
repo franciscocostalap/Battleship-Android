@@ -1,7 +1,8 @@
 package com.example.battleshipmobile.battleship.service.ranking
 
-import android.util.Log
+
 import com.example.battleshipmobile.battleship.service.*
+import com.example.battleshipmobile.battleship.service.dto.OutputUserDTO
 import com.example.battleshipmobile.battleship.service.user.UserInfo
 import com.example.battleshipmobile.utils.*
 import com.google.gson.Gson
@@ -74,7 +75,7 @@ class RankingService(
 
             val values = extractValues(embeddedUri.toString(), userInfoURI.toString())["userID"]?.toInt()
             val id = values ?: throw IllegalStateException("No userID in embedded entity")
-            id to entity.properties as UserInfo
+            id to entity.properties as OutputUserDTO
         }
 
         val ranking = statistics.ranking.map { rankingEntry ->

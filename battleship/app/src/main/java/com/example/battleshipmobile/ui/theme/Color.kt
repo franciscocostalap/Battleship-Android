@@ -29,6 +29,10 @@ val blueNormal = Color(0xFF6E7DAB)
 val blueLight = Color(0xFF5762D5)
 val whitelight = Color(0xFFD1E3DD)
 
+val yellow100 = Color(0xFFFFF9C4)
+val yellow200 = Color(0xFFFFF59D)
+val yellow300 = Color(0xFFFFF176)
+val yellow400 = Color(0xFFFFEE58)
 
 val HEADER_COLOR = Color(0xFF17374C)
 val HEADER_COLOR_LIGHT = Color(0xFF0D47A1)

@@ -63,7 +63,7 @@ class QueueViewModel(private val gameService: GameService): ViewModel() {
     fun leaveLobby(){
         viewModelScope.launch {
             try{
-                gameService.cancelPolling()
+                gameService.cancelLobbyPolling()
                 Result.success(gameService.cancelQueue())
             }catch (e: Exception){
                 Result.failure<LobbyInformationDTO>(e)

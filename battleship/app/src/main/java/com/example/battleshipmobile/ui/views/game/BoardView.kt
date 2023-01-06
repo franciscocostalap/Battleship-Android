@@ -13,6 +13,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.battleshipmobile.battleship.service.model.*
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
+import com.example.battleshipmobile.ui.theme.yellow200
+import com.example.battleshipmobile.ui.theme.yellow400
 
 
 const val SQUARE_BASE_SIDE = 170
@@ -60,7 +62,7 @@ fun SquareView(
         SquareType.ShipPart -> INDIGO_7
         SquareType.Water -> GRAY_4
         SquareType.Hit -> Color.Red
-        SquareType.AimedShot -> Color.Yellow
+        SquareType.AimedShot -> yellow400
     }
 
     val side = squareSide(boardSide).dp

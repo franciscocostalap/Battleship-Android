@@ -11,8 +11,6 @@ suspend fun <T> ProducerScope<T>.use(block: suspend ProducerScope<T>.() -> Unit)
     }catch (e: Exception) {
         close(e)
     } finally {
-        check(!close()){
-            "Channel wasn't properly closed"
-        }
+        close()
     }
 }

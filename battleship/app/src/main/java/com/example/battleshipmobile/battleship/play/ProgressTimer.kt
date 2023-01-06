@@ -21,17 +21,12 @@ fun TimerLogic(
     timeToDefineLayout: Long,
     onProgressChange: (progress: Float) -> Unit,
     onTimeout: () -> Unit,
-    resetToggle: Boolean = false
 ){
     val timeoutSeconds = timeToDefineLayout / 1000
 
     var remainingTime by rememberSaveable { mutableStateOf(timeoutSeconds) }
     var isOver by rememberSaveable { mutableStateOf(false) }
 
-    if(resetToggle){
-        remainingTime = timeoutSeconds
-        isOver = false
-    }
 
     LaunchedEffect(key1 = true){
         while(!isOver) {

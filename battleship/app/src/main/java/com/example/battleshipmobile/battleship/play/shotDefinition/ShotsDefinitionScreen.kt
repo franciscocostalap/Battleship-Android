@@ -1,27 +1,31 @@
 package com.example.battleshipmobile.battleship.play.shotDefinition
 
-import com.example.battleshipmobile.R
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.play.Orientation
-import com.example.battleshipmobile.battleship.play.ProgressTimer
+import com.example.battleshipmobile.battleship.play.StatelessProgressBar
+import com.example.battleshipmobile.battleship.play.TimerLogic
 import com.example.battleshipmobile.battleship.service.model.Board
 import com.example.battleshipmobile.battleship.service.model.Square
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.ui.views.game.BoardView
+import com.example.battleshipmobile.ui.views.general.SlidingText
 
 data class GameBoards(
     val myBoard: Board,
@@ -35,9 +39,9 @@ enum class GameTurn {
 
 data class ShotsDefinitionHandlers(
     val onOpponentBoardSquareClicked: (Square) -> Unit = {},
-    val onOwnBoardSquareClicked : (Square) -> Unit = {},
+    val onOwnBoardSquareClicked : () -> Unit = {},
     val onSubmitShotsClick: () -> Unit = {},
-    val onTimeout: () -> Unit = {}
+    val onTimeout: () -> Unit = {},
 )
 
 data class ShotsDefinitionScreenState(
@@ -74,6 +78,7 @@ private fun StatelessShotsDefinitionScreen(
     timeToDefineShot: Long,
     screenConfiguration: Configuration = LocalConfiguration.current
 ){
+    var timerProgress by rememberSaveable { mutableStateOf(1.0F) }
 
     Scaffold(
         modifier = Modifier
@@ -87,19 +92,28 @@ private fun StatelessShotsDefinitionScreen(
                 LandScapeShotsDefinitionScreen(
                     state = state,
                     handlers = handlers,
-                    timeToDefineShot = timeToDefineShot,
-                    padding = padding
+                    padding = padding,
+                    timerProgress = timerProgress
                 )
             }
             else -> {
                 PortraitShotsDefinitionScreen(
                     state = state,
                     handlers = handlers,
-                    timeToDefineShot = timeToDefineShot,
-                    padding = padding
+                    padding = padding,
+                    timerProgress = timerProgress
                 )
             }
         }
+    }
+    key(state.timerResetToggle){
+        TimerLogic(
+            timeToDefineLayout = timeToDefineShot,
+            onProgressChange = {
+                timerProgress = it
+            },
+            onTimeout = { handlers.onTimeout() },
+        )
     }
 }
 
@@ -108,7 +122,7 @@ private fun LandScapeShotsDefinitionScreen(
     state: ShotsDefinitionScreenState,
     handlers: ShotsDefinitionHandlers = ShotsDefinitionHandlers(),
     padding: PaddingValues,
-    timeToDefineShot: Long
+    timerProgress : Float
 ) {
     LazyRow(
         modifier = Modifier
@@ -128,7 +142,7 @@ private fun LandScapeShotsDefinitionScreen(
                         modifier = Modifier
                             .testTag(TestTags.LayoutDefinition.Board)
                             .padding(16.dp),
-                        onSquareClicked = {}
+                        onSquareClicked = {handlers.onOwnBoardSquareClicked()}
                     )
                 }
             }
@@ -143,14 +157,31 @@ private fun LandScapeShotsDefinitionScreen(
                         .fillMaxWidth()
                 ) {
                     Button(
-                        onClick = { handlers.onSubmitShotsClick(state.currentShots) },
+                        onClick = { handlers.onSubmitShotsClick() },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = MaterialTheme.colors.primary,
                             contentColor = MaterialTheme.colors.onPrimary
-                        )
+                        ),
+                        modifier = Modifier.scale(0.9f)
                     ) {
-                        Text("Submit")
+                        Text(stringResource(R.string.confirm))
                     }
+
+                    val turn =
+                        if (state.turn == GameTurn.MY)
+                            stringResource(R.string.my_turn)
+                        else
+                            stringResource(R.string.opponent_turn)
+                    Text(
+                        turn,
+                        fontSize = 14.sp,
+                    )
+
+                    Text(
+                        stringResource(R.string.remaining_shots) + "${state.remainingShots}",
+                        fontSize = 14.sp,
+                    )
+
                 }
 
 
@@ -165,18 +196,13 @@ private fun LandScapeShotsDefinitionScreen(
                             .fillMaxWidth()
                             .padding(16.dp),
                     ){ //NOT centered, it is the progressTimer fault
-                        ProgressTimer(
-                            timeToDefineShot,
-                            onTimeout = handlers.onTimeout,
+                        StatelessProgressBar(
+                            progress = timerProgress,
                             orientation = Orientation.VERTICAL,
                         )
                     }
                 }
-
-
             }
-
-
 
             LazyColumn(
                 modifier = Modifier
@@ -202,7 +228,7 @@ fun PortraitShotsDefinitionScreen(
     state: ShotsDefinitionScreenState,
     handlers: ShotsDefinitionHandlers = ShotsDefinitionHandlers(),
     padding: PaddingValues,
-    timeToDefineShot: Long
+    timerProgress : Float
 ) {
     LazyColumn( //surrounded by lazycolumn to support small sized screens
         modifier = Modifier
@@ -221,7 +247,7 @@ fun PortraitShotsDefinitionScreen(
                         modifier = Modifier
                             .testTag(TestTags.LayoutDefinition.Board)
                             .padding(16.dp),
-                        onSquareClicked = {}
+                        onSquareClicked = {handlers.onOwnBoardSquareClicked()}
                     )
                 }
 
@@ -230,7 +256,7 @@ fun PortraitShotsDefinitionScreen(
             Row(
                 modifier = Modifier
                     .height(100.dp)
-                    .padding(start = 16.dp,end = 16.dp)
+                    .padding(start = 16.dp, end = 16.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -251,23 +277,26 @@ fun PortraitShotsDefinitionScreen(
                             stringResource(R.string.my_turn)
                         else
                             stringResource(R.string.opponent_turn)
-                    Text(turn)
+                    SlidingText(
+                        turn,
+                        MaterialTheme.typography.body1.fontSize,
+                    )
 
-
-                    Text(stringResource(R.string.remaining_shots) + "${state.remainingShots}")
+                    SlidingText(
+                        stringResource(R.string.remaining_shots) + "${state.remainingShots}",
+                        MaterialTheme.typography.body1.fontSize,
+                    )
                 }
 
                 Column(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .weight(2f),
+                        .weight(1.9f),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    //mudar timer
-                    ProgressTimer(
-                        timeToDefineShot,
-                        onTimeout = handlers.onTimeout
-                    )
+                    StatelessProgressBar(
+                        progress = timerProgress,
+                    )//TODO: cor
                 }
             }
 
@@ -317,8 +346,8 @@ fun PortraitScreenPreview() {
         ) { padding ->
             PortraitShotsDefinitionScreen(
                 state,
-                timeToDefineShot = 1000,
-                padding = padding
+                padding = padding,
+                timerProgress = 1f
             )
         }
     }

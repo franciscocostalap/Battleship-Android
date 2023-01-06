@@ -11,9 +11,9 @@ import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.home.HomeActivity
 import com.example.battleshipmobile.ui.views.LoadingContent
 import com.example.battleshipmobile.ui.views.general.Alert
-import com.example.battleshipmobile.battleship.home.HomeActivity
 import com.example.battleshipmobile.ui.showToast
 import com.example.battleshipmobile.ui.views.BackPressHandler
+import com.example.battleshipmobile.ui.views.general.ErrorAlert
 import com.example.battleshipmobile.utils.viewModelInit
 
 class ShotsDefinitionActivity : ComponentActivity() {
@@ -51,7 +51,18 @@ class ShotsDefinitionActivity : ComponentActivity() {
             val shotsDefinitionRules = viewModel.shotsDefinitionRules
             val turn = viewModel.turn
             val boards = viewModel.boards
-
+            val isTimedOut = viewModel.isTimedOut
+            val timerResetToggle = viewModel.timerResetToggle
+            if(isTimedOut) {
+                ErrorAlert(
+                    title = R.string.timeout_title,
+                    message = R.string.timeout_placeships_message,
+                    onDismiss = {
+                        HomeActivity.navigate(this)
+                        finish()
+                    }
+                )
+            }
             LoadingContent(isLoading = viewModel.isLoading) {
                 // Loading checks
                 checkNotNull(boards)
@@ -63,7 +74,7 @@ class ShotsDefinitionActivity : ComponentActivity() {
                     turn = turn,
                     remainingTime = shotsDefinitionRules.shotsDefinitionTimeout,
                     remainingShots = shotsDefinitionRules.shotsPerTurn - viewModel.currentShots,
-                    timerResetToggle = viewModel.timerResetToggle
+                    timerResetToggle = timerResetToggle
                 )
 
                 if(turn != GameTurn.MY) viewModel.waitForOpponentPlay()
@@ -72,7 +83,7 @@ class ShotsDefinitionActivity : ComponentActivity() {
                     onOpponentBoardSquareClicked = { square ->
                         viewModel.handleShot(square)
                     },
-                    onOwnBoardSquareClicked = { square ->
+                    onOwnBoardSquareClicked = {
                         showToast("You can't shoot on your own board!")
                     },
                     onSubmitShotsClick = {

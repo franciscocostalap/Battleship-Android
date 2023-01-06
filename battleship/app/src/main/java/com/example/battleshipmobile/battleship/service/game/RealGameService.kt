@@ -32,7 +32,7 @@ class RealGameService(
     private val jsonFormatter: Gson,
     private val rootUrl: String,
     private val parentURL: URL
-) : GameService {
+) : GameService{
 
     companion object {
         private const val QUEUE_REL = "queue"
@@ -69,7 +69,7 @@ class RealGameService(
     /**
      * Producer Scopes of the multiple polling operations
      */
-    private var lobbyProducerScope: ProducerScope<LobbyInformationDTO>? = null
+    private var lobbyProducerScope: ProducerScope<LobbyInformation>? = null
     private var gameStateProducerScope: ProducerScope<GameStateInfo>? = null
     private var myBoardProducerScope: ProducerScope<Board>? = null
 
@@ -282,15 +282,16 @@ class RealGameService(
         }
     }
 
+    /**
+     * Cancels the polling of the user board
+     */
     override suspend fun cancelPollMyBoard() {
         myBoardProducerScope?.close()
     }
 
     /**
-     * Cancels the polling of the lobby information.
+     * Cancels the polling of the lobby GameState.
      */
-    override fun cancelPolling(){
-        lobbyProducerScope?.close()
     override suspend fun cancelPollingGameState() {
         gameStateProducerScope?.close()
     }

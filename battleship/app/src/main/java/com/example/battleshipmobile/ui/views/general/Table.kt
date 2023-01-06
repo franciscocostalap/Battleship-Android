@@ -154,16 +154,16 @@ private fun TableRow(
                 modifier = boxModifier.weight(boxesWeight[index]),
                 contentAlignment = Alignment.Center
             ) {
-                if (index == 1) {
-                    SlidingText(
-                        text,
-                        fontSize,
-                        isVisible,
-                        fontColor = fontColor
-                    )
-                } else {
-                    Text(text, fontSize = fontSize,color = fontColor)
-                }
+
+                SlidingText(
+                    text,
+                    fontSize,
+                    isVisible,
+                    fontColor = fontColor
+                )
+
+                 //   Text(text, fontSize = fontSize,color = fontColor)
+
             }
         }
 
