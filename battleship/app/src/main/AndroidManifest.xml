@@ -18,11 +18,13 @@
         android:theme="@style/Theme.BattleshipMobile"
         tools:targetApi="31">
         <activity
-            android:name=".battleship.play.layout_definition.LayoutDefinitionActivity"
+            android:name=".battleship.play.layoutDefinition.LayoutDefinitionActivity"
             android:exported="false" />
         <activity
             android:name=".battleship.ranking.RankingActivity"
             android:exported="false" />
+        <activity android:name=".battleship.play.shotDefinition.ShotsDefinitionActivity"
+            android:exported="false"/>
 
         <activity
             android:name=".battleship.home.HomeActivity"

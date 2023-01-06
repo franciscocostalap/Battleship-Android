@@ -1,5 +1,6 @@
 package com.example.battleshipmobile.battleship.service.ranking
 
+import android.util.Log
 import com.example.battleshipmobile.battleship.service.*
 import com.example.battleshipmobile.battleship.service.user.UserInfo
 import com.example.battleshipmobile.utils.*
@@ -26,13 +27,13 @@ class RankingService(
      * Requires that the home entity was fetched first
      *
      */
-    private suspend fun ensureStatisticsURL(): Action {
+    private suspend fun ensureStatisticsURL(): Relation {
         homeEntity = super.fetchParentEntity(client, jsonFormatter, parentURL,homeEntity)
 
         val homeSirenEntity = homeEntity
         require(homeSirenEntity != null) { HOME_ERR_MESSAGE }
 
-        return ensureAction(
+        return ensureRelation(
             parentSirenEntity = homeSirenEntity,
             relation = STATISTICS_REL,
             rootUrl = rootUrl,
@@ -49,7 +50,7 @@ class RankingService(
         val request = buildAndSendRequest<Statistics>(
             client,
             jsonFormatter,
-            action = ensureStatisticsURL(),
+            relation = ensureStatisticsURL(),
         )
 
         return getEmbeddedStatistics(request)

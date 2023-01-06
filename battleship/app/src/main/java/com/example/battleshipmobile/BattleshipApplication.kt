@@ -21,7 +21,6 @@ import com.example.battleshipmobile.utils.NoEntitySiren
 import com.example.battleshipmobile.utils.SubEntity
 import com.example.battleshipmobile.utils.SubEntityDeserializer
 
-
 import okhttp3.*
 import java.net.URL
 
@@ -36,7 +35,7 @@ interface DependenciesContainer{
     val systemInfoService : SysInfoService
 }
 
-private const val host = "http://192.168.1.119:8080"
+private const val host = "https://7d79-217-129-147-107.eu.ngrok.io"
 private const val root = "$host/api"
 private const val home = "$root/"
 private const val userHome = "$root/my"

@@ -1,4 +1,4 @@
-package com.example.battleshipmobile.battleship.play.layout_definition
+package com.example.battleshipmobile.battleship.play.layoutDefinition
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.*

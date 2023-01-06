@@ -16,7 +16,7 @@ import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.home.HomeActivity
 import com.example.battleshipmobile.battleship.play.QueueScreen
-import com.example.battleshipmobile.battleship.play.layout_definition.LayoutDefinitionActivity
+import com.example.battleshipmobile.battleship.play.layoutDefinition.LayoutDefinitionActivity
 import com.example.battleshipmobile.battleship.play.lobby.QueueState.*
 import com.example.battleshipmobile.ui.showToast
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
@@ -106,13 +106,28 @@ class QueueActivity : ComponentActivity() {
                                 finish()
                             }
                         ) {
-                            QueueScreenContent(lobby.state)
+                            QueueScreenContent(
+                                lobby.state,
+                                onQueueCancel = {
+                                    viewModel.leaveLobby()
+                                    HomeActivity.navigate(this)
+                                    finish()
+                                }
+                            )
+
                             BackHandler { showToast(CANT_PERFORM_BACK_ACTION) }
                         }
 
                     } else {
                         //First player to join
-                        QueueScreenContent(lobby.state)
+                        QueueScreenContent(
+                            lobby.state,
+                            onQueueCancel = {
+                                viewModel.leaveLobby()
+                                HomeActivity.navigate(this)
+                                finish()
+                            }
+                        )
                     }
                 }else{
                     LoadingScreen()
@@ -138,12 +153,13 @@ class QueueActivity : ComponentActivity() {
         }
     }
 
-        /**
+    /**
      * Queue screen content
      *
      */
     @Composable
-    private fun QueueScreenContent(lobbyState: QueueState) {
+    private fun QueueScreenContent(lobbyState: QueueState, onQueueCancel: () -> Unit = { }) {
+
         QueueScreen(
             queueState = lobbyState,
             onBackClick = {
@@ -156,11 +172,6 @@ class QueueActivity : ComponentActivity() {
             })
     }
 
-    private fun onQueueCancel(){
-        viewModel.leaveLobby()
-        HomeActivity.navigate(this)
-        finish()
-    }
 
 }
 

@@ -16,7 +16,7 @@ class AuthInfoRepositoryTests {
 
     private val repo by lazy {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        AuthInfoService(context,cookieStore)
+        AuthInfoService(context, cookieStore, host="test")
     }
 
     @Test

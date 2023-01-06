@@ -140,6 +140,7 @@ class SubEntityDeserializer<T>(private val propertiesType: Type) : JsonDeseriali
                 rel = entity.getAsListOfString("rel") ?: emptyList(),
                 href = URI(entity.get("href").asString),
                 clazz = entity.getAsListOfString("class"),
+                type = entity.get("type")?.asString,
                 title = entity.get("title")?.asString
             )
         }

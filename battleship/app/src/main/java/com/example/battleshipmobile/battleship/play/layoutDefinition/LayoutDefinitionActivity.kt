@@ -1,4 +1,4 @@
-package com.example.battleshipmobile.battleship.play.layout_definition
+package com.example.battleshipmobile.battleship.play.layoutDefinition
 
 import android.app.Activity
 import android.content.Intent
@@ -14,6 +14,8 @@ import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.home.HomeActivity
 import com.example.battleshipmobile.battleship.play.lobby.QueueActivity
+import com.example.battleshipmobile.battleship.play.shotDefinition.ShotsDefinitionActivity
+import com.example.battleshipmobile.battleship.play.shotDefinition.ShotsDefinitionScreen
 import com.example.battleshipmobile.battleship.service.ID
 import com.example.battleshipmobile.ui.showToast
 import com.example.battleshipmobile.ui.views.BackPressHandler
@@ -123,7 +125,7 @@ class LayoutDefinitionActivity : ComponentActivity() {
                 viewModel.playingGameState.collectLatest {
                     if (it != null) {
                         Log.v("LAYOUT_DEFINITION", "State changed to ${it.state}")
-                        //navigate to shooting phase
+                        ShotsDefinitionActivity.navigate(this@LayoutDefinitionActivity)
                     }
                 }
             }
