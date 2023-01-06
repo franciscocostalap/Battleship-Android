@@ -13,14 +13,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.semantics
 import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.home.HomeActivity
-import com.example.battleshipmobile.battleship.service.user.AuthInfo
-import com.example.battleshipmobile.ui.ErrorAlert
+import com.example.battleshipmobile.ui.views.general.ErrorAlert
 import com.example.battleshipmobile.ui.TestTags
-import com.example.battleshipmobile.ui.authType
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.utils.viewModelInit
 

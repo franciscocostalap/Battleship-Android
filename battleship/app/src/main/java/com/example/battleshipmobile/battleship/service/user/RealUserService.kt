@@ -1,11 +1,9 @@
 package com.example.battleshipmobile.battleship.service.user
 
 import com.example.battleshipmobile.battleship.service.Relation
-import com.example.battleshipmobile.battleship.service.RelationType
-import com.example.battleshipmobile.battleship.service.buildAndSendRequest
 import com.example.battleshipmobile.battleship.service.dto.InputUserDTO
-import com.example.battleshipmobile.battleship.service.ensureRelation
 import com.example.battleshipmobile.utils.*
+import com.example.battleshipmobile.battleship.service.ensureRelation
 import com.google.gson.Gson
 import okhttp3.*
 import java.net.URL
@@ -15,13 +13,13 @@ import java.net.URL
  * @property client Http client
  * @property jsonFormatter
  * @property rootUrl api base url used in all endpoints
- * @property parentUrl url that gives access to the requested resources with its siren actions/links
+ * @property parentURL url that gives access to the requested resources with its siren actions/links
  */
 class RealUserService(
     private val client: OkHttpClient,
     private val jsonFormatter: Gson,
     private val rootUrl: String,
-    private val parentUrl: URL
+    private val parentURL: URL
 ) : UserService {
 
     companion object {
@@ -40,10 +38,10 @@ class RealUserService(
      * Sends the user credentials in the request body to the server.
      *
      * @param credentials username and password
-     * @param relation
+     * @param action
      * @return [AuthInfo] user id and token
      */
-    private suspend fun sendCredentials(credentials: User, relation: Relation): AuthInfo {
+    private suspend fun sendCredentials(credentials: User, action: Relation): AuthInfo {
         val body = jsonFormatter.toJson(InputUserDTO(credentials))
 
         val result = buildAndSendRequest<AuthInfo>(
@@ -62,7 +60,7 @@ class RealUserService(
      * @return [AuthInfo] user id and token
      */
     override suspend fun register(user: User): AuthInfo =
-        sendCredentials(user, relation = ensureRegisterAction())
+        sendCredentials(user, action = ensureRegisterAction())
 
     /**
      * Authenticates an already existing user returning it's authentication information
@@ -70,17 +68,17 @@ class RealUserService(
      * @return [AuthInfo] user id and token
      */
     override suspend fun login(authenticator: User): AuthInfo =
-        sendCredentials(authenticator, relation = ensureLoginAction())
+        sendCredentials(authenticator, action = ensureLoginAction())
 
 
     /**
      * Ensures that the register action exists and returns it.
      * Requires that the home was previously fetched.
      *
-     * @return [Relation] Register url and method
+     * @return [Action] Register url and method
      */
     private suspend fun ensureRegisterAction(): Relation {
-        homeEntity = super.fetchParentEntity(client, jsonFormatter, parentUrl, homeEntity)
+        homeEntity = super.fetchParentEntity(client, jsonFormatter, parentURL, homeEntity)
         val homeSirenEntity = homeEntity
         require(homeSirenEntity != null) { HOME_ERR_MESSAGE }
 
@@ -96,10 +94,10 @@ class RealUserService(
      * Ensures that the register action exists and returns it.
      * Requires that the home was previously fetched.
      *
-     * @return [Relation] Login url and method
+     * @return [Action] Login url and method
      */
     private suspend fun ensureLoginAction(): Relation {
-        homeEntity = super.fetchParentEntity(client, jsonFormatter, parentUrl,homeEntity)
+        homeEntity = super.fetchParentEntity(client, jsonFormatter, parentURL,homeEntity)
         val homeSirenEntity = homeEntity
         require(homeSirenEntity != null) { HOME_ERR_MESSAGE }
 

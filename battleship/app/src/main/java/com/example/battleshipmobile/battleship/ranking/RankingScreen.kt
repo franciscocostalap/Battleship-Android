@@ -30,18 +30,35 @@ import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.dismissKeyboard
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.ui.theme.HEADER_COLOR
+import com.example.battleshipmobile.ui.views.LoadingScreen
 import com.example.battleshipmobile.ui.views.general.BackButton
 import kotlinx.coroutines.launch
 
+private const val SCREEN_TAG = "RankingScreen"
 @Composable
 fun RankingScreen(
     onBackClick : () -> Unit,
-    gameStatistics : StatisticsEmbedded?,
+    gameStatistics : StatisticsEmbedded,
     onSearchError : (String) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     var userSearch by rememberSaveable { mutableStateOf("") }
     val tableLazyState = rememberLazyListState()
+    fun findIndexOf(name: String) : Int? =
+        gameStatistics.ranking.indexOfFirst { it.player == name }.let { i ->
+            if (i == -1) null else i
+        }
+
+    fun onTextSubmit(){
+        Log.d(SCREEN_TAG, "onTextSubmit")
+        coroutineScope.launch {
+            Log.v(SCREEN_TAG, "Searching for $userSearch")
+            findIndexOf(userSearch)?.let { index ->
+                Log.v(SCREEN_TAG, "Found $userSearch at $index")
+                tableLazyState.animateScrollToItem(index)
+            } ?: onSearchError(userSearch)
+        }
+    }
 
     BattleshipMobileTheme {
         Surface(
@@ -50,39 +67,15 @@ fun RankingScreen(
                 .background(MaterialTheme.colors.background)
                 .testTag(TestTags.Statistics.Screen)
         ) {
-            if(gameStatistics != null){
-                fun findIndexOf(name: String) : Int? =
-                    gameStatistics.ranking.indexOfFirst { it.player == name }.let { i ->
-                        if (i == -1) null else i
-                    }
+            StatelessRankingScreen(
+                onBackClick = onBackClick,
+                gameStatistics = gameStatistics,
+                userSearchValue = userSearch,
+                userSearchOnChange = { userSearch = it },
+                tableLazyState = tableLazyState,
+                onTextSubmit = { onTextSubmit() },
 
-                StatelessRankingScreen(
-                    onBackClick = onBackClick,
-                    gameStatistics = gameStatistics,
-                    userSearchValue = userSearch,
-                    userSearchOnChange = { userSearch = it },
-                    onTextSubmit = {
-                        Log.d("RankingScreen", "onTextSubmit")
-                        coroutineScope.launch {
-                            Log.v("RankingScreen", "Searching for $userSearch")
-                            findIndexOf(userSearch)?.let { index ->
-                                Log.v("RankingScreen", "Found $userSearch at $index")
-                                tableLazyState.animateScrollToItem(index)
-                            } ?: onSearchError(userSearch)
-                        }
-                    },
-                    tableLazyState = tableLazyState,
-                )
-            } else{
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
+            )
 
         }
     }

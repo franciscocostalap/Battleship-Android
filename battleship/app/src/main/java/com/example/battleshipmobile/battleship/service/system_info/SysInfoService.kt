@@ -15,6 +15,7 @@ class SysInfoService(
     private val rootUrl: String,
     private val parentURL: URL
 ) : ISystemInfoService {
+
      var homeEntity: SirenEntity<Nothing>? = null
 
     companion object{
@@ -22,6 +23,13 @@ class SysInfoService(
         private const val INFO_REL = "system-info"
     }
 
+    private suspend fun ensureSysInfoLink(): Relation {
+    /**
+     * Ensures that the SystemInfo Action is present in the home entity
+     * Requires that the home was fetched first.
+     *
+     * @return [Action] the action or link url and method
+     */
     private suspend fun ensureSysInfoLink(): Relation {
         homeEntity = super.fetchParentEntity(client,jsonFormatter,parentURL,homeEntity)
 

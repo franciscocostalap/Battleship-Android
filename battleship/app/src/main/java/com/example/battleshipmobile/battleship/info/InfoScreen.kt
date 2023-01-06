@@ -30,8 +30,7 @@ import com.example.battleshipmobile.ui.views.general.BackButton
 fun InfoScreen(
     onBackClick: () -> Unit,
     onSendClick: (email: String) -> Unit,
-    isLoading : Boolean ,
-    info : SystemInfo?
+    info : SystemInfo
 ) {
     BattleshipMobileTheme {
 
@@ -41,83 +40,69 @@ fun InfoScreen(
                 .background(MaterialTheme.colors.background)
                 .testTag(TestTags.Info.Screen)
         ) {
-
-            if (isLoading) {
-                Box(
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+            ) {
+                Text(//TODO: CORES DO TITOLU E VERSAO QUANDO ESTA LANDSCAPE
+                    text = stringResource(id = R.string.info_title),
+                    style = MaterialTheme.typography.h3,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-               require(info != null) { "System info is null" }
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                )
 
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                Text(
+                    text = stringResource(id = R.string.authors),
+                    style = MaterialTheme.typography.body1,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                )
+
+                // Card for each social
+                LazyColumn(
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(//TODO: CORES DO TITOLU E VERSAO QUANDO ESTA LANDSCAPE
-                        text = stringResource(id = R.string.info_title),
-                        style = MaterialTheme.typography.h3,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    )
-
-                    Text(
-                        text = stringResource(id = R.string.authors),
-                        style = MaterialTheme.typography.body1,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    )
-
-                    // Card for each social
-                    LazyColumn(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        items(info.authors) { social ->
-                            SocialCard(
-                                social = social,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                onClick = { onSendClick(social.email) }
-                            )
-                            if (social != info.authors.last())
-                                Spacer(modifier = Modifier.height(20.dp))
-                        }
-                    }
-
-                    Text(
-                        text = stringResource(id = R.string.version_text) + " " + info.version,
-                        style = MaterialTheme.typography.body1,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                    )
-
-
-                    Box(
-                        modifier= Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                    ){
-                        BackButton(
-                            onBackClick = onBackClick,
-                            modifier = Modifier.align(Alignment.BottomCenter)
+                    items(info.authors) { social ->
+                        SocialCard(
+                            social = social,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            onClick = { onSendClick(social.email) }
                         )
+                        if (social != info.authors.last())
+                            Spacer(modifier = Modifier.height(20.dp))
                     }
-
                 }
+
+                Text(
+                    text = stringResource(id = R.string.version_text) + " " + info.version,
+                    style = MaterialTheme.typography.body1,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                )
+
+
+                Box(
+                    modifier= Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ){
+                    BackButton(
+                        onBackClick = onBackClick,
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                    )
+                }
+
             }
         }
 
@@ -202,6 +187,5 @@ fun InfoScreenPreview(){
             version = "1.0",
             authors = socialsPreview
         ),
-        isLoading = false
     )
 }

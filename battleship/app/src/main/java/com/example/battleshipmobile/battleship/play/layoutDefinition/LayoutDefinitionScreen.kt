@@ -32,6 +32,7 @@ data class LayoutDefinitionScreenState(
     val board: Board,
     val availableShips: List<ShipData>,
     val selectedShip: ShipData?,
+    val isSubmittingDisabled: Boolean,
 )
 
 @Composable
@@ -78,14 +79,18 @@ fun LayoutDefinitionScreen(
                         FleetCompositionControls(
                             onRotateRequested = handlers.onRotateClicked,
                             onResetRequested = handlers.onFleetResetClicked,
-                            onSubmitRequested = handlers.onSubmit
+                            onSubmitRequested = handlers.onSubmit,
+                            isRotateEnabled = state.selectedShip != null,
+                            isResetEnabled = state.board.shipParts.isNotEmpty(),
+                            isSubmitEnabled = state.availableShips.isEmpty() && !state.isSubmittingDisabled,
                         )
                     }
                 }
             }
         }
     }
-}
+}//TODO: on the statistics screen enabled the button only when it has text
+//TODO: DAW, verificar o input do utilziador no login e register
 
 @Preview(showBackground = true)
 @Composable
@@ -109,6 +114,7 @@ fun DefaultPreview() {
                 )
             ).toList(),
             selectedShip = null,
+            isSubmittingDisabled = true,
         ),
         timeToDefineLayout = 1000
     )
