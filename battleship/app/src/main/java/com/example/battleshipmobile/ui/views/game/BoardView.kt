@@ -15,7 +15,7 @@ import com.example.battleshipmobile.battleship.service.model.*
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 
 
-const val SQUARE_BASE_SIDE = 180
+const val SQUARE_BASE_SIDE = 170
 const val SQUARE_SHRINK_FACTOR = 0.5
 const val SQUARE_BORDER_WIDTH = 1
 val GRAY_4 = Color( 206, 212, 218)
@@ -46,7 +46,6 @@ fun BoardView(
 
 fun squareSide(side: Int): Double {
     return  SQUARE_BASE_SIDE / (SQUARE_SHRINK_FACTOR * side)
-
 }
 
 @Composable
@@ -61,6 +60,7 @@ fun SquareView(
         SquareType.ShipPart -> INDIGO_7
         SquareType.Water -> GRAY_4
         SquareType.Hit -> Color.Red
+        SquareType.AimedShot -> Color.Yellow
     }
 
     val side = squareSide(boardSide).dp

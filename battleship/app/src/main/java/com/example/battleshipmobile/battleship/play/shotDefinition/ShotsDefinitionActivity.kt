@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import com.example.battleshipmobile.DependenciesContainer
+import com.example.battleshipmobile.ui.views.LoadingContent
 import com.example.battleshipmobile.utils.viewModelInit
 
 class ShotsDefinitionActivity : ComponentActivity() {
@@ -21,9 +22,9 @@ class ShotsDefinitionActivity : ComponentActivity() {
     }
 
     private val dependencies by lazy { application as DependenciesContainer }
-    private val viewModel: ShotsDefinitionViewModel by viewModels {
+    private val viewModel: GameViewModel by viewModels {
         viewModelInit {
-            ShotsDefinitionViewModel(dependencies.gameService, dependencies.authInfoService)
+            GameViewModel(dependencies.gameService, dependencies.authInfoService)
         }
     }
 
@@ -33,26 +34,29 @@ class ShotsDefinitionActivity : ComponentActivity() {
 
             val shotsDefinitionRules = viewModel.shotsDefinitionRules
             val turn = viewModel.turn
-            if (shotsDefinitionRules == null && turn == null)
-                viewModel.initializeGame()
-
-
             val boards = viewModel.boards
-            if (shotsDefinitionRules != null && boards != null && turn != null) {
+
+            LoadingContent(isLoading = viewModel.isLoading) {
+                // Loading checks
+                checkNotNull(boards)
+                checkNotNull(shotsDefinitionRules)
+                checkNotNull(turn)
+
                 val screenState = ShotsDefinitionScreenState(
                     boards = boards,
-                    currentShots = viewModel.currentShots,
                     turn = turn,
                     remainingTime = shotsDefinitionRules.shotsDefinitionTimeout,
                     timerResetToggle = viewModel.timerResetToggle
                 )
 
+                if(turn != GameTurn.MY) viewModel.waitForOpponentPlay()
+
                 val screenHandlers = ShotsDefinitionHandlers(
                     onOpponentBoardSquareClicked = { square ->
-                        viewModel.onOpponentBoardSquareClicked(square)
+                        viewModel.handleShot(square)
                     },
                     onSubmitShotsClick = {
-                        viewModel.submitShots()
+                        viewModel.trySubmitShots()
                     },
                     onTimeout = {
                         viewModel.onTimeout()

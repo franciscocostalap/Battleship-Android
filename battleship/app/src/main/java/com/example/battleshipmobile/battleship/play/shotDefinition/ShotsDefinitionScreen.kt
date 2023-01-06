@@ -29,13 +29,12 @@ enum class GameTurn {
 
 data class ShotsDefinitionHandlers(
     val onOpponentBoardSquareClicked: (Square) -> Unit = {},
-    val onSubmitShotsClick: (List<Square>) -> Unit = {},
+    val onSubmitShotsClick: () -> Unit = {},
     val onTimeout: () -> Unit = {}
 )
 
 data class ShotsDefinitionScreenState(
     val boards: GameBoards,
-    val currentShots: List<Square>,
     val turn: GameTurn,
     val remainingTime: Long,
     val timerResetToggle: Boolean,
@@ -73,7 +72,7 @@ fun ShotsDefinitionScreen(
                     ) {
 
                         Button(
-                            onClick = { handlers.onSubmitShotsClick(state.currentShots) }
+                            onClick = { handlers.onSubmitShotsClick() }
                         ) {
                             Text("Submit")
                         }
@@ -113,7 +112,6 @@ fun DefaultPreview() {
     ShotsDefinitionScreen(
         state = ShotsDefinitionScreenState(
             boards = gameBoards,
-            currentShots = listOf(),
             turn = GameTurn.MY,
             remainingTime = 60L,
             timerResetToggle = false
