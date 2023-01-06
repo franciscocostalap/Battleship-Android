@@ -13,8 +13,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.home.HomeActivity
+import com.example.battleshipmobile.battleship.play.lobby.QueueActivity
 import com.example.battleshipmobile.battleship.service.ID
 import com.example.battleshipmobile.ui.showToast
+import com.example.battleshipmobile.ui.views.BackPressHandler
 import com.example.battleshipmobile.ui.views.LoadingScreen
 import com.example.battleshipmobile.ui.views.general.ErrorAlert
 import com.example.battleshipmobile.utils.viewModelInit
@@ -85,6 +87,9 @@ class LayoutDefinitionActivity : ComponentActivity() {
                     },
                     onTimeout = {
                         viewModel.onTimeout()
+                    },
+                    onBackClicked = {
+                        onBackClicked()
                     }
                 )
                 if(isTimedOut) {
@@ -106,6 +111,9 @@ class LayoutDefinitionActivity : ComponentActivity() {
             }else{
                 LoadingScreen()
             }
+            BackPressHandler {
+                onBackClicked()
+            }
 
         }
 
@@ -120,6 +128,10 @@ class LayoutDefinitionActivity : ComponentActivity() {
                 }
             }
         }
+    }
+    private fun onBackClicked() {
+        HomeActivity.navigate(this)
+        finish()
     }
 
 }

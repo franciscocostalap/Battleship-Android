@@ -43,8 +43,8 @@ fun HomeScreen(
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.background)
-            .testTag(TestTags.Home.Screen)
+            .testTag(TestTags.Home.Screen),
+        color = MaterialTheme.colors.background
     ) {
         val configuration = LocalConfiguration.current
 
@@ -184,13 +184,15 @@ private fun LandscapeHomeScreen(
                     fillMaxHeight()
                     .weight(2f)
             ){
-                Text(
-                    text = stringResource(R.string.welcome_message),
-                    color = Color(62, 66, 68),  //put in theme
-                    fontSize = MaterialTheme.typography.subtitle1.fontSize,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
+                if(!isLoggedIn) {
+                    Text(
+                        text = stringResource(R.string.welcome_message),
+                        color = Color(62, 66, 68),  //put in theme
+                        fontSize = MaterialTheme.typography.subtitle1.fontSize,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
 
             Column(

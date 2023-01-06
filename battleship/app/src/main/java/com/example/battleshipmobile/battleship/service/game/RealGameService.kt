@@ -190,6 +190,7 @@ class RealGameService(
     override suspend fun pollLobbyInformation(): Flow<LobbyInformationDTO> {
         return callbackFlow {
             try {
+                lobbyProducerScope = this
                 //Fast path
                 val startingLobbyState = lobbyStateEntity?.properties
                 require (startingLobbyState != null) { QUEUE_ERR_MESSAGE }

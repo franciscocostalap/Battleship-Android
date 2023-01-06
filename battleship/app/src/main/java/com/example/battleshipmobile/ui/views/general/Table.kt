@@ -29,7 +29,7 @@ fun LazyTable(modifier : Modifier = Modifier,
               playerStats : List<PlayerStatisticsDTO>,
               width : Dp = 350.dp,
               height : Dp = 650.dp,
-              backgroundColor : Color = MaterialTheme.colors.primary,
+              backgroundColor : Color = MaterialTheme.colors.secondaryVariant,
               borderColor : Color = MaterialTheme.colors.secondary,
               headerBackgroundColor : Color = MaterialTheme.colors.primaryVariant,
               headerBorderColor : Color = MaterialTheme.colors.secondary,
@@ -134,6 +134,7 @@ private fun TableRow(
     boxesText: List<String>,
     boxesWeight : List<Float>,
     fontSize : TextUnit = 10.sp,
+    fontColor : Color = Color.White,
     isVisible : Boolean
 ) {
     assert(boxesWeight.size == boxesText.size) { "boxesWeight and boxesText must have the same size" }
@@ -157,10 +158,11 @@ private fun TableRow(
                     SlidingText(
                         text,
                         fontSize,
-                        isVisible
+                        isVisible,
+                        fontColor = fontColor
                     )
                 } else {
-                    Text(text, fontSize = fontSize)
+                    Text(text, fontSize = fontSize,color = fontColor)
                 }
             }
         }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.RestartAlt
@@ -45,10 +46,11 @@ fun FleetCompositionView(
     val availableShipsBySize = availableShips.groupBy { it.ship.size }
     val height = ICON_BUTTON_SIZE.times(NUM_OF_BUTTONS) + CONTROL_BUTTON_SPACER_DP.times(NUM_OF_BUTTONS-1) + ICON_BUTTON_PADDING.times(2).times(
         NUM_OF_BUTTONS)
+    val shipSquareSize = (SQUARE_BASE_SIDE / (SQUARE_SHRINK_FACTOR * 10)).dp
     LazyColumn(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.padding(16.dp).height(height)
+        modifier = Modifier.padding(16.dp).height(height).width(shipSquareSize.times(5))
     ) {
 
         items(availableShipsBySize.toList()) { (_, shipsPerSize) ->
@@ -59,7 +61,7 @@ fun FleetCompositionView(
                     checkNotNull(actualShip){"Unexpected null shipData."}
                     ShipView(
                         shipData = actualShip,
-                        squareSize =  (SQUARE_BASE_SIDE / (SQUARE_SHRINK_FACTOR * 10)).dp,
+                        squareSize =  shipSquareSize,
                         onClick = { onShipSelected(actualShip) },
                         isSelected = selectedShip?.id == shipData.id
                     )
@@ -116,11 +118,12 @@ fun FleetCompositionControlButton(
     isEnabled: Boolean = true
 ) {
     //TODO: change Background color depending on enabled/disabled
+    val iconBackgroundColor = if (isEnabled) MaterialTheme.colors.primary else GRAY_8
     IconButton(
         onClick = onClick,
         modifier = Modifier
             .padding(ICON_BUTTON_PADDING)
-            .background(color = GRAY_8)
+            .background(color = iconBackgroundColor)
             .testTag(testTag),
         enabled = isEnabled
     ) {

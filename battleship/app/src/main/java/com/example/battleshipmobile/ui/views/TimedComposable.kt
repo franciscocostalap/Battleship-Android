@@ -1,28 +1,43 @@
 package com.example.battleshipmobile.ui.views
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import kotlinx.coroutines.delay
+import android.util.Log
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import kotlinx.coroutines.*
 
 /**
- * A Composable [content] will be displayed for a given limited amount of time [time] and then
+ * A Composable [content] will be displayed for a given limited amount of time [timeToWait] and then
  * will perform an action [onTimeout]
  *
- * @param time the time in milliseconds that the [Composable] will be displayed
+ * @param timeToWait the time in milliseconds that the [Composable] will be displayed
  * @param onTimeout the action to be performed when the time is over
  * @param content the [Composable] to be displayed
  */
 @Composable
 fun TimedComposable(
-    time: Long,
+    timeToWait: Long,
     onTimeout: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
-    val state = remember { mutableStateOf(true) }
+    val state = rememberSaveable { mutableStateOf(true) }
+    var initialMoment by rememberSaveable { mutableStateOf<Long?>(null) }
+    var remainingTime by rememberSaveable { mutableStateOf(timeToWait) }
+
+
     LaunchedEffect(key1 = true) {
-        delay(time)
+        if(initialMoment == null) {
+            initialMoment = System.currentTimeMillis()
+        }
+        coroutineContext.job.invokeOnCompletion {
+            val initMoment = initialMoment
+            if(it is  CancellationException && initMoment != null) {
+                val currentTime = System.currentTimeMillis()
+                val timeElapsed = currentTime - initMoment
+                remainingTime = (timeToWait - timeElapsed).coerceAtLeast(0)
+            }
+        }
+
+        delay(remainingTime)
         state.value = false
         onTimeout()
     }

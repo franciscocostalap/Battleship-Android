@@ -66,9 +66,9 @@ fun AuthenticationScreen(
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colors.background)
                 .semantics { this[authType] = formType }
                 .testTag(TestTags.Auth.Screen),
+            color = MaterialTheme.colors.background
         ) {
 
             Column(

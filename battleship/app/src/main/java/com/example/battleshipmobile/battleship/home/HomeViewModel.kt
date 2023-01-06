@@ -11,29 +11,10 @@ import com.example.battleshipmobile.battleship.service.dto.LobbyInformationDTO
 import com.example.battleshipmobile.battleship.service.game.GameService
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val gameService: GameService, private val authInfoRepository: AuthInfoService) : ViewModel() {
-
-
-    var lobbyInformationResult by mutableStateOf<Result<LobbyInformationDTO>?>(null)
-    private set
+class HomeViewModel(private val authInfoRepository: AuthInfoService) : ViewModel() {
 
     var uid by mutableStateOf<ID?>(null)
     private set
-
-
-    fun enqueue(){
-        viewModelScope.launch {
-           lobbyInformationResult =  try{
-               Result.success(gameService.enqueue())
-           }catch (e: Exception){
-               Result.failure(e)
-           }
-        }
-    }
-
-    fun setLobbyInfoToNull(){
-        lobbyInformationResult = null
-    }
 
     fun logout(){
         uid = authInfoRepository.uid
