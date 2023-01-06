@@ -39,7 +39,7 @@ class RealGameService(
         private const val CANCEL_QUEUE_REL = "cancelQueue"
         private const val LOBBY_STATE_REL = "lobby-state"
         private const val LAYOUT_DEFINITION_REL = "layout-definition"
-        private const val SHOT_DEFINITION_REL = "shotS-definition"
+        private const val SHOT_DEFINITION_REL = "shots-definition"
         private const val GAME_RULES_REL = "game-rules"
         private const val MY_FLEET_REL = "myFleet"
         private const val OPPONENT_FLEET_REL = "opponentFleet"
