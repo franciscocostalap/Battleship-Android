@@ -13,8 +13,8 @@ import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.TAG
 import com.example.battleshipmobile.battleship.home.HomeActivity
+import com.example.battleshipmobile.ui.views.LoadingContent
 import com.example.battleshipmobile.ui.views.general.ErrorAlert
-import com.example.battleshipmobile.ui.views.LoadingScreen
 import com.example.battleshipmobile.utils.viewModelInit
 
 
@@ -63,16 +63,15 @@ class InfoActivity : ComponentActivity() {
                 infoViewModel.getSystemInfo()
             }
 
-            if(sysInfo != null){
+            LoadingContent(isLoading = sysInfo == null) {
+                check(sysInfo != null)
+
                 InfoScreen(
                     onBackClick = { finish() },
                     onSendClick = { email -> openSendEmail(email) },
                     info = sysInfo,
                 )
-            }else{
-                LoadingScreen()
             }
-
         }
     }
 

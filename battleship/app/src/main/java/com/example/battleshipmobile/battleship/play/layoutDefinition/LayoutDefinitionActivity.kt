@@ -19,6 +19,7 @@ import com.example.battleshipmobile.battleship.play.shotDefinition.ShotsDefiniti
 import com.example.battleshipmobile.battleship.service.ID
 import com.example.battleshipmobile.ui.showToast
 import com.example.battleshipmobile.ui.views.BackPressHandler
+import com.example.battleshipmobile.ui.views.LoadingContent
 import com.example.battleshipmobile.ui.views.LoadingScreen
 import com.example.battleshipmobile.ui.views.general.ErrorAlert
 import com.example.battleshipmobile.utils.viewModelInit
@@ -50,7 +51,6 @@ class LayoutDefinitionActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-
             val gameRules = viewModel.gameRules
             if (gameRules == null)
                 viewModel.getGameRules()
@@ -58,28 +58,22 @@ class LayoutDefinitionActivity : ComponentActivity() {
             val availableShips = viewModel.availableShips
             val isSubmittingDisabled = viewModel.isSubmittingDisabled
             val isTimedOut = viewModel.isTimedOut
-
-            if (gameRules != null && board != null && availableShips != null) {
+            LoadingContent(isLoading = gameRules != null && board != null && availableShips != null){
+                check(gameRules != null && board != null && availableShips != null)
                 val screenState = LayoutDefinitionScreenState(
                     board = board,
                     availableShips = availableShips,
                     selectedShip = viewModel.selected,
                     isSubmittingDisabled = isSubmittingDisabled,
                 )
-
                 val screenHandlers = LayoutDefinitionHandlers(
                     onShipClicked = { shipData -> viewModel.selected = shipData },
                     onSquareClicked = { square ->
                         viewModel.selected?.let { selectedShipData ->
-                            viewModel.placeShip(
-                                initialSquare = square,
-                                shipData = selectedShipData
-                            )
+                            viewModel.placeShip(initialSquare = square, shipData = selectedShipData)
                         }
                     },
-                    onRotateClicked = {
-                        viewModel.rotateSelected()
-                    },
+                    onRotateClicked = { viewModel.rotateSelected() },
                     onFleetResetClicked = {
                         viewModel.resetState()
                         showToast("Fleet reset.")
@@ -88,36 +82,28 @@ class LayoutDefinitionActivity : ComponentActivity() {
                         viewModel.submitLayout()
                         showToast("Fleet submitted.")
                     },
-                    onTimeout = {
-                        viewModel.onTimeout()
-                    },
-                    onBackClicked = {
-                        onBackClicked()
-                    }
+                    onTimeout = { viewModel.onTimeout() },
+                    onBackClicked = { onBackClicked() }
                 )
-                if(isTimedOut) {
-                    ErrorAlert(
-                        title = R.string.timeout_title,
-                        message = R.string.timeout_placeships_message,
-                        onDismiss = {
-                            HomeActivity.navigate(this)
-                            finish()
-                        }
-                    )
-                }
-
                 LayoutDefinitionScreen(
                     state = screenState,
                     handlers = screenHandlers,
                     timeToDefineLayout = gameRules.layoutDefinitionTime
                 )
-            }else{
-                LoadingScreen()
             }
             BackPressHandler {
                 onBackClicked()
             }
-
+            if(isTimedOut) {
+                ErrorAlert(
+                    title = R.string.timeout_title,
+                    message = R.string.timeout_placeships_message,
+                    onDismiss = {
+                        HomeActivity.navigate(this)
+                        finish()
+                    }
+                )
+            }
         }
 
         lifecycleScope.launch {

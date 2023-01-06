@@ -207,18 +207,14 @@ class RealGameService(
      * @param shotsDefinitionDTO list of shots to be made
      * @return [BoardDTO] the new board after the shots
      */
-    override suspend fun makeShots(shotsDefinitionDTO: ShotsDefinitionDTO): Board{
+    override suspend fun makeShots(shotsDefinitionDTO: ShotsDefinitionDTO){
         val body = jsonFormatter.toJson(shotsDefinitionDTO)
-        val result = buildAndSendRequest<Unit>(
+        buildAndSendRequest<Unit>(
             client,
             jsonFormatter,
-            relation = ensureShotDefinitionAction(embedded = true),
+            relation = ensureShotDefinitionAction(embedded = false),
             body = body
         )
-
-        return result
-            .getEmbeddedBoardDTO()
-            .toBoard()
     }
 
 

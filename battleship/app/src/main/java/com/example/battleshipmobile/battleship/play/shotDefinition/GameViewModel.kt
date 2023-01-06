@@ -115,7 +115,8 @@ class GameViewModel(
         if(turn != MY || boards?.opponentBoard?.aimedShots?.size != shotsDefinitionRules?.shotsPerTurn) return
         val shots = boards?.opponentBoard?.aimedShots ?: return
         viewModelScope.launch {
-            val newOpponentBoard = gameService.makeShots(ShotsDefinitionDTO(shots))
+            gameService.makeShots(ShotsDefinitionDTO(shots))
+            val newOpponentBoard = gameService.getBoard(OPPONENT)
             boards = boards?.copy(opponentBoard = newOpponentBoard)
             timerResetToggle = !timerResetToggle
             changeTurn()

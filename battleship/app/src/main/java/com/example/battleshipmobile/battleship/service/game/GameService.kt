@@ -93,5 +93,5 @@ interface GameService : AppService {
      * @param shotsDefinitionDTO list of shots to be made
      * @return [BoardDTO] the new board after the shots
      */
-    suspend fun makeShots(shotsDefinitionDTO: ShotsDefinitionDTO): Board
+    suspend fun makeShots(shotsDefinitionDTO: ShotsDefinitionDTO)
 }
