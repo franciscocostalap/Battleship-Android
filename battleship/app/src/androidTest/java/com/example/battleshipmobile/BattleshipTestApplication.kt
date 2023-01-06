@@ -5,10 +5,12 @@ import android.content.Context
 import androidx.test.runner.AndroidJUnitRunner
 import com.example.battleshipmobile.battleship.auth.AuthInfoService
 import com.example.battleshipmobile.battleship.service.game.GameService
-import com.example.battleshipmobile.battleship.service.game.LobbyInformation
+import com.example.battleshipmobile.battleship.service.lobby.LobbyInformation
 import com.example.battleshipmobile.battleship.service.ranking.PlayerStatisticsDTO
 import com.example.battleshipmobile.battleship.service.ranking.RankingServiceI
 import com.example.battleshipmobile.battleship.service.ranking.StatisticsEmbedded
+import com.example.battleshipmobile.battleship.service.system_info.SysInfoService
+import com.example.battleshipmobile.battleship.service.system_info.SystemInfo
 import com.example.battleshipmobile.battleship.service.user.AuthInfo
 import com.example.battleshipmobile.battleship.service.user.UserService
 import io.mockk.coEvery
@@ -32,10 +34,24 @@ class BattleshipTestApplication: DependenciesContainer, Application() {
     }
 
     override var gameService: GameService = mockk(relaxed = true){
-        coEvery { this@mockk.get(any(), ) } returns LobbyInformation(0, null)
+        coEvery { getLobbyInformation() } returns LobbyInformation(0, null)
         coEvery { enqueue() } returns LobbyInformation(0, null)
-        coEvery { cancelQueue(any(), )}
+        coEvery { cancelQueue() }
     }
+    override val systemInfoService: SysInfoService
+        get() = mockk(relaxed = true){
+            coEvery { getSysInfo() } returns SystemInfo(
+                authors = listOf(
+                    SystemInfo.Author(
+                        name = "test",
+                        email = "test@email.com",
+                        github = "https://www.github.com/test",
+                        iselID=48265
+                    )
+                ),
+                version = "1.0.0",
+            )
+        }
 }
 
 @Suppress("unused")
