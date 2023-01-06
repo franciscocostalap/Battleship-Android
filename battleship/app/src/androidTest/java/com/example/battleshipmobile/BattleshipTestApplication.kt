@@ -34,7 +34,7 @@ class BattleshipTestApplication: DependenciesContainer, Application() {
     override var gameService: GameService = mockk(relaxed = true){
         coEvery { this@mockk.get(any(), ) } returns LobbyInformation(0, null)
         coEvery { enqueue() } returns LobbyInformation(0, null)
-        coEvery { cancel(any(), )}
+        coEvery { cancelQueue(any(), )}
     }
 }
 

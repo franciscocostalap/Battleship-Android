@@ -15,7 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.battleship.home.HomeActivity
 import com.example.battleshipmobile.battleship.play.QueueScreen
-import com.example.battleshipmobile.battleship.play.layout_definition.LayoutDefinitionActivity
+import com.example.battleshipmobile.battleship.play.layoutDefinition.LayoutDefinitionActivity
 import com.example.battleshipmobile.battleship.play.lobby.QueueState.*
 import com.example.battleshipmobile.battleship.service.ID
 import com.example.battleshipmobile.ui.showToast
@@ -77,7 +77,7 @@ class QueueActivity : ComponentActivity() {
                         onTimeout = {
                             val gameID = viewModel.lobby.gameID
                             require(gameID != null) { GAME_WAS_NOT_CREATED }
-                            LayoutDefinitionActivity.navigate(this, gameID)
+                            LayoutDefinitionActivity.navigate(this)
                             finish()
                         }
                     ) {

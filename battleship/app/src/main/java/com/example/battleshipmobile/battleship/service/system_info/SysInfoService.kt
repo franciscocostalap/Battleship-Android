@@ -1,14 +1,9 @@
 package com.example.battleshipmobile.battleship.service.system_info
 
-import com.example.battleshipmobile.battleship.http.buildRequest
-import com.example.battleshipmobile.battleship.http.handle
-import com.example.battleshipmobile.battleship.http.send
-import com.example.battleshipmobile.battleship.service.Action
+import com.example.battleshipmobile.battleship.service.Relation
 import com.example.battleshipmobile.battleship.service.RelationType
 import com.example.battleshipmobile.battleship.service.buildAndSendRequest
-import com.example.battleshipmobile.battleship.service.ensureAction
-import com.example.battleshipmobile.battleship.service.ranking.RankingService
-import com.example.battleshipmobile.battleship.service.ranking.Statistics
+import com.example.battleshipmobile.battleship.service.ensureRelation
 import com.example.battleshipmobile.utils.SirenEntity
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
@@ -27,18 +22,18 @@ class SysInfoService(
         private const val INFO_REL = "system-info"
     }
 
-    private suspend fun ensureSysInfoLink(): Action {
+    private suspend fun ensureSysInfoLink(): Relation {
         homeEntity = super.fetchParentEntity(client,jsonFormatter,parentURL,homeEntity)
 
         val homeEntitySiren = homeEntity
         require(homeEntitySiren != null) { HOME_ERR_MESSAGE }
 
-        return ensureAction(
+        return ensureRelation(
             parentSirenEntity = homeEntitySiren,
             relation = INFO_REL,
             rootUrl = rootUrl,
             relationType = RelationType.LINK,
-            embededInfo = false
+            embeddedInfo = false
         )
     }
 
@@ -49,7 +44,7 @@ class SysInfoService(
         val request = buildAndSendRequest<SystemInfo>(
             client,
             jsonFormatter,
-            action =ensureSysInfoLink(),
+            relation =ensureSysInfoLink(),
         )
         return request.properties ?: throw IllegalStateException("No properties in response")
     }

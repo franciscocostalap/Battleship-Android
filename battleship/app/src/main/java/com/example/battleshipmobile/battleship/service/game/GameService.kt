@@ -1,11 +1,9 @@
 package com.example.battleshipmobile.battleship.service.game
 
+import com.example.battleshipmobile.battleship.play.shotDefinition.GameTurn
 import com.example.battleshipmobile.battleship.service.AppService
 import com.example.battleshipmobile.battleship.service.ID
-import com.example.battleshipmobile.battleship.service.dto.GameRulesDTO
-import com.example.battleshipmobile.battleship.service.dto.GameStateInfoDTO
-import com.example.battleshipmobile.battleship.service.dto.LobbyInformationDTO
-import com.example.battleshipmobile.battleship.service.dto.ShipsInfoDTO
+import com.example.battleshipmobile.battleship.service.dto.*
 import kotlinx.coroutines.flow.Flow
 
 interface GameService : AppService {
@@ -37,7 +35,7 @@ interface GameService : AppService {
     /**
      * The user quits from the requested lobby
      */
-    suspend fun cancel()
+    suspend fun cancelQueue()
 
     /**
      * Places the given ships on the board.
@@ -64,4 +62,18 @@ interface GameService : AppService {
      * Cancels the current polling
      */
     fun cancelPolling()
+
+    /**
+     * Gets the board of one of the players
+     * @whichFleet which fleet to get the board from
+     * @return [BoardDTO]
+     */
+    suspend fun getBoard(whichFleet: GameTurn): BoardDTO
+
+    /**
+     * Makes shots to a board
+     * @param shotsDefinitionDTO list of shots to be made
+     * @return [BoardDTO] the new board after the shots
+     */
+    suspend fun makeShots(shotsDefinitionDTO: ShotsDefinitionDTO): BoardDTO
 }

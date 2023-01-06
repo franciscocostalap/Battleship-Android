@@ -1,4 +1,4 @@
-package com.example.battleshipmobile.battleship.play.layout_definition
+package com.example.battleshipmobile.battleship.play.layoutDefinition
 
 import android.app.Activity
 import android.content.Intent
@@ -11,6 +11,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.battleshipmobile.DependenciesContainer
+import com.example.battleshipmobile.battleship.play.shotDefinition.ShotsDefinitionActivity
+import com.example.battleshipmobile.battleship.play.shotDefinition.ShotsDefinitionScreen
 import com.example.battleshipmobile.battleship.service.ID
 import com.example.battleshipmobile.utils.viewModelInit
 import kotlinx.coroutines.flow.collectLatest
@@ -19,13 +21,9 @@ import kotlinx.coroutines.launch
 class LayoutDefinitionActivity : ComponentActivity() {
 
     companion object {
-
-        const val GAME_ID_EXTRA = "gameID"
-
-        fun navigate(origin: Activity, gameID: ID) {
+        fun navigate(origin: Activity) {
             with(origin) {
                 val intent = Intent(this, LayoutDefinitionActivity::class.java)
-                intent.putExtra(GAME_ID_EXTRA, gameID)
                 startActivity(intent)
             }
         }
@@ -93,7 +91,7 @@ class LayoutDefinitionActivity : ComponentActivity() {
                 viewModel.playingGameState.collectLatest {
                     if (it != null) {
                         Log.v("LAYOUT_DEFINITION", "State changed to ${it.state}")
-                        //navigate to shooting phase
+                        ShotsDefinitionActivity.navigate(this@LayoutDefinitionActivity)
                     }
                 }
             }

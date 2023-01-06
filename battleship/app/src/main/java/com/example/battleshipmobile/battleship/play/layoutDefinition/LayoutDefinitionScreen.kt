@@ -1,4 +1,4 @@
-package com.example.battleshipmobile.battleship.play.layout_definition
+package com.example.battleshipmobile.battleship.play.layoutDefinition
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn

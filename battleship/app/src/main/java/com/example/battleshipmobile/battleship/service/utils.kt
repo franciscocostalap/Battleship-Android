@@ -13,12 +13,16 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.net.URL
 
-enum class RelationType { ACTION, LINK }
-data class Action(val url: URL, val method: HttpMethod = GET)
+enum class RelationType() {
+    ACTION,
+    LINK
+}
+
+data class Relation(val url: URL, val method: HttpMethod = GET)
 
 private const val HTTP_METHOD_REQUIRED = "HTTP method required"
-private const val LINK_NOT_FOUND = "Entity has no link with the rel: "
-private const val ACTION_NOT_FOUND = "Entity has no action with the rel: "
+private fun relationNotFound(type: RelationType) =
+    "Entity has no ${type.name.lowercase()} with the rel: "
 
 /**
  * Ensures that the action or link is present in the entity
@@ -27,60 +31,65 @@ private const val ACTION_NOT_FOUND = "Entity has no action with the rel: "
  * @param relation relation to check
  * @param rootUrl api base url used for all endpoints
  * @param relationType type of connection to check: action or link
- * @return [Action] the action or link url and method
+ * @return [Relation] the action or link url and method
  */
 
-fun <T> ensureAction(
+fun <T> ensureRelation(
     parentSirenEntity: SirenEntity<T>,
     relation: String,
     rootUrl: String,
     relationType: RelationType,
-    embededInfo: Boolean = false
-): Action {
-    val query = if(embededInfo) "?embedded=true" else ""
+    embeddedInfo: Boolean = false
+): Relation {
+    val query = if (embeddedInfo) "?embedded=true" else ""
 
     return if (relationType == ACTION) {
         val sirenAction =
-            parentSirenEntity.actions?.find { it.name == relation } ?: throw UnresolvedActionException(
-                ACTION_NOT_FOUND + relation
-            )
+            parentSirenEntity.actions?.find { it.name == relation }
+                ?: throw UnresolvedActionException(relationNotFound(ACTION) + relation)
 
-        buildAction(rootUrl, sirenAction.href.toString() + query, sirenAction.method)
+        buildRelation(rootUrl, sirenAction.href.toString() + query, sirenAction.method)
     } else {
         val sirenLink =
             parentSirenEntity.links?.find { it.rel.contains(relation) }
-                ?: throw UnresolvedActionException(LINK_NOT_FOUND + relation)
-        buildAction(rootUrl, sirenLink.href.toString() + query)
+                ?: throw UnresolvedActionException(relationNotFound(LINK) + relation)
+
+        buildRelation(rootUrl, sirenLink.href.toString() + query)
     }
 }
+
 /**
- * Builds an [Action]
+ * Builds an [Relation]
  *
  * @param root api base url used for all endpoints
  * @param uri action or link href
  * @param method action or link method
- * @return [Action] the action or link url and method
+ * @return [Relation] the action or link url and method
  */
-private fun buildAction(root: String, uri: String, method: String? = "GET"): Action {
+private fun buildRelation(root: String, uri: String, method: String? = "GET"): Relation {
     val url = URL(root + uri)
     val httpMethod = HttpMethod.valueOf(
         method ?: throw IllegalArgumentException(HTTP_METHOD_REQUIRED)
     )
-    return Action(url, httpMethod)
+    return Relation(url, httpMethod)
 }
 
 /**
- * Builds a request using an [Action]
+ * Builds a request using an [Relation]
  *
- * @param action action to build the request from
+ * @param relation action to build the request from
  * @param body request body
  * @param query query parameters
  * @return [Request]
  */
-fun buildRequest(action: Action,  body: String? = null, query : Map<String,String>? = null): Request =
+fun buildRequest(
+    relation: Relation,
+    body: String? = null,
+    query: Map<String, String>? = null
+): Request =
     com.example.battleshipmobile.battleship.http.buildRequest(
-        action.url,
-        action.method,
+        relation.url,
+        relation.method,
         body,
         query
     )
@@ -90,17 +99,17 @@ fun buildRequest(action: Action,  body: String? = null, query : Map<String,Strin
  *
  * @param client HTTP client
  * @param jsonFormatter
- * @param action action to build the request from
+ * @param relation action to build the request from
  * @return [SirenEntity] response entity
  */
 suspend inline fun <reified T> buildAndSendRequest(
     client: OkHttpClient,
     jsonFormatter: Gson,
-    action: Action,
+    relation: Relation,
     body: String? = null,
-    query : Map<String, String>? = null
+    query: Map<String, String>? = null
 ): SirenEntity<T> {
-    val request = buildRequest(action, body,query)
+    val request = buildRequest(relation, body, query)
     Log.v("APP REQUEST", request.toString())
 
     return request.send(client) {
@@ -136,7 +145,15 @@ fun extractValues(uri: String, template: String): Map<String, String> {
     return values
 }
 
-fun SirenEntity<*>.filterEmbeddedEntitiesFor(rel : String) =
+fun SirenEntity<*>.filterEmbeddedEntitiesFor(rel: String) =
     this.entities
         ?.filterIsInstance<EmbeddedEntity<*>>()
-        ?.filter { (it.rel[0] == rel) } ?: throw IllegalStateException("No embedded entities in response")
+        ?.filter { (it.rel[0] == rel) }
+        ?: throw IllegalStateException("No embedded entities in response")
+
+
+fun SirenEntity<*>.filterEmbeddedLinksFor(rel: String) =
+    this.links
+        ?.filterIsInstance<EmbeddedLink>()
+        ?.filter { (it.rel[0] == rel) }
+        ?: throw IllegalStateException("No embedded links in response")

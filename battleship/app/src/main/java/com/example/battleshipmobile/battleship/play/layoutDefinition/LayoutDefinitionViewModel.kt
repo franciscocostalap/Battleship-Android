@@ -1,4 +1,4 @@
-package com.example.battleshipmobile.battleship.play.layout_definition
+package com.example.battleshipmobile.battleship.play.layoutDefinition
 
 import android.util.Log
 import androidx.compose.runtime.getValue

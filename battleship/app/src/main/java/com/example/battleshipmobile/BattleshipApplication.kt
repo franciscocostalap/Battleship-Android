@@ -6,13 +6,11 @@ import com.example.battleshipmobile.battleship.http.ResendCookiesJar
 import com.example.battleshipmobile.battleship.service.game.GameService
 import com.example.battleshipmobile.battleship.service.game.RealGameService
 import com.example.battleshipmobile.battleship.service.user.RealUserService
-import com.example.battleshipmobile.battleship.service.user.UserService
 import com.example.battleshipmobile.battleship.http.SharedPrefsCookieStore
 import com.example.battleshipmobile.battleship.service.dto.BoardDTO
 import com.example.battleshipmobile.battleship.service.dto.GameStateInfoDTO
 import com.example.battleshipmobile.battleship.service.dto.OutputUserDTO
 import com.example.battleshipmobile.battleship.service.ranking.RankingService
-import com.example.battleshipmobile.battleship.service.ranking.RankingServiceI
 import com.example.battleshipmobile.battleship.service.system_info.SysInfoService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -37,7 +35,7 @@ interface DependenciesContainer{
     val systemInfoService : SysInfoService
 }
 
-private const val host = "http://192.168.1.119:8090"
+private const val host = "https://7d79-217-129-147-107.eu.ngrok.io"
 private const val root = "$host/api"
 private const val home = "$root/"
 private const val userHome = "$root/my"

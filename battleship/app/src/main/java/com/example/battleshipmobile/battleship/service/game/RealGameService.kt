@@ -3,12 +3,10 @@ package com.example.battleshipmobile.battleship.service.game
 import com.example.battleshipmobile.battleship.http.buildRequest
 import com.example.battleshipmobile.battleship.http.handle
 import com.example.battleshipmobile.battleship.http.send
+import com.example.battleshipmobile.battleship.play.shotDefinition.GameTurn
 import com.example.battleshipmobile.battleship.service.*
-import com.example.battleshipmobile.battleship.service.dto.GameRulesDTO
-import com.example.battleshipmobile.battleship.service.dto.GameStateInfoDTO
-import com.example.battleshipmobile.battleship.service.dto.LobbyInformationDTO
-import com.example.battleshipmobile.battleship.service.dto.ShipsInfoDTO
-import com.example.battleshipmobile.battleship.service.model.State
+import com.example.battleshipmobile.battleship.service.dto.*
+import com.example.battleshipmobile.battleship.service.model.State.*
 import com.example.battleshipmobile.utils.*
 import com.google.gson.Gson
 import kotlinx.coroutines.channels.ProducerScope
@@ -37,18 +35,25 @@ class RealGameService(
         private const val CANCEL_QUEUE_REL = "cancelQueue"
         private const val LOBBY_STATE_REL = "lobby-state"
         private const val LAYOUT_DEFINITION_REL = "layout-definition"
+        private const val SHOT_DEFINITION_REL = "shotS-definition"
         private const val GAME_RULES_REL = "game-rules"
+        private const val MY_FLEET_REL = "myFleet"
+        private const val OPPONENT_FLEET_REL = "opponentFleet"
+        private const val FLEET_REL = "fleet"
         private const val SELF = "self"
         private const val USER_HOME_ERR_MESSAGE = "User home entity is not set"
         private const val GAME_STATE_ERR_MSG = "Game state entity is not set"
         private const val QUEUE_ERR_MESSAGE = "Must enter a queue first"
         private const val PROPERTIES_REQUIRED = "Response has no properties"
         private const val GAME_NOT_STARTED= "Game has not started"
-        private const val ILLEGAL_GAME_STATE = "Game state must be PLACING_SHIPS"
+        private const val MUST_BE_PLACING_SHIPS = "Game state must be PLACING_SHIPS"
+        private const val MUST_BE_PLAYING = "Game state must be PLAYING"
+        private const val BOARD_EMBEDDED_LINK_REQUIRED = "This game state requires a board embedded link"
+        private const val BOARD_EMBEDDED_ENTITY_REQUIRED =  "Board embedded entity required"
     }
 
     //TODO use caching
-
+    //TODO make it scalable to multiple games for a user
     /**
      * Siren node entities
      */
@@ -69,7 +74,7 @@ class RealGameService(
         val result = buildAndSendRequest<LobbyInformationDTO>(
             client,
             jsonFormatter,
-            action = ensureQueueAction(),
+            relation = ensureQueueAction(),
         )
 
         lobbyStateEntity = result
@@ -89,7 +94,7 @@ class RealGameService(
         val result = buildAndSendRequest<LobbyInformationDTO>(
         client,
         jsonFormatter,
-        action = ensureLobbyStateLink(),
+        relation = ensureLobbyStateLink(),
         )
 
         lobbyStateEntity = result
@@ -109,7 +114,7 @@ class RealGameService(
         val result = buildAndSendRequest<GameStateInfoDTO>(
             client,
             jsonFormatter,
-            action = ensureGameStateLink(),
+            relation = ensureGameStateLink(),
         )
 
         //Update the game state entity with the new game state since it may be different
@@ -126,17 +131,17 @@ class RealGameService(
         buildAndSendRequest<GameRulesDTO>(
             client,
             jsonFormatter,
-            action = ensureGameRulesLink(),
+            relation = ensureGameRulesLink(),
         ).properties ?: throw IllegalStateException(PROPERTIES_REQUIRED)
 
     /**
      * The user quits from the requested lobby
      */
-    override suspend fun cancel() {
+    override suspend fun cancelQueue() {
         buildAndSendRequest<Unit>(
             client,
             jsonFormatter,
-            action = ensureCancelAction(),
+            relation = ensureCancelAction(),
         )
     }
 
@@ -150,10 +155,60 @@ class RealGameService(
         buildAndSendRequest<Unit>(
             client,
             jsonFormatter,
-            action = ensureLayoutDefinitionAction(),
+            relation = ensureLayoutDefinitionAction(),
             body = body
         )
     }
+
+    /**
+     * Gets the board of one of the players
+     * @whichFleet which fleet to get the board from
+     * @return [BoardDTO]
+     */
+    override suspend fun getBoard(whichFleet: GameTurn): BoardDTO{
+        val relationKey = when(whichFleet){
+            GameTurn.MY -> MY_FLEET_REL
+            GameTurn.OPPONENT -> OPPONENT_FLEET_REL
+        }
+
+        fetchGameState()
+        val currentGameStateEntity = gameStateEntity ?: throw IllegalStateException(GAME_STATE_ERR_MSG)
+        val state = currentGameStateEntity.properties?.state ?: throw IllegalStateException(PROPERTIES_REQUIRED)
+
+        if(relationKey == MY_FLEET_REL)
+            require(state != CANCELLED) { MUST_BE_PLACING_SHIPS }
+        else
+            require(state != CANCELLED && state != PLACING_SHIPS) { MUST_BE_PLACING_SHIPS }
+
+        val embeddedLink = currentGameStateEntity.ensureEmbeddedBoardLink(relationKey)
+        //TODO board no backend esta embedded link, pq n embedded entity?? ja q queremos as properties logo, excusa-se fazer outra request.
+
+        val result = buildAndSendRequest<BoardDTO>(
+            client,
+            jsonFormatter,
+            relation = embeddedLink
+        )
+
+        return result.properties ?: throw IllegalStateException(PROPERTIES_REQUIRED)
+    }
+
+    /**
+     * Makes shots to a board
+     * @param shotsDefinitionDTO list of shots to be made
+     * @return [BoardDTO] the new board after the shots
+     */
+    override suspend fun makeShots(shotsDefinitionDTO: ShotsDefinitionDTO): BoardDTO{
+        val body = jsonFormatter.toJson(shotsDefinitionDTO)
+        val result = buildAndSendRequest<Unit>(
+            client,
+            jsonFormatter,
+            relation = ensureShotDefinitionAction(),
+            body = body
+        )
+
+        return result.getEmbeddedBoardEntity()
+    }
+
 
     /**
      * Keeps polling the game state [GameStateInfoDTO].
@@ -165,14 +220,14 @@ class RealGameService(
             try {
                 val startingGameState = gameStateEntity?.properties
                 require(startingGameState != null) { GAME_STATE_ERR_MSG }
-                if(startingGameState.state != State.PLACING_SHIPS)
+                if(startingGameState.state != PLACING_SHIPS)
                     trySend(startingGameState)
 
                 do{
                     val gameState = getGameStateInfo()
                     trySend(gameState)
                     delay(3000)
-                }while (gameState.state == State.PLACING_SHIPS)
+                }while (gameState.state == PLACING_SHIPS)
 
             }catch (e: Exception){
                 this.close(e)
@@ -251,7 +306,7 @@ class RealGameService(
                 jsonFormatter
             )
         }
-        require(responseResult.properties?.state == State.PLACING_SHIPS){ ILLEGAL_GAME_STATE }
+
         gameStateEntity = responseResult
     }
 
@@ -261,9 +316,9 @@ class RealGameService(
      * Ensures that the lobby state link exists and returns it.
      * Requires that the queue action was performed first.
      *
-     * @return [Action] Lobby state url and method
+     * @return [Relation] Lobby state url and method
      */
-    private fun ensureLobbyStateLink(): Action{
+    private fun ensureLobbyStateLink(): Relation{
         val lobbyInformationSirenEntity = lobbyStateEntity
         require(lobbyInformationSirenEntity != null) { QUEUE_ERR_MESSAGE }
         val relation = if(lobbyInformationSirenEntity.links?.find{ link ->
@@ -272,7 +327,7 @@ class RealGameService(
         else
             SELF
 
-        return ensureAction(
+        return ensureRelation(
             parentSirenEntity = lobbyInformationSirenEntity,
             relation = relation,
             rootUrl,
@@ -284,13 +339,13 @@ class RealGameService(
      * Ensures that the game state link exists and returns it.
      * Requires that the queue action was performed first and the game was already created.
      *
-     * @return [Action] Game state url and method
+     * @return [Relation] Game state url and method
      */
-    private fun ensureGameStateLink(): Action{
+    private fun ensureGameStateLink(): Relation{
         val gameStateSirenEntity = gameStateEntity
         require(gameStateSirenEntity != null) { GAME_STATE_ERR_MSG }
 
-        return ensureAction(
+        return ensureRelation(
             parentSirenEntity = gameStateSirenEntity,
             relation = SELF,
             rootUrl,
@@ -302,14 +357,14 @@ class RealGameService(
      *  Ensures that the game rules link exists and returns it.
      *  Requires that the queue action was performed first and the game was already created.
      *
-     * @return [Action] Game rules url and method
+     * @return [Relation] Game rules url and method
      */
-    private suspend fun ensureGameRulesLink(): Action{
+    private suspend fun ensureGameRulesLink(): Relation{
         gameStateEntity ?: fetchGameState()
         val gameStateSirenEntity = gameStateEntity
         require(gameStateSirenEntity != null) { GAME_STATE_ERR_MSG }
 
-        return ensureAction(
+        return ensureRelation(
             parentSirenEntity = gameStateSirenEntity,
             relation = GAME_RULES_REL,
             rootUrl,
@@ -322,14 +377,14 @@ class RealGameService(
      * Ensures that the queue action exists and returns it.
      * Requires that the user home was fetched first.
      *
-    * @return [Action] Queue url and method
+    * @return [Relation] Queue url and method
      */
-    private suspend fun ensureQueueAction(): Action {
+    private suspend fun ensureQueueAction(): Relation {
         fetchUserHomeEntity()
         val userHomeSirenEntity = userHomeEntity
         require(userHomeSirenEntity != null) { USER_HOME_ERR_MESSAGE }
 
-        return ensureAction(
+        return ensureRelation(
             parentSirenEntity = userHomeSirenEntity,
             relation = QUEUE_REL,
             rootUrl,
@@ -341,13 +396,13 @@ class RealGameService(
      * Ensures that the cancel queue action exists and returns it.
      * Requires that the queue action was performed first.
      *
-     * @return [Action] Cancel queue url and method
+     * @return [Relation] Cancel queue url and method
      */
-    private fun ensureCancelAction(): Action {
+    private fun ensureCancelAction(): Relation {
         val lobbyStateSirenEntity = lobbyStateEntity
         require(lobbyStateSirenEntity != null) { QUEUE_ERR_MESSAGE }
 
-        return ensureAction(
+        return ensureRelation(
             parentSirenEntity = lobbyStateSirenEntity,
             relation = CANCEL_QUEUE_REL,
             rootUrl,
@@ -358,18 +413,68 @@ class RealGameService(
     /**
      * Ensures that the layout definition action is available in the game state entity
      *
-     * @return [Action] layout definition action
+     * @return [Relation] layout definition action
      */
-    private suspend fun ensureLayoutDefinitionAction(): Action {
+    private suspend fun ensureLayoutDefinitionAction(): Relation {
         fetchGameState()
         val gameStateEntity = gameStateEntity
         require(gameStateEntity != null){ GAME_STATE_ERR_MSG }
 
-        return ensureAction(
+        return ensureRelation(
             parentSirenEntity = gameStateEntity,
             relation = LAYOUT_DEFINITION_REL,
             rootUrl,
             relationType = RelationType.ACTION
         )
+    }
+
+    /**
+     * Ensures that the shots definition action is available in the game state entity
+     *
+     * @return [Relation] shots definition action
+     */
+    private suspend fun ensureShotDefinitionAction(): Relation {
+        fetchGameState()
+        val gameStateEntity = gameStateEntity
+        require(gameStateEntity != null){ GAME_STATE_ERR_MSG }
+        val state = gameStateEntity.properties?.state
+        require(state == PLAYING) { MUST_BE_PLAYING }
+
+        return ensureRelation(
+            parentSirenEntity = gameStateEntity,
+            relation = SHOT_DEFINITION_REL,
+            rootUrl,
+            relationType = RelationType.ACTION
+        )
+    }
+
+    /**
+     * Ensures that the board embedded link is available in the game state entity
+     */
+    private fun SirenEntity<GameStateInfoDTO>.ensureEmbeddedBoardLink(rel: String): Relation{
+        val entity = entities?.find { subEntity ->
+            subEntity as EmbeddedLink
+            subEntity.rel.any{ it == rel }
+        }
+
+        require(entity != null) { BOARD_EMBEDDED_LINK_REQUIRED }
+
+        entity as EmbeddedLink
+        return Relation(URL(rootUrl + entity.href))
+    }
+
+    /**
+     * Ensures that the board embedded entity is available in the shots definition entity
+     */
+    private fun SirenEntity<Unit>.getEmbeddedBoardEntity(): BoardDTO {
+        val entity = entities?.find { subEntity ->
+            subEntity as EmbeddedEntity<*>
+            subEntity.rel.any { it == FLEET_REL }
+        }
+
+        require(entity != null) { BOARD_EMBEDDED_ENTITY_REQUIRED }
+
+        entity as EmbeddedEntity<*>
+        return entity.properties as BoardDTO? ?: throw IllegalStateException(PROPERTIES_REQUIRED)
     }
 }

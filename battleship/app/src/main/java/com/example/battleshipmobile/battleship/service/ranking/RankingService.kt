@@ -26,18 +26,18 @@ class RankingService(
      * Requires that the home entity was fetched first
      *
      */
-    private suspend fun ensureStatisticsURL(): Action {
+    private suspend fun ensureStatisticsURL(): Relation {
         homeEntity = super.fetchParentEntity(client, jsonFormatter, parentURL,homeEntity)
 
         val homeSirenEntity = homeEntity
         require(homeSirenEntity != null) { HOME_ERR_MESSAGE }
 
-        return ensureAction(
+        return ensureRelation(
             parentSirenEntity = homeSirenEntity,
             relation = STATISTICS_REL,
             rootUrl = rootUrl,
             relationType = RelationType.LINK,
-            embededInfo = true
+            embeddedInfo = true
         )
     }
 
@@ -49,7 +49,7 @@ class RankingService(
         val request = buildAndSendRequest<Statistics>(
             client,
             jsonFormatter,
-            action = ensureStatisticsURL(),
+            relation = ensureStatisticsURL(),
         )
 
         return getEmbeddedStatistics(request)

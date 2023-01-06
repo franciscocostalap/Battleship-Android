@@ -32,7 +32,7 @@ class QueueViewModel(private val gameService: GameService): ViewModel() {
         viewModelScope.launch {
             try{
                 gameService.cancelPolling()
-                Result.success(gameService.cancel())
+                Result.success(gameService.cancelQueue())
             }catch (e: Exception){
                 Result.failure<LobbyInformationDTO>(e)
             }
