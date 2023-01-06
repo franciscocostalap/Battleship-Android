@@ -11,9 +11,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
+
+@Composable
+fun LoadingContent(isLoading: Boolean, content: @Composable () -> Unit) {
+    if(isLoading){
+        LoadingScreen()
+    }else{
+        content()
+    }
+}
 
 @Composable
 fun LoadingScreen() {
@@ -34,4 +44,10 @@ fun LoadingScreen() {
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoadingScreenPreview() {
+    LoadingScreen()
 }
