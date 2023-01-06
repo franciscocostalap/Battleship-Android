@@ -38,6 +38,7 @@ import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
 import com.example.battleshipmobile.ui.theme.HEADER_COLOR
 import com.example.battleshipmobile.ui.views.auth.AuthenticationForm
 import com.example.battleshipmobile.ui.views.home.BATTLESHIP_IMAGE_SIZE
+import com.example.battleshipmobile.ui.views.home.BattleShipImage
 
 enum class AuthenticationFormType{
     Login,
@@ -77,14 +78,7 @@ fun AuthenticationScreen(
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.bs_icon),
-                    contentDescription = "battleship icon",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(BATTLESHIP_IMAGE_SIZE)
-                )
+                BattleShipImage(140.dp)
 
                 Text(
                     text = stringResource(R.string.app_name),

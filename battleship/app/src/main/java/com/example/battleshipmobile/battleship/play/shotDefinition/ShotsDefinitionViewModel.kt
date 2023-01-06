@@ -7,11 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.battleshipmobile.battleship.auth.AuthInfoService
 import com.example.battleshipmobile.battleship.play.shotDefinition.GameTurn.*
-import com.example.battleshipmobile.battleship.service.dto.GameRulesDTO
-import com.example.battleshipmobile.battleship.service.dto.GameStateInfoDTO
 import com.example.battleshipmobile.battleship.service.dto.ShotsDefinitionDTO
 import com.example.battleshipmobile.battleship.service.game.GameService
 import com.example.battleshipmobile.battleship.service.model.Board
+import com.example.battleshipmobile.battleship.service.model.GameRules
+import com.example.battleshipmobile.battleship.service.model.GameStateInfo
 import com.example.battleshipmobile.battleship.service.model.Square
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -49,8 +49,8 @@ class ShotsDefinitionViewModel(
                 opponentBoard
             ) = awaitAll(gameStateDTO, gameRulesDTO, myBoardDTO, opponentBoardDTO)
 
-            gameRules as GameRulesDTO
-            gameState as GameStateInfoDTO
+            gameRules as GameRules
+            gameState as GameStateInfo
             myBoard as Board
             opponentBoard as Board
 

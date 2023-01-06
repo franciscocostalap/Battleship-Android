@@ -31,10 +31,10 @@ fun CustomProgressBar(
 private fun VerticalProgressBar(
     progress: Float
 ) {
-    Row (
+    Column (
         modifier = Modifier
             .fillMaxHeight()
-            .padding(20.dp)
+            .padding(10.dp)
         ){
 
         Box(

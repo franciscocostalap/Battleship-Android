@@ -49,7 +49,7 @@ fun FleetCompositionView(
     val shipSquareSize = (SQUARE_BASE_SIDE / (SQUARE_SHRINK_FACTOR * 10)).dp
     LazyColumn(
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.SpaceBetween,
+        verticalArrangement = Arrangement.Top,
         modifier = Modifier.padding(16.dp).height(height).width(shipSquareSize.times(5))
     ) {
 
@@ -117,8 +117,7 @@ fun FleetCompositionControlButton(
     imageVector: ImageVector,
     isEnabled: Boolean = true
 ) {
-    //TODO: change Background color depending on enabled/disabled
-    val iconBackgroundColor = if (isEnabled) MaterialTheme.colors.primary else GRAY_8
+    val iconBackgroundColor = if (isEnabled) MaterialTheme.colors.primary else MaterialTheme.colors.onSecondary
     IconButton(
         onClick = onClick,
         modifier = Modifier

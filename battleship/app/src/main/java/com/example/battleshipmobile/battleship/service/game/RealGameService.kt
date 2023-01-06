@@ -56,7 +56,6 @@ class RealGameService(
         private const val BOARD_EMBEDDED_ENTITY_REQUIRED =  "Board embedded entity required"
     }
 
-    //TODO use caching
     //TODO make it scalable to multiple games for a user
     /**
      * Siren node entities
@@ -279,7 +278,7 @@ class RealGameService(
      * Cancels the current polling
      */
     override fun cancelPolling(){
-        lobbyProducerScope?.close() //TODO change how to get the scope
+        lobbyProducerScope?.close()
     }
 
     /**

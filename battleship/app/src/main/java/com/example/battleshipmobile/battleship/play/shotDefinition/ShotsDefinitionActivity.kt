@@ -7,6 +7,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import com.example.battleshipmobile.DependenciesContainer
+import com.example.battleshipmobile.battleship.home.HomeActivity
+import com.example.battleshipmobile.ui.showToast
+import com.example.battleshipmobile.ui.views.BackPressHandler
 import com.example.battleshipmobile.utils.viewModelInit
 
 class ShotsDefinitionActivity : ComponentActivity() {
@@ -51,8 +54,12 @@ class ShotsDefinitionActivity : ComponentActivity() {
                     onOpponentBoardSquareClicked = { square ->
                         viewModel.onOpponentBoardSquareClicked(square)
                     },
+                    onOwnBoardSquareClicked = { square ->
+                        showToast("You can't shoot on your own board!")
+                    },
                     onSubmitShotsClick = {
                         viewModel.submitShots()
+                        showToast("Shots fired!")
                     },
                     onTimeout = {
                         viewModel.onTimeout()
@@ -65,7 +72,13 @@ class ShotsDefinitionActivity : ComponentActivity() {
                     timeToDefineShot = shotsDefinitionRules.shotsDefinitionTimeout,
                 )
             }
+            BackPressHandler {
+                onBackClicked()
+            }
         }
     }
-
+    private fun onBackClicked() {
+        HomeActivity.navigate(this)
+        finish()
+    }
 }

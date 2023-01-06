@@ -9,7 +9,7 @@ android {
     compileSdk 33
 
     packagingOptions {
-       // resources.excludes.add("META-INF/*")  //this line needs to be commented out to use the Layout inspector with compose
+        //resources.excludes.add("META-INF/*")  //this line needs to be commented out to use the Layout inspector with compose
         jniLibs {
             useLegacyPackaging = true
         }
