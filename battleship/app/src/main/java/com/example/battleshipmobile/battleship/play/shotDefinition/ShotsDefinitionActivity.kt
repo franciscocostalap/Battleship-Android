@@ -7,7 +7,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import com.example.battleshipmobile.DependenciesContainer
+import com.example.battleshipmobile.R
+import com.example.battleshipmobile.battleship.home.HomeActivity
 import com.example.battleshipmobile.ui.views.LoadingContent
+import com.example.battleshipmobile.ui.views.general.Alert
 import com.example.battleshipmobile.utils.viewModelInit
 
 class ShotsDefinitionActivity : ComponentActivity() {
@@ -31,7 +34,17 @@ class ShotsDefinitionActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-
+            val winner = viewModel.winner
+            if(winner != null){
+                Alert(
+                    message = if(winner == GameTurn.MY) R.string.game_won else R.string.game_lost,
+                    buttonText = R.string.ok,
+                    onDismiss = {
+                        HomeActivity.navigate(this)
+                        finish()
+                    }
+                )
+            }
             val shotsDefinitionRules = viewModel.shotsDefinitionRules
             val turn = viewModel.turn
             val boards = viewModel.boards
@@ -46,6 +59,7 @@ class ShotsDefinitionActivity : ComponentActivity() {
                     boards = boards,
                     turn = turn,
                     remainingTime = shotsDefinitionRules.shotsDefinitionTimeout,
+                    remainingShots = shotsDefinitionRules.shotsPerTurn - viewModel.currentShots,
                     timerResetToggle = viewModel.timerResetToggle
                 )
 

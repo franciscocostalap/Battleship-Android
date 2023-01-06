@@ -9,10 +9,9 @@ import com.example.battleshipmobile.battleship.auth.AuthInfoService
 import com.example.battleshipmobile.battleship.play.shotDefinition.GameTurn.*
 import com.example.battleshipmobile.battleship.service.dto.ShotsDefinitionDTO
 import com.example.battleshipmobile.battleship.service.game.GameService
-import com.example.battleshipmobile.battleship.service.model.Board
-import com.example.battleshipmobile.battleship.service.model.GameRules
-import com.example.battleshipmobile.battleship.service.model.GameStateInfo
-import com.example.battleshipmobile.battleship.service.model.Square
+import com.example.battleshipmobile.battleship.service.model.*
+import com.example.battleshipmobile.battleship.service.model.State.*
+import com.example.battleshipmobile.ui.views.general.ErrorAlert
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.collectLatest
@@ -36,9 +35,13 @@ class GameViewModel(
     private set
     var shotsDefinitionRules: ShotsDefinitionRules? = null
     private set
-    var gameCurrentState: GameStateInfo? by mutableStateOf(null)
-    private set
     var isLoading: Boolean by mutableStateOf(false)
+    private set
+    var winner: GameTurn? by mutableStateOf(null)
+    private set
+    var currentShots: Int by mutableStateOf(shotsDefinitionRules?.shotsPerTurn ?: 0)
+    private set
+    var isTimedOut: Boolean by mutableStateOf(false)
     private set
 
     init {
@@ -115,6 +118,13 @@ class GameViewModel(
 
     fun waitForOpponentPlay() {
         viewModelScope.launch {
+            //winner check
+            val gameInfo = gameService.getGameStateInfo()
+            if(gameInfo.state == FINISHED) {
+                winner = if(gameInfo.turnID == authService.uid) OPPONENT else MY
+                return@launch
+            }
+
             val myBoardFlow = gameService.pollMyBoard()
             myBoardFlow.collectLatest { myBoardState ->
                 if(myBoardState != boards?.myBoard){
@@ -126,8 +136,8 @@ class GameViewModel(
         }
     }
 
-    fun onTimeout(){
-        TODO()
+    fun onTimeout() {
+        isTimedOut = true
     }
 
 }

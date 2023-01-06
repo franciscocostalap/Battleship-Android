@@ -13,8 +13,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.battleshipmobile.battleship.play.Orientation
-import com.example.battleshipmobile.battleship.play.ProgressTimer
 import com.example.battleshipmobile.battleship.play.StatelessProgressBar
+import com.example.battleshipmobile.battleship.play.TimerLogic
 import com.example.battleshipmobile.battleship.service.model.Board
 import com.example.battleshipmobile.battleship.service.model.GameRules
 import com.example.battleshipmobile.battleship.service.model.Square
@@ -50,38 +50,29 @@ fun LayoutDefinitionScreen(
     handlers: LayoutDefinitionHandlers = LayoutDefinitionHandlers(),
     timeToDefineLayout: Long
 ) {
-    var progress by rememberSaveable { mutableStateOf(1.0F) }
-    val timeoutSeconds = timeToDefineLayout / 1000
-
-    var remainingTime by rememberSaveable { mutableStateOf(timeoutSeconds) }
-    var isOver by rememberSaveable { mutableStateOf(false) }
+    var timerProgress by rememberSaveable { mutableStateOf(1.0F) }
 
     BattleshipMobileTheme {
-
             StatelessLayoutDefinitionScreen(
                 state = state,
                 handlers = handlers,
                 screenConfiguration = LocalConfiguration.current,
-                timerProgress = progress,
+                timerProgress = timerProgress,
             )
-
     }
 
-    LaunchedEffect(key1 = true){
-        while(!isOver) {
-            if (remainingTime == 0L) {
-                handlers.onTimeout()
-                isOver = true
-            }
-            delay(1000)
-            val updatedTime = remainingTime - 1
-            remainingTime = updatedTime.coerceAtLeast(0L)
-
-            val newProgress = remainingTime / timeoutSeconds.toFloat()
-            progress = newProgress.coerceAtLeast(0F)
+    TimerLogic(
+        timeToDefineLayout,
+        onProgressChange = {
+            timerProgress = it
+        },
+        onTimeout = {
+            handlers.onTimeout()
         }
-    }
+    )
 }
+
+
 
 @Composable
 fun StatelessLayoutDefinitionScreen(

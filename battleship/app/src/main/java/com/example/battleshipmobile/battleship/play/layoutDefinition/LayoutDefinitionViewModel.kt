@@ -104,8 +104,7 @@ class LayoutDefinitionViewModel(private val gameService: GameService) : ViewMode
                 throw e
             }
         }.invokeOnCompletion {
-            if(it == null) isSubmittingDisabled = true
-            else isSubmittingDisabled = false
+            isSubmittingDisabled = it == null
         }
         isSubmittingDisabled = true
         return true

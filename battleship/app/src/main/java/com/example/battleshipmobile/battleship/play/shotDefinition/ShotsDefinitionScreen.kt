@@ -1,5 +1,6 @@
 package com.example.battleshipmobile.battleship.play.shotDefinition
 
+import com.example.battleshipmobile.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
@@ -8,9 +9,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.battleshipmobile.battleship.play.ProgressTimer
 import com.example.battleshipmobile.battleship.service.model.Board
 import com.example.battleshipmobile.battleship.service.model.Square
 import com.example.battleshipmobile.ui.TestTags
@@ -38,13 +39,14 @@ data class ShotsDefinitionScreenState(
     val turn: GameTurn,
     val remainingTime: Long,
     val timerResetToggle: Boolean,
+    val remainingShots: Int
 )
 
 @Composable
 fun ShotsDefinitionScreen(
     state: ShotsDefinitionScreenState,
     handlers: ShotsDefinitionHandlers = ShotsDefinitionHandlers(),
-    timeToDefineShot: Long
+    timeToDefineShot: Long,
 ) {
     BattleshipMobileTheme {
         Scaffold(
@@ -66,21 +68,37 @@ fun ShotsDefinitionScreen(
                             .padding(16.dp),
                         onSquareClicked = {}
                     )
-                    Row(
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        verticalArrangement = Arrangement.SpaceBetween
                     ) {
-
-                        Button(
-                            onClick = { handlers.onSubmitShotsClick() }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text("Submit")
-                        }
+                            val turn =
+                                if (state.turn == GameTurn.MY)
+                                    stringResource(R.string.my_turn)
+                                else
+                                    stringResource(R.string.opponent_turn)
+                            Text(turn)
 
-                        ProgressTimer(
-                            timeToDefineShot,
-                            onTimeout = handlers.onTimeout
-                        )
+
+                            Text(stringResource(R.string.remaining_shots) + "${state.remainingShots}")
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+
+                            Button(
+                                onClick = { handlers.onSubmitShotsClick() }
+                            ) {
+                                Text(stringResource(R.string.confirm))
+                            }
+
+                            //TIMER
+                        }
                     }
 
                     BoardView(
@@ -114,7 +132,8 @@ fun DefaultPreview() {
             boards = gameBoards,
             turn = GameTurn.MY,
             remainingTime = 60L,
-            timerResetToggle = false
+            timerResetToggle = false,
+            remainingShots = 1
         ),
         timeToDefineShot = 60L
     )

@@ -41,4 +41,11 @@
     <string name="authors">Autores:</string>
     <string name="timeout_placeships_message">O tempo para colocar navios chegou ao fim.</string>
     <string name="timeout_title">Tempo esgotado</string>
+    <string name="game_won">Ganhaste!</string>
+    <string name="empty" />
+    <string name="game_lost">Perdeste!</string>
+    <string name="my_turn">Teu turno</string>
+    <string name="opponent_turn">Turno do adversário</string>
+    <string name="confirm">Confirma</string>
+    <string name="remaining_shots">"Tiros em falta: "</string>
 </resources>
