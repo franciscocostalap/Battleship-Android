@@ -6,7 +6,8 @@ data class Board(
     val side: Int,
     val shots: List<Square>,
     val hits: List<Square>,
-    val shipParts: List<Square>
+    val shipParts: List<Square>,
+    val aimedShots: List<Square> = emptyList(),
 ){
     companion object
 }
@@ -15,7 +16,8 @@ enum class SquareType{
     Shot,
     Hit,
     ShipPart,
-    Water
+    Water,
+    AimedShot
 }
 
 fun Board.Companion.empty(side: Int): Board {
@@ -23,7 +25,8 @@ fun Board.Companion.empty(side: Int): Board {
         side = side,
         shots = listOf(),
         hits = listOf(),
-        shipParts = listOf()
+        shipParts = listOf(),
+        aimedShots = listOf()
     )
 }
 
@@ -91,7 +94,8 @@ fun Board.toMatrix(): Map<Square, SquareType>{
     return listOf(
         hits.map { it to SquareType.Hit },
         shots.map { it to SquareType.Shot } ,
-        shipParts.map { it to SquareType.ShipPart }
+        shipParts.map { it to SquareType.ShipPart },
+        aimedShots.map { it to SquareType.AimedShot }
     ).flatten()
      .toMap()
 }

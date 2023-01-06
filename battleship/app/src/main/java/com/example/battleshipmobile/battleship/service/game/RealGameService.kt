@@ -39,7 +39,7 @@ class RealGameService(
         private const val CANCEL_QUEUE_REL = "cancelQueue"
         private const val LOBBY_STATE_REL = "lobby-state"
         private const val LAYOUT_DEFINITION_REL = "layout-definition"
-        private const val SHOT_DEFINITION_REL = "shotS-definition"
+        private const val SHOT_DEFINITION_REL = "shots-definition"
         private const val GAME_RULES_REL = "game-rules"
         private const val MY_FLEET_REL = "myFleet"
         private const val OPPONENT_FLEET_REL = "opponentFleet"
@@ -57,6 +57,8 @@ class RealGameService(
     }
 
     //TODO make it scalable to multiple games for a user
+
+
     /**
      * Siren node entities
      */
@@ -65,9 +67,11 @@ class RealGameService(
     private var gameStateEntity: SirenEntity<GameStateInfoDTO>? = null
 
     /**
-     * flow producer scope to allow cancelling
+     * Producer Scopes of the multiple polling operations
      */
-     private var lobbyProducerScope: ProducerScope<LobbyInformation>? = null
+    private var lobbyProducerScope: ProducerScope<LobbyInformationDTO>? = null
+    private var gameStateProducerScope: ProducerScope<GameStateInfo>? = null
+    private var myBoardProducerScope: ProducerScope<Board>? = null
 
     /**
      * Queues up a user to play returning the lobby information.
@@ -208,7 +212,7 @@ class RealGameService(
         val result = buildAndSendRequest<Unit>(
             client,
             jsonFormatter,
-            relation = ensureShotDefinitionAction(),
+            relation = ensureShotDefinitionAction(embedded = true),
             body = body
         )
 
@@ -225,22 +229,17 @@ class RealGameService(
      */
     override suspend fun pollGameStateInfo(): Flow<GameStateInfo> {
         return callbackFlow {
-            try {
+            gameStateProducerScope = this
+            this.use{
                 val startingGameState = gameStateEntity?.properties
                 require(startingGameState != null) { GAME_STATE_ERR_MSG }
-                if(startingGameState.state != PLACING_SHIPS)
-                    trySend(startingGameState.toGameStateInfo())
 
                 do{
                     val gameState = getGameStateInfo()
                     trySend(gameState)
                     delay(3000)
-                }while (gameState.state == PLACING_SHIPS)
+                }while (true)
 
-            }catch (e: Exception){
-                this.close(e)
-            }finally {
-                this.close()
             }
         }
     }
@@ -252,8 +251,8 @@ class RealGameService(
      */
     override suspend fun pollLobbyInformation(): Flow<LobbyInformation> {
         return callbackFlow {
-            try {
-                lobbyProducerScope = this
+            lobbyProducerScope = this
+            this.use{
                 //Fast path
                 val startingLobbyState = lobbyStateEntity?.properties
                 require (startingLobbyState != null) { QUEUE_ERR_MESSAGE }
@@ -266,18 +265,40 @@ class RealGameService(
                     delay(1500L)
                 }while(lobbyInformation.gameID == null)
 
-            }catch (e: Exception) {
-                this.close(e)
-            }finally {
-                this.close()
             }
         }
     }
 
+    override suspend fun pollMyBoard(): Flow<Board> {
+        return callbackFlow {
+            myBoardProducerScope = this
+            this.use {
+                do{
+                    val board = getBoard(GameTurn.MY)
+                    trySend(board)
+                    delay(3000L)
+                }while(true)
+            }
+        }
+    }
+
+    override suspend fun cancelPollMyBoard() {
+        myBoardProducerScope?.close()
+    }
+
     /**
-     * Cancels the current polling
+     * Cancels the polling of the lobby information.
      */
     override fun cancelPolling(){
+        lobbyProducerScope?.close()
+    override suspend fun cancelPollingGameState() {
+        gameStateProducerScope?.close()
+    }
+
+    /**
+     * Cancels the current lobby polling
+     */
+    override fun cancelLobbyPolling(){
         lobbyProducerScope?.close()
     }
 
@@ -424,7 +445,7 @@ class RealGameService(
      *
      * @return [Relation] shots definition action
      */
-    private suspend fun ensureShotDefinitionAction(): Relation {
+    private suspend fun ensureShotDefinitionAction(embedded: Boolean): Relation {
         fetchGameState()
         val gameStateEntity = gameStateEntity
         require(gameStateEntity != null){ GAME_STATE_ERR_MSG }
@@ -435,7 +456,8 @@ class RealGameService(
             parentSirenEntity = gameStateEntity,
             relation = SHOT_DEFINITION_REL,
             rootUrl,
-            relationType = RelationType.ACTION
+            relationType = RelationType.ACTION,
+            embeddedInfo = embedded
         )
     }
 

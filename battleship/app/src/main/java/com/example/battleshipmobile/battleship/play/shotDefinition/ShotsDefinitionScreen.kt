@@ -1,5 +1,6 @@
 package com.example.battleshipmobile.battleship.play.shotDefinition
 
+import com.example.battleshipmobile.R
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,8 +11,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.play.Orientation
 import com.example.battleshipmobile.battleship.play.ProgressTimer
 import com.example.battleshipmobile.battleship.service.model.Board
@@ -33,16 +36,16 @@ enum class GameTurn {
 data class ShotsDefinitionHandlers(
     val onOpponentBoardSquareClicked: (Square) -> Unit = {},
     val onOwnBoardSquareClicked : (Square) -> Unit = {},
-    val onSubmitShotsClick: (List<Square>) -> Unit = {},
+    val onSubmitShotsClick: () -> Unit = {},
     val onTimeout: () -> Unit = {}
 )
 
 data class ShotsDefinitionScreenState(
     val boards: GameBoards,
-    val currentShots: List<Square>,
     val turn: GameTurn,
     val remainingTime: Long,
     val timerResetToggle: Boolean,
+    val remainingShots: Int
 )
 
 
@@ -51,7 +54,7 @@ data class ShotsDefinitionScreenState(
 fun ShotsDefinitionScreen(
     state: ShotsDefinitionScreenState,
     handlers: ShotsDefinitionHandlers = ShotsDefinitionHandlers(),
-    timeToDefineShot: Long
+    timeToDefineShot: Long,
 ) {
 
     BattleshipMobileTheme {
@@ -238,11 +241,20 @@ fun PortraitShotsDefinitionScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Button(
-                        onClick = { handlers.onSubmitShotsClick(state.currentShots) }
+                        onClick = { handlers.onSubmitShotsClick() }
                     ) {
-                        Text("Submit")
+                        Text(stringResource(R.string.confirm))
                     }
 
+                    val turn =
+                        if (state.turn == GameTurn.MY)
+                            stringResource(R.string.my_turn)
+                        else
+                            stringResource(R.string.opponent_turn)
+                    Text(turn)
+
+
+                    Text(stringResource(R.string.remaining_shots) + "${state.remainingShots}")
                 }
 
                 Column(
@@ -251,6 +263,7 @@ fun PortraitShotsDefinitionScreen(
                         .weight(2f),
                     verticalArrangement = Arrangement.Center
                 ) {
+                    //mudar timer
                     ProgressTimer(
                         timeToDefineShot,
                         onTimeout = handlers.onTimeout
@@ -291,10 +304,10 @@ fun PortraitScreenPreview() {
             myBoard = board,
             opponentBoard = board
         ),
-        currentShots = emptyList(),
         turn = GameTurn.MY,
         remainingTime = 0,
-        timerResetToggle = false
+        timerResetToggle = false,
+        remainingShots = 1
     )
     BattleshipMobileTheme {
         Scaffold(
@@ -311,27 +324,27 @@ fun PortraitScreenPreview() {
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun DefaultPreview() {
-//
-//    val board = Board(
-//        side = 10,
-//        shots = listOf(),
-//        hits = listOf(),
-//        shipParts = listOf()
-//    )
-//
-//    val gameBoards = GameBoards(board, board)
-//
-//    ShotsDefinitionScreen(
-//        state = ShotsDefinitionScreenState(
-//            boards = gameBoards,
-//            currentShots = listOf(),
-//            turn = GameTurn.MY,
-//            remainingTime = 60L,
-//            timerResetToggle = false
-//        ),
-//        timeToDefineShot = 60L
-//    )
-//}
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+
+    val board = Board(
+        side = 10,
+        shots = listOf(),
+        hits = listOf(),
+        shipParts = listOf()
+    )
+
+    val gameBoards = GameBoards(board, board)
+
+    ShotsDefinitionScreen(
+        state = ShotsDefinitionScreenState(
+            boards = gameBoards,
+            turn = GameTurn.MY,
+            remainingTime = 60L,
+            timerResetToggle = false,
+            remainingShots = 1
+        ),
+        timeToDefineShot = 60L
+    )
+}

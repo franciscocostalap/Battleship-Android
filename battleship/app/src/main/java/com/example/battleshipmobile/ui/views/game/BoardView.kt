@@ -46,7 +46,6 @@ fun BoardView(
 
 fun squareSide(side: Int): Double {
     return  SQUARE_BASE_SIDE / (SQUARE_SHRINK_FACTOR * side)
-
 }
 
 @Composable
@@ -61,6 +60,7 @@ fun SquareView(
         SquareType.ShipPart -> INDIGO_7
         SquareType.Water -> GRAY_4
         SquareType.Hit -> Color.Red
+        SquareType.AimedShot -> Color.Yellow
     }
 
     val side = squareSide(boardSide).dp

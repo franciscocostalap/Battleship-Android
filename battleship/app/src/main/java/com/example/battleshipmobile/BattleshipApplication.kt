@@ -35,7 +35,7 @@ interface DependenciesContainer{
     val systemInfoService : SysInfoService
 }
 
-private const val host = "https://7d79-217-129-147-107.eu.ngrok.io"
+private const val host = "http://10.0.2.2:8080"
 private const val root = "$host/api"
 private const val home = "$root/"
 private const val userHome = "$root/my"
@@ -56,10 +56,6 @@ class BattleshipApplication : Application(), DependenciesContainer {
         GsonBuilder()
             .registerTypeHierarchyAdapter(
                 SubEntity::class.java,
-                SubEntityDeserializer<OutputUserDTO>(OutputUserDTO::class.java)
-            )
-            .registerTypeHierarchyAdapter(
-                SubEntity::class.java,
                 SubEntityDeserializer<GameStateInfoDTO>(GameStateInfoDTO::class.java)
             )
             .registerTypeHierarchyAdapter(
@@ -68,11 +64,11 @@ class BattleshipApplication : Application(), DependenciesContainer {
             )
             .registerTypeHierarchyAdapter(
                 SubEntity::class.java,
-                SubEntityDeserializer<BoardDTO>(BoardDTO::class.java)
+                SubEntityDeserializer<UserInfo>(UserInfo::class.java)
             )
             .registerTypeHierarchyAdapter(
                 SubEntity::class.java,
-                SubEntityDeserializer<UserInfo>(UserInfo::class.java)
+                SubEntityDeserializer<BoardDTO>(BoardDTO::class.java)
             )
             .create()
     }

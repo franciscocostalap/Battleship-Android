@@ -55,6 +55,21 @@ interface GameService : AppService {
     suspend fun pollGameStateInfo(): Flow<GameStateInfo>
 
     /**
+     * Poll the board of the given player.
+     */
+    suspend fun pollMyBoard(): Flow<Board>
+
+    /**
+     * Cancels the polling of the board.
+     */
+    suspend fun cancelPollMyBoard()
+
+    /**
+     * Cancel the polling of the game state.
+     */
+    suspend fun cancelPollingGameState()
+
+    /**
      * Keeps polling the lobby information [LobbyInformationDTO].
      *
      * @return the flow of the lobby information
@@ -64,7 +79,7 @@ interface GameService : AppService {
     /**
      * Cancels the current polling
      */
-    fun cancelPolling()
+    fun cancelLobbyPolling()
 
     /**
      * Gets the board of one of the players

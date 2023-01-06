@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
+import java.util.Optional.empty
 
 @Composable
 fun ErrorAlert(
@@ -29,6 +30,21 @@ fun ErrorAlert(
 ) {
     AlertImpl(
         title = stringResource(id = title),
+        message = stringResource(id = message),
+        buttonText = stringResource(id = buttonText),
+        onDismiss = onDismiss
+    )
+}
+
+@Composable
+fun Alert(
+    @StringRes title: Int? = null,
+    @StringRes message: Int,
+    @StringRes buttonText: Int,
+    onDismiss: () -> Unit = { }
+) {
+    AlertImpl(
+        title = stringResource(id = title ?: R.string.empty),
         message = stringResource(id = message),
         buttonText = stringResource(id = buttonText),
         onDismiss = onDismiss

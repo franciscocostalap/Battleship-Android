@@ -7,6 +7,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import com.example.battleshipmobile.DependenciesContainer
+import com.example.battleshipmobile.R
+import com.example.battleshipmobile.battleship.home.HomeActivity
+import com.example.battleshipmobile.ui.views.LoadingContent
+import com.example.battleshipmobile.ui.views.general.Alert
 import com.example.battleshipmobile.battleship.home.HomeActivity
 import com.example.battleshipmobile.ui.showToast
 import com.example.battleshipmobile.ui.views.BackPressHandler
@@ -24,41 +28,55 @@ class ShotsDefinitionActivity : ComponentActivity() {
     }
 
     private val dependencies by lazy { application as DependenciesContainer }
-    private val viewModel: ShotsDefinitionViewModel by viewModels {
+    private val viewModel: GameViewModel by viewModels {
         viewModelInit {
-            ShotsDefinitionViewModel(dependencies.gameService, dependencies.authInfoService)
+            GameViewModel(dependencies.gameService, dependencies.authInfoService)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-
+            val winner = viewModel.winner
+            if(winner != null){
+                Alert(
+                    message = if(winner == GameTurn.MY) R.string.game_won else R.string.game_lost,
+                    buttonText = R.string.ok,
+                    onDismiss = {
+                        HomeActivity.navigate(this)
+                        finish()
+                    }
+                )
+            }
             val shotsDefinitionRules = viewModel.shotsDefinitionRules
             val turn = viewModel.turn
-            if (shotsDefinitionRules == null && turn == null)
-                viewModel.initializeGame()
-
-
             val boards = viewModel.boards
-            if (shotsDefinitionRules != null && boards != null && turn != null) {
+
+            LoadingContent(isLoading = viewModel.isLoading) {
+                // Loading checks
+                checkNotNull(boards)
+                checkNotNull(shotsDefinitionRules)
+                checkNotNull(turn)
+
                 val screenState = ShotsDefinitionScreenState(
                     boards = boards,
-                    currentShots = viewModel.currentShots,
                     turn = turn,
                     remainingTime = shotsDefinitionRules.shotsDefinitionTimeout,
+                    remainingShots = shotsDefinitionRules.shotsPerTurn - viewModel.currentShots,
                     timerResetToggle = viewModel.timerResetToggle
                 )
 
+                if(turn != GameTurn.MY) viewModel.waitForOpponentPlay()
+
                 val screenHandlers = ShotsDefinitionHandlers(
                     onOpponentBoardSquareClicked = { square ->
-                        viewModel.onOpponentBoardSquareClicked(square)
+                        viewModel.handleShot(square)
                     },
                     onOwnBoardSquareClicked = { square ->
                         showToast("You can't shoot on your own board!")
                     },
                     onSubmitShotsClick = {
-                        viewModel.submitShots()
+                        viewModel.trySubmitShots()
                         showToast("Shots fired!")
                     },
                     onTimeout = {

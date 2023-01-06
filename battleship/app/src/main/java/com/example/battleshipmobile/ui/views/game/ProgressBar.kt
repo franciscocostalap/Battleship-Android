@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.battleshipmobile.battleship.play.BarColors
 import com.example.battleshipmobile.battleship.play.Orientation
 import com.example.battleshipmobile.ui.theme.Blue200
 import com.example.battleshipmobile.ui.theme.Blue700
@@ -18,18 +19,20 @@ import com.example.battleshipmobile.ui.theme.Blue700
 fun CustomProgressBar(
     progress: Float,
     orientation: Orientation = Orientation.HORIZONTAL,
+    barColor: BarColors = BarColors(Blue200, Blue700)
 ){
     if(orientation == Orientation.HORIZONTAL) {
-        HorizontalProgressBar(progress = progress)
+        HorizontalProgressBar(progress = progress, barColor = barColor)
     } else {
-        VerticalProgressBar(progress = progress)
+        VerticalProgressBar(progress = progress, barColor = barColor)
     }
 
 }
 
 @Composable
 private fun VerticalProgressBar(
-    progress: Float
+    progress: Float,
+    barColor: BarColors = BarColors(Blue200, Blue700)
 ) {
     Column (
         modifier = Modifier
@@ -46,14 +49,14 @@ private fun VerticalProgressBar(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(9.dp))
-                    .background(Blue200)
+                    .background(barColor.background)
             )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(progress)
                     .clip(RoundedCornerShape(9.dp))
-                    .background(Blue700)
+                    .background(barColor.foreground)
                     .animateContentSize()
             )
         }
@@ -63,7 +66,8 @@ private fun VerticalProgressBar(
 
 @Composable
 private fun HorizontalProgressBar(
-    progress: Float
+    progress: Float,
+    barColor: BarColors = BarColors(Blue200, Blue700),
 ){
     Column(
         modifier = Modifier
@@ -79,14 +83,14 @@ private fun HorizontalProgressBar(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(9.dp))
-                    .background(Blue200)
+                    .background(barColor.background)
             )
             Box(
                 modifier = Modifier
                     .fillMaxWidth(progress)
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(9.dp))
-                    .background(Blue700)
+                    .background(barColor.foreground)
                     .animateContentSize()
             )
         }

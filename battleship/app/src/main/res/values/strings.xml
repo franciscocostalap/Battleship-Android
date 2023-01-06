@@ -42,4 +42,11 @@
     <string name="authors">Authors:</string>
     <string name="timeout_title">Timeout</string>
     <string name="timeout_placeships_message">The time to place ships is over.</string>
+    <string name="empty" translatable="false" />
+    <string name="game_won">You won!</string>
+    <string name="game_lost">You lost!</string>
+    <string name="my_turn">It is your turn</string>
+    <string name="opponent_turn">It is your opponent\'s turn</string>
+    <string name="confirm">Confirm</string>
+    <string name="remaining_shots">Remaining shots:</string>
 </resources>

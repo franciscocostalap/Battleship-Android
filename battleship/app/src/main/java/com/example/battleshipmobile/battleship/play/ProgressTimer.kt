@@ -1,11 +1,13 @@
 package com.example.battleshipmobile.battleship.play
 
-import android.util.Log
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.Color
+import com.example.battleshipmobile.ui.theme.Blue200
+import com.example.battleshipmobile.ui.theme.Blue700
 import com.example.battleshipmobile.ui.views.game.CustomProgressBar
 import kotlinx.coroutines.delay
 
@@ -14,30 +16,22 @@ enum class Orientation {
     VERTICAL
 }
 
-/**
- *  Displays a progress timer bar that counts down from timeout to 0
- *
- *  @param timeout the time in milliseconds to count down from
- *  @param onTimeout the function to call when the timer reaches 0
- */
 @Composable
-fun ProgressTimer(
-    timeout: Long,
+fun TimerLogic(
+    timeToDefineLayout: Long,
+    onProgressChange: (progress: Float) -> Unit,
     onTimeout: () -> Unit,
-    orientation : Orientation = Orientation.HORIZONTAL,
-
-) {
-    var progress by rememberSaveable { mutableStateOf(1.0F) }
-    val timeoutSeconds = timeout / 1000
+    resetToggle: Boolean = false
+){
+    val timeoutSeconds = timeToDefineLayout / 1000
 
     var remainingTime by rememberSaveable { mutableStateOf(timeoutSeconds) }
     var isOver by rememberSaveable { mutableStateOf(false) }
 
-
-    StatelessProgressBar(
-        progress = progress,
-        orientation = orientation
-    )
+    if(resetToggle){
+        remainingTime = timeoutSeconds
+        isOver = false
+    }
 
     LaunchedEffect(key1 = true){
         while(!isOver) {
@@ -50,15 +44,21 @@ fun ProgressTimer(
             remainingTime = updatedTime.coerceAtLeast(0L)
 
             val newProgress = remainingTime / timeoutSeconds.toFloat()
-            progress = newProgress.coerceAtLeast(0F)
+            onProgressChange(newProgress.coerceAtLeast(0F))
         }
     }
 }
 
+data class BarColors(
+    val background: Color,
+    val foreground: Color
+)
+
 @Composable
 fun StatelessProgressBar(
     progress : Float,
-    orientation: Orientation = Orientation.HORIZONTAL
+    orientation: Orientation = Orientation.HORIZONTAL,
+    barColor: BarColors = BarColors(Blue200, Blue700),
 ){
     val size by animateFloatAsState(
         targetValue = progress,
@@ -68,5 +68,5 @@ fun StatelessProgressBar(
             easing = LinearOutSlowInEasing
         )
     )
-    CustomProgressBar(progress = size, orientation = orientation)
+    CustomProgressBar(progress = size, orientation = orientation, barColor = barColor)
 }
