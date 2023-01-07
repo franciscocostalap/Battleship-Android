@@ -41,6 +41,7 @@
     <string name="info_title">Information</string>
     <string name="authors">Authors:</string>
     <string name="timeout_title">Timeout</string>
+    <string name="timeout_shots_message">The time to shoot is over.</string>
     <string name="timeout_placeships_message">The time to place ships is over.</string>
     <string name="empty" translatable="false" />
     <string name="game_won">You won!</string>

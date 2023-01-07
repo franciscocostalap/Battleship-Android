@@ -59,7 +59,7 @@ class ShotsDefinitionActivity : ComponentActivity() {
             if(isTimedOut) {
                 ErrorAlert(
                     title = R.string.timeout_title,
-                    message = R.string.timeout_placeships_message,
+                    message = R.string.timeout_shots_message,
                     onDismiss = ::dismissAlert
                 )
             }

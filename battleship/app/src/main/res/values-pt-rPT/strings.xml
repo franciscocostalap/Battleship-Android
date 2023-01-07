@@ -39,6 +39,7 @@
     <string name="version_text">Versão:</string>
     <string name="info_title">Informação</string>
     <string name="authors">Autores:</string>
+    <string name="timeout_shots_message">O tempo para disparar acabou.</string>
     <string name="timeout_placeships_message">O tempo para colocar navios chegou ao fim.</string>
     <string name="timeout_title">Tempo esgotado</string>
     <string name="game_won">Ganhaste!</string>
