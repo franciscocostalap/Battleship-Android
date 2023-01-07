@@ -3,34 +3,27 @@ package com.example.battleshipmobile.battleship.play.layoutDefinition
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.compose.runtime.collectAsState
 import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.home.HomeActivity
-import com.example.battleshipmobile.battleship.play.lobby.QueueActivity
 import com.example.battleshipmobile.battleship.play.shotDefinition.ShotsDefinitionActivity
-import com.example.battleshipmobile.battleship.play.shotDefinition.ShotsDefinitionScreen
 import com.example.battleshipmobile.battleship.service.ID
+import com.example.battleshipmobile.battleship.service.model.State
 import com.example.battleshipmobile.ui.showToast
 import com.example.battleshipmobile.ui.views.BackPressHandler
 import com.example.battleshipmobile.ui.views.LoadingContent
-import com.example.battleshipmobile.ui.views.LoadingScreen
 import com.example.battleshipmobile.ui.views.general.ErrorAlert
 import com.example.battleshipmobile.utils.viewModelInit
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 class LayoutDefinitionActivity : ComponentActivity() {
 
     companion object {
 
-        const val GAME_ID_EXTRA = "gameID"
+        private const val GAME_ID_EXTRA = "gameID"
 
         fun navigate(origin: Activity, gameID: ID) {
             with(origin) {
@@ -51,6 +44,22 @@ class LayoutDefinitionActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
+            val gameState = viewModel.gameCurrentState.collectAsState()
+            when(gameState.value?.state){
+                State.CANCELLED -> {
+                    viewModel.onLeave()
+                    HomeActivity.navigate(this)
+                    finish()
+                }
+                State.PLAYING -> {
+                    viewModel.onLeave()
+                    ShotsDefinitionActivity.navigate(this)
+                    finish()
+                }
+                else -> {}
+            }
+
             val gameRules = viewModel.gameRules
             if (gameRules == null)
                 viewModel.getGameRules()
@@ -105,20 +114,8 @@ class LayoutDefinitionActivity : ComponentActivity() {
                 )
             }
         }
-
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.startLayoutDefinitionPhase()
-                viewModel.playingGameState.collectLatest {
-                    if (it != null) {
-                        Log.v("LAYOUT_DEFINITION", "State changed to ${it.state}")
-                        viewModel.onLeave()
-                        ShotsDefinitionActivity.navigate(this@LayoutDefinitionActivity)
-                    }
-                }
-            }
-        }
     }
+
     private fun onBackClicked() {
         viewModel.onLeave()
         HomeActivity.navigate(this)

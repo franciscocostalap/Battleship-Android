@@ -39,8 +39,6 @@ class GameViewModel(
     private set
     var winner: GameTurn? by mutableStateOf(null)
     private set
-    var currentShots: Int by mutableStateOf(shotsDefinitionRules?.shotsPerTurn ?: 0)
-    private set
     var isTimedOut: Boolean by mutableStateOf(false)
     private set
 
@@ -119,6 +117,7 @@ class GameViewModel(
             val newOpponentBoard = gameService.getBoard(OPPONENT)
             boards = boards?.copy(opponentBoard = newOpponentBoard)
             timerResetToggle = !timerResetToggle
+            checkWinner()
             changeTurn()
         }
     }
@@ -126,20 +125,24 @@ class GameViewModel(
     fun waitForOpponentPlay() {
         viewModelScope.launch {
             //winner check
-            val gameInfo = gameService.getGameStateInfo()
-            if(gameInfo.state == FINISHED) {
-                winner = if(gameInfo.turnID == authService.uid) OPPONENT else MY
-                return@launch
-            }
-
             val myBoardFlow = gameService.pollMyBoard()
             myBoardFlow.collectLatest { myBoardState ->
                 if(myBoardState != boards?.myBoard){
                     boards = boards?.copy(myBoard = myBoardState)
                     timerResetToggle = !timerResetToggle
                     changeTurn()
+                    checkWinner()
                     gameService.cancelPollMyBoard()
                 }
+            }
+        }
+    }
+
+    fun checkWinner(){
+        viewModelScope.launch {
+            val gameInfo = gameService.getGameStateInfo()
+            if(gameInfo.state == FINISHED) {
+                winner = if(gameInfo.turnID == authService.uid) OPPONENT else MY
             }
         }
     }

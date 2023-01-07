@@ -6,14 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.battleshipmobile.battleship.http.hypermedia.Problem
 import com.example.battleshipmobile.battleship.service.dto.*
 import com.example.battleshipmobile.battleship.service.game.GameService
 import com.example.battleshipmobile.battleship.service.model.*
 import com.example.battleshipmobile.battleship.service.model.GameRules.FleetComposition
-import com.example.battleshipmobile.battleship.service.model.State.PLAYING
 import com.example.battleshipmobile.ui.views.game.ShipData
-import com.example.battleshipmobile.utils.minutesToMillis
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,22 +30,21 @@ class LayoutDefinitionViewModel(private val gameService: GameService) : ViewMode
     var gameRules: GameRules? by mutableStateOf(null)
     var board: Board? by mutableStateOf(null)
     var isSubmittingDisabled : Boolean by mutableStateOf(false)
+    private set
 
     private val _playingGameState = MutableStateFlow<GameStateInfo?>(null)
-    val playingGameState = _playingGameState.asStateFlow()
+    val gameCurrentState = _playingGameState.asStateFlow()
 
 
-    fun startLayoutDefinitionPhase() {
+    fun waitForOpponent() {
         viewModelScope.launch {
             gameService
                 .pollGameStateInfo()
                 .collectLatest {
                     Log.v("GAME_STATE_INFO", it.toString())
-                    if(it.state == PLAYING) {
-                        _playingGameState.value = it
-                    }
+                    _playingGameState.value = it
                 }
-        }
+            }
     }
 
     fun placeShip(initialSquare: Square, shipData: ShipData) {
@@ -96,10 +92,8 @@ class LayoutDefinitionViewModel(private val gameService: GameService) : ViewMode
     fun submitLayout() : Boolean {
         viewModelScope.launch {
             try {
-                val result = async {
-                    gameService.placeShips(ShipsInfoDTO(placedShips))
-                }
-                result.await()
+                gameService.placeShips(ShipsInfoDTO(placedShips))
+                waitForOpponent()
             }catch (e: Throwable) {
                 if(e is CancellationException) throw e
                 Log.e("SUBMIT_LAYOUT", e.message ?: "Unknown error")

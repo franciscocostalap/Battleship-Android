@@ -181,17 +181,8 @@ class RealGameService(
             GameTurn.OPPONENT -> OPPONENT_FLEET_REL
         }
 
-        fetchGameState()
         val currentGameStateEntity = gameStateEntity ?: throw IllegalStateException(GAME_STATE_ERR_MSG)
-        val state = currentGameStateEntity.properties?.state ?: throw IllegalStateException(PROPERTIES_REQUIRED)
-
-        if(relationKey == MY_FLEET_REL)
-            require(state != CANCELLED) { MUST_BE_PLACING_SHIPS }
-        else
-            require(state != CANCELLED && state != PLACING_SHIPS) { MUST_BE_PLACING_SHIPS }
-
         val embeddedLink = currentGameStateEntity.ensureEmbeddedBoardLink(relationKey)
-
 
         val result = buildAndSendRequest<BoardDTO>(
             client,
@@ -320,8 +311,6 @@ class RealGameService(
 
         gameStateEntity = responseResult
     }
-
-
 
     /**
      * Ensures that the lobby state link exists and returns it.

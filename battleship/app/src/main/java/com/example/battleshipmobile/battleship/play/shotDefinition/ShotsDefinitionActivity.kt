@@ -34,6 +34,12 @@ class ShotsDefinitionActivity : ComponentActivity() {
         }
     }
 
+    fun dismissAlert(){
+        HomeActivity.navigate(this)
+        viewModel.onLeave()
+        finish()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -42,10 +48,7 @@ class ShotsDefinitionActivity : ComponentActivity() {
                 Alert(
                     message = if(winner == GameTurn.MY) R.string.game_won else R.string.game_lost,
                     buttonText = R.string.ok,
-                    onDismiss = {
-                        HomeActivity.navigate(this)
-                        finish()
-                    }
+                    onDismiss = ::dismissAlert
                 )
             }
             val shotsDefinitionRules = viewModel.shotsDefinitionRules
@@ -57,10 +60,7 @@ class ShotsDefinitionActivity : ComponentActivity() {
                 ErrorAlert(
                     title = R.string.timeout_title,
                     message = R.string.timeout_placeships_message,
-                    onDismiss = {
-                        HomeActivity.navigate(this)
-                        finish()
-                    }
+                    onDismiss = ::dismissAlert
                 )
             }
             LoadingContent(isLoading = viewModel.isLoading) {
@@ -73,7 +73,7 @@ class ShotsDefinitionActivity : ComponentActivity() {
                     boards = boards,
                     turn = turn,
                     remainingTime = shotsDefinitionRules.shotsDefinitionTimeout,
-                    remainingShots = shotsDefinitionRules.shotsPerTurn - viewModel.currentShots,
+                    remainingShots = shotsDefinitionRules.shotsPerTurn - boards.opponentBoard.aimedShots.size,
                     timerResetToggle = timerResetToggle
                 )
 
