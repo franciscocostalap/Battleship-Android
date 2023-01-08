@@ -48,12 +48,10 @@ class LayoutDefinitionActivity : ComponentActivity() {
             val gameState = viewModel.gameCurrentState.collectAsState()
             when(gameState.value?.state){
                 State.CANCELLED -> {
-                    viewModel.onLeave()
                     HomeActivity.navigate(this)
                     finish()
                 }
                 State.PLAYING -> {
-                    viewModel.onLeave()
                     ShotsDefinitionActivity.navigate(this)
                     finish()
                 }

@@ -36,13 +36,16 @@ class LayoutDefinitionViewModel(private val gameService: GameService) : ViewMode
     val gameCurrentState = _playingGameState.asStateFlow()
 
 
-    fun waitForOpponent() {
+    private fun waitForOpponent() {
         viewModelScope.launch {
             gameService
                 .pollGameStateInfo()
                 .collectLatest {
                     Log.v("GAME_STATE_INFO", it.toString())
                     _playingGameState.value = it
+                    if(it.state == State.PLAYING || it.state == State.CANCELLED) {
+                        onLeave()
+                    }
                 }
             }
     }
@@ -89,7 +92,7 @@ class LayoutDefinitionViewModel(private val gameService: GameService) : ViewMode
         placedShips = emptyList()
     }
 
-    fun submitLayout() : Boolean {
+    fun submitLayout() {
         viewModelScope.launch {
             try {
                 gameService.placeShips(ShipsInfoDTO(placedShips))
@@ -100,10 +103,9 @@ class LayoutDefinitionViewModel(private val gameService: GameService) : ViewMode
                 throw e
             }
         }.invokeOnCompletion {
-            isSubmittingDisabled = it == null
+            if(it != null) isSubmittingDisabled = false
         }
         isSubmittingDisabled = true
-        return true
     }
 
     fun onTimeout() {

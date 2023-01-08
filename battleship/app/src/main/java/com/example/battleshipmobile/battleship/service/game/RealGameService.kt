@@ -249,7 +249,7 @@ class RealGameService(
                 do{
                     val lobbyInformation = getLobbyInformation()
                     trySend(lobbyInformation)
-                    delay(1500L)
+                    delay(3000L)
                 }while(lobbyInformation.gameID == null)
 
             }

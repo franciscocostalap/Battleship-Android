@@ -34,7 +34,7 @@ class ShotsDefinitionActivity : ComponentActivity() {
         }
     }
 
-    fun dismissAlert(){
+    private fun dismissAlert(){
         HomeActivity.navigate(this)
         viewModel.onLeave()
         finish()
@@ -74,7 +74,8 @@ class ShotsDefinitionActivity : ComponentActivity() {
                     turn = turn,
                     remainingTime = shotsDefinitionRules.shotsDefinitionTimeout,
                     remainingShots = shotsDefinitionRules.shotsPerTurn - boards.opponentBoard.aimedShots.size,
-                    timerResetToggle = timerResetToggle
+                    timerResetToggle = timerResetToggle,
+                    isSubmittingDisabled = viewModel.isSubmittingDisabled
                 )
 
                 if(turn != GameTurn.MY) viewModel.waitForOpponentPlay()

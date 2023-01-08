@@ -30,7 +30,7 @@ interface DependenciesContainer{
     val systemInfoService : SysInfoService
 }
 
-private const val host = "http://10.0.2.2:8080"
+private const val host = "https://894e-217-129-147-107.eu.ngrok.io"
 private const val root = "$host/api"
 private const val home = "$root/"
 private const val userHome = "$root/my"

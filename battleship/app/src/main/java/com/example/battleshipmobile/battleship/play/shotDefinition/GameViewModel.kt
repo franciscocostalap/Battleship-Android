@@ -41,6 +41,8 @@ class GameViewModel(
     private set
     var isTimedOut: Boolean by mutableStateOf(false)
     private set
+    var isSubmittingDisabled : Boolean by mutableStateOf(false)
+    private set
 
     init {
         initializeGame()
@@ -119,7 +121,10 @@ class GameViewModel(
             timerResetToggle = !timerResetToggle
             checkWinner()
             changeTurn()
+        }.invokeOnCompletion {
+            isSubmittingDisabled = false
         }
+        isSubmittingDisabled = true
     }
 
     fun waitForOpponentPlay() {
@@ -138,7 +143,7 @@ class GameViewModel(
         }
     }
 
-    fun checkWinner(){
+    private fun checkWinner(){
         viewModelScope.launch {
             val gameInfo = gameService.getGameStateInfo()
             if(gameInfo.state == FINISHED) {

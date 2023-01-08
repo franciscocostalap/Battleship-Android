@@ -49,7 +49,8 @@ data class ShotsDefinitionScreenState(
     val turn: GameTurn,
     val remainingTime: Long,
     val timerResetToggle: Boolean,
-    val remainingShots: Int
+    val remainingShots: Int,
+    val isSubmittingDisabled: Boolean
 )
 
 
@@ -158,6 +159,7 @@ private fun LandScapeShotsDefinitionScreen(
                 ) {
                     Button(
                         onClick = { handlers.onSubmitShotsClick() },
+                        enabled = state.isSubmittingDisabled,
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = MaterialTheme.colors.primary,
                             contentColor = MaterialTheme.colors.onPrimary
@@ -267,7 +269,12 @@ fun PortraitShotsDefinitionScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Button(
-                        onClick = { handlers.onSubmitShotsClick() }
+                        onClick = { handlers.onSubmitShotsClick() },
+                        enabled = state.isSubmittingDisabled,
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = MaterialTheme.colors.primary,
+                            contentColor = MaterialTheme.colors.onPrimary
+                        )
                     ) {
                         Text(stringResource(R.string.confirm))
                     }
@@ -296,7 +303,7 @@ fun PortraitShotsDefinitionScreen(
                 ) {
                     StatelessProgressBar(
                         progress = timerProgress,
-                    )//TODO: cor
+                    )
                 }
             }
 
@@ -336,7 +343,8 @@ fun PortraitScreenPreview() {
         turn = GameTurn.MY,
         remainingTime = 0,
         timerResetToggle = false,
-        remainingShots = 1
+        remainingShots = 1,
+        isSubmittingDisabled = false
     )
     BattleshipMobileTheme {
         Scaffold(
@@ -372,7 +380,8 @@ fun DefaultPreview() {
             turn = GameTurn.MY,
             remainingTime = 60L,
             timerResetToggle = false,
-            remainingShots = 1
+            remainingShots = 1,
+            isSubmittingDisabled = false
         ),
         timeToDefineShot = 60L
     )

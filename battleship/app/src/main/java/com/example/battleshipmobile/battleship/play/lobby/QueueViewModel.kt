@@ -19,7 +19,6 @@ class QueueViewModel(private val gameService: GameService): ViewModel() {
     private var lobbyMonitor : Job? = null
 
     private val _pendingMatch = MutableStateFlow<LobbyInformation?>(null)
-
     val pendingMatch = _pendingMatch.asStateFlow()
 
     fun waitForMatch() = viewModelScope.launch {
