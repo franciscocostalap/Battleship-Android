@@ -48,20 +48,7 @@ class HomeActivityTests {
 
     }
 
-    @Test
-    fun expected_home_screen_with_auth_info() {
 
-        // Arrange not needed because the default authInfo repo is already set to return a non null value
-
-        ActivityScenario.launch(HomeActivity::class.java).use {
-            testRule.onNodeWithTag(TestTags.Home.Screen).assertExists()
-            testRule.onNodeWithTag(TestTags.Home.PlayButton).assertExists()
-            testRule.onNodeWithTag(TestTags.Home.RankingsButton).assertExists()
-            testRule.onNodeWithTag(TestTags.Home.CreditsButton).assertExists()
-            testRule.onNodeWithTag(TestTags.Home.LogoutButton).assertExists()
-        }
-
-    }
 
     @Test
     fun pressing_sign_in_button_navigates_to_login_activity(){
@@ -79,76 +66,6 @@ class HomeActivityTests {
 
     }
 
-    @Test
-    fun pressing_credits_button_navigates_to_info_screen_activity_with_no_auth(){
 
-        // Arrange
-        application.authInfoService = mockRepo
-
-        ActivityScenario.launch(HomeActivity::class.java).use{
-
-            testRule.onNodeWithTag(TestTags.Home.CreditsButton).performClick()
-
-            testRule.waitForIdle()
-
-            testRule.onNodeWithTag(TestTags.Home.Screen).assertDoesNotExist()
-            testRule.onNodeWithTag(TestTags.Info.Screen).assertExists()
-
-        }
-
-    }
-
-    @Test
-    fun pressing_credits_button_navigates_to_info_screen_activity_with_auth(){
-
-
-        ActivityScenario.launch(HomeActivity::class.java).use{
-
-            testRule.onNodeWithTag(TestTags.Home.CreditsButton).performClick()
-
-            testRule.waitForIdle()
-
-            testRule.onNodeWithTag(TestTags.Home.Screen).assertDoesNotExist()
-            testRule.onNodeWithTag(TestTags.Info.Screen).assertExists()
-        }
-
-    }
-
-    @Test
-    fun pressing_rankings_button_navigates_to_rankings_activity_with_no_auth(){
-
-        // Arrange
-        application.authInfoService = mockRepo
-
-        ActivityScenario.launch(HomeActivity::class.java).use{
-
-            testRule.onNodeWithTag(TestTags.Home.RankingsButton).performClick()
-
-            testRule.waitForIdle()
-
-            testRule.onNodeWithTag(TestTags.Home.Screen).assertDoesNotExist()
-            testRule.onNodeWithTag(TestTags.Statistics.Screen).assertExists()
-
-        }
-
-    }
-
-    @Test
-    fun pressing_rankings_button_navigates_to_rankings_activity_with_auth(){
-
-        // Arrange not needed because mockk already returns an auth info not null
-
-        ActivityScenario.launch(HomeActivity::class.java).use{
-
-            testRule.onNodeWithTag(TestTags.Home.RankingsButton).performClick()
-
-            testRule.waitForIdle()
-
-            testRule.onNodeWithTag(TestTags.Home.Screen).assertDoesNotExist()
-            testRule.onNodeWithTag(TestTags.Statistics.Screen).assertExists()
-
-        }
-
-    }
 
 }

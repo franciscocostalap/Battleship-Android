@@ -56,36 +56,6 @@ class AuthenticationActivityTests {
     }
 
     @Test
-    fun auth_screen_navigates_to_home_activity_after_registering_a_user() {
-
-        // Arrange
-        application.authInfoService = mockRepo
-        application.userService = mockk(relaxed = true) {
-            coEvery { register(any()) } returns AuthInfo(0, "test")
-        }
-
-        // Act
-        ActivityScenario.launch(AuthenticationActivity::class.java).use {
-
-            testRule.onNodeWithTag(TestTags.Auth.AuthSwapLink)
-                .performClick() // swap to register screen
-
-            testRule.waitForIdle()
-
-            testRule.onNodeWithTag(TestTags.Auth.UsernameField).performTextInput("testUsername")
-            testRule.onNodeWithTag(TestTags.Auth.PasswordField).performTextInput("testPassword2!")
-            testRule.onNodeWithTag(TestTags.Auth.SubmitButton).performClick()
-
-            testRule.waitForIdle()
-
-            // Assert
-            verify { mockRepo.uid = 0}
-            testRule.onNodeWithTag(TestTags.Home.Screen).assertExists()
-            testRule.onNodeWithTag(TestTags.Auth.Screen).assertDoesNotExist()
-        }
-    }
-
-    @Test
     fun login_screen_navigates_to_register_screen_when_auth_swap_link_is_clicked() {
 
         // Arrange

@@ -26,7 +26,9 @@ class BattleshipTestApplication: DependenciesContainer, Application() {
     }
 
     override var authInfoService: AuthInfoService = mockk(relaxed = true) {
-            every { uid } returns 0
+            every { uid } returns 3
+            coEvery { clearAuthInfo()  } returns Unit
+            coEvery { hasAuthInfo() } returns true
         }
 
     override val statisticsService: RankingServiceI = mockk(relaxed = true){
