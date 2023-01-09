@@ -1,4 +1,4 @@
-package com.example.battleshipmobile.battleship.play
+package com.example.battleshipmobile.battleship.play.lobby
 
 
 import androidx.compose.foundation.layout.*
@@ -14,7 +14,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.battleshipmobile.ui.views.general.CustomTextButton
-import com.example.battleshipmobile.battleship.play.lobby.QueueState
 import com.example.battleshipmobile.battleship.play.lobby.QueueState.*
 import com.example.battleshipmobile.ui.TestTags
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme

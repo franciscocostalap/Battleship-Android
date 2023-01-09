@@ -16,25 +16,12 @@ class QueueViewModel(private val gameService: GameService): ViewModel() {
     var lobbyInformationResult by mutableStateOf<Result<LobbyInformation>?>(null)
         private set
     var lobby by mutableStateOf<Queue?>(null)
-    private var lobbyMonitor : Job? = null
 
     private val _pendingMatch = MutableStateFlow<LobbyInformation?>(null)
-    val pendingMatch = _pendingMatch.asStateFlow()
+    var isPooling by mutableStateOf(false)
 
-    fun waitForMatch() = viewModelScope.launch {
-        if(lobbyMonitor != null){
-            lobbyMonitor?.join()
-            val lobbyInfo = lobbyInformationResult?.getOrNull()
-            if(lobbyInfo?.gameID != null){
-                Log.v("QUEUE_VIEW_MODEL", "Lobby was found at the start")
-                _pendingMatch.value = lobbyInfo
-                return@launch
-            }
-            if(lobbyInformationResult?.isFailure == true){
-                Log.e("QUEUE_VIEW_MODEL", "Error joining match")
-                return@launch
-            }
-        }else throw IllegalStateException("Lobby was not created")
+
+    private fun waitForMatch() = viewModelScope.launch {
         gameService
             .pollLobbyInformation()
             .collectLatest {
@@ -45,11 +32,21 @@ class QueueViewModel(private val gameService: GameService): ViewModel() {
             }
     }
 
-    fun enterLobby()  {
-        if(lobbyMonitor != null) { //prevent multiple lobby calls
-            return
+    fun startPollingLobby(){
+        viewModelScope.launch {
+            waitForMatch()
+            Log.v("QUEUE_VIEW_MODEL", "starting to collect")
+            _pendingMatch.collectLatest {
+                if (it != null) {
+                    Log.v("QUEUE_VIEW_MODEL", "Match found")
+                    lobby = Queue(QueueState.FULL, gameID = it.gameID, lobbyID = it.lobbyID)
+                }
+            }
         }
-        lobbyMonitor = viewModelScope.launch {
+    }
+
+    fun enterLobby()  {
+        viewModelScope.launch {
             lobbyInformationResult =  try{
                 Result.success(gameService.enqueue())
             }catch (e: Exception){

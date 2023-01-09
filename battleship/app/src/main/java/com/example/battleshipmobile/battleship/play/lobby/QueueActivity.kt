@@ -9,23 +9,18 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.*
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.example.battleshipmobile.DependenciesContainer
 import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.home.HomeActivity
-import com.example.battleshipmobile.battleship.play.QueueScreen
 import com.example.battleshipmobile.battleship.play.layoutDefinition.LayoutDefinitionActivity
 import com.example.battleshipmobile.battleship.play.lobby.QueueState.*
 import com.example.battleshipmobile.ui.showToast
 import com.example.battleshipmobile.ui.theme.BattleshipMobileTheme
+import com.example.battleshipmobile.ui.views.LoadingContent
 import com.example.battleshipmobile.ui.views.LoadingScreen
 import com.example.battleshipmobile.ui.views.TimedComposable
 import com.example.battleshipmobile.ui.views.general.ErrorAlert
 import com.example.battleshipmobile.utils.viewModelInit
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 class QueueActivity : ComponentActivity() {
 
@@ -65,13 +60,31 @@ class QueueActivity : ComponentActivity() {
                 require(authRepo.hasAuthInfo()) { MUST_BE_AUTHENTICATED }
 
                 val lobbyInfoResult = viewModel.lobbyInformationResult
-                val lobby = viewModel.lobby
 
-                // Recomposition triggered by lobby information mutable state
-                if (lobbyInfoResult != null && lobby == null) {
+                if(lobbyInfoResult == null){
+                    Log.v(TAG, "Entering lobby")
+                    viewModel.enterLobby()
+                }
+
+                Log.v(TAG, "isPooling: $viewModel.isPooling")
+                val queueInfo = viewModel.lobby
+
+                if ( queueInfo != null && queueInfo.gameID == null && !viewModel.isPooling ){
+                    viewModel.isPooling = true
+                    Log.v (TAG, "Pooling started")
+                    viewModel.startPollingLobby()
+                }
+
+                if (lobbyInfoResult != null && queueInfo == null) {
                     Log.v(TAG, "Getting information from lobby result")
                     lobbyInfoResult.onSuccess { lobbyInfo ->
-                        if(lobbyInfo.gameID == null){
+                        if(lobbyInfo.gameID != null){ //second player path
+                            viewModel.lobby = Queue(
+                                state = FULL,
+                                lobbyID = lobbyInfo.lobbyID,
+                                gameID = lobbyInfo.gameID
+                            )
+                        }else{
                             viewModel.lobby = Queue(
                                 state = SEARCHING_OPPONENT,
                                 lobbyID = lobbyInfo.lobbyID,
@@ -92,22 +105,24 @@ class QueueActivity : ComponentActivity() {
                     }
                 }
 
-                if (lobby != null) {
-                    Log.d(TAG, "Lobby: $lobby")
 
-                    if (lobby.state == FULL) {
+                LoadingContent(isLoading = queueInfo == null){
+                    require(queueInfo != null) { LOBBY_WAS_NOT_CREATED }
+                    Log.d(TAG, "Lobby: $queueInfo")
+
+                    if (queueInfo.state == FULL) {
 
                         TimedComposable(
                             timeToWait = DELAY_TIME,
                             onTimeout = {
-                                val gameID = lobby.gameID
+                                val gameID = queueInfo.gameID
                                 require(gameID != null) { GAME_WAS_NOT_CREATED }
                                 LayoutDefinitionActivity.navigate(this, gameID)
                                 finish()
                             }
                         ) {
                             QueueScreenContent(
-                                lobby.state,
+                                queueInfo.state,
                                 onQueueCancel = {
                                     viewModel.leaveLobby()
                                     HomeActivity.navigate(this)
@@ -121,7 +136,7 @@ class QueueActivity : ComponentActivity() {
                     } else {
                         //First player to join
                         QueueScreenContent(
-                            lobby.state,
+                            queueInfo.state,
                             onQueueCancel = {
                                 viewModel.leaveLobby()
                                 HomeActivity.navigate(this)
@@ -129,28 +144,10 @@ class QueueActivity : ComponentActivity() {
                             }
                         )
                     }
-                }else{
-                    LoadingScreen()
                 }
             }
         }
 
-
-        lifecycleScope.launch {
-            Log.v(TAG, "Creating lobby")
-            viewModel.enterLobby()
-
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.waitForMatch()
-                Log.v(TAG, "starting to collect")
-                viewModel.pendingMatch.collectLatest {
-                    if (it != null) {
-                        Log.v(TAG, "Match found")
-                        viewModel.lobby = Queue(FULL, gameID = it.gameID, lobbyID = it.lobbyID)
-                    }
-                }
-            }
-        }
     }
 
     /**

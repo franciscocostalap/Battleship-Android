@@ -159,7 +159,7 @@ private fun LandScapeShotsDefinitionScreen(
                 ) {
                     Button(
                         onClick = { handlers.onSubmitShotsClick() },
-                        enabled = state.isSubmittingDisabled,
+                        enabled = !state.isSubmittingDisabled && state.remainingShots == 0,
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = MaterialTheme.colors.primary,
                             contentColor = MaterialTheme.colors.onPrimary
@@ -270,7 +270,7 @@ fun PortraitShotsDefinitionScreen(
                 ) {
                     Button(
                         onClick = { handlers.onSubmitShotsClick() },
-                        enabled = state.isSubmittingDisabled,
+                        enabled = !state.isSubmittingDisabled && state.remainingShots == 0,
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = MaterialTheme.colors.primary,
                             contentColor = MaterialTheme.colors.onPrimary
