@@ -78,8 +78,8 @@ fun QueueScreen(
                     text = "Cancel",
                     modifier = Modifier.testTag(TestTags.Lobby.CancelButton)
                 )
-                BackPressHandler(onBackPressed = onBackClick)
             }
+            BackPressHandler(onBackPressed = onBackClick)
         }
     }
 }

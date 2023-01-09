@@ -12,7 +12,7 @@ import com.example.battleshipmobile.R
 import com.example.battleshipmobile.battleship.home.HomeActivity
 import com.example.battleshipmobile.ui.views.general.ErrorAlert
 import com.example.battleshipmobile.ui.showToast
-import com.example.battleshipmobile.ui.views.LoadingScreen
+import com.example.battleshipmobile.ui.views.LoadingContent
 import com.example.battleshipmobile.utils.viewModelInit
 
 
@@ -34,15 +34,25 @@ class RankingActivity: ComponentActivity() {
         viewModelInit{ RankingViewModel(dependencies.statisticsService) }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.v(TAG, "RankingActivity onCreate")
 
         setContent {
 
-            val statisticsResult = rankingViewModel.statisticsResult
+            val statistics = rankingViewModel.statistics
+            LoadingContent(isLoading = statistics == null) {
+                check(statistics != null)
+                RankingScreen(
+                    onBackClick = { finish() },
+                    gameStatistics = statistics,
+                    onSearchError = {
+                        showToast(getString(R.string.app_error_user_not_found) + it)
+                    }
+                )
+            }
 
+            val statisticsResult = rankingViewModel.statisticsResult
             if(statisticsResult != null){
                 statisticsResult.onSuccess {
                     Log.v(TAG, "RankingActivity onSuccess")
@@ -63,19 +73,6 @@ class RankingActivity: ComponentActivity() {
             }else{
                 Log.v(TAG, "Fetching statistics")
                 rankingViewModel.getStatistics()
-            }
-            val statistics = rankingViewModel.statistics
-
-            if(statistics != null){
-                RankingScreen(
-                    onBackClick = { finish() },
-                    gameStatistics = statistics,
-                    onSearchError = {
-                        showToast("User $it not found")
-                    }
-                )
-            }else{
-                LoadingScreen()
             }
 
         }

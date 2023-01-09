@@ -49,4 +49,5 @@
     <string name="opponent_turn">Turno do adversário</string>
     <string name="confirm">Confirma</string>
     <string name="remaining_shots">"Tiros em falta: "</string>
+    <string name="app_error_user_not_found">"Utilizador não encontrado: "</string>
 </resources>

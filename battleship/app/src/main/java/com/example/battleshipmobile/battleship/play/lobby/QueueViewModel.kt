@@ -16,36 +16,30 @@ class QueueViewModel(private val gameService: GameService): ViewModel() {
     var lobbyInformationResult by mutableStateOf<Result<LobbyInformation>?>(null)
         private set
     var lobby by mutableStateOf<Queue?>(null)
+        private set
+    var isPolling by mutableStateOf(false)
 
-    private val _pendingMatch = MutableStateFlow<LobbyInformation?>(null)
-    var isPooling by mutableStateOf(false)
-
-
-    private fun waitForMatch() = viewModelScope.launch {
-        gameService
-            .pollLobbyInformation()
-            .collectLatest {
-
-                if(it.gameID != null) {
-                    _pendingMatch.value = it
-                }
-            }
+    init {
+        Log.v("QueueViewModel", "init")
+        enterLobby()
     }
 
-    fun startPollingLobby(){
+    fun waitForOpponent(lobbyInfo: LobbyInformation){
+        lobby = Queue(gameID=lobbyInfo.gameID, lobbyID=lobbyInfo.lobbyID)
         viewModelScope.launch {
-            waitForMatch()
-            Log.v("QUEUE_VIEW_MODEL", "starting to collect")
-            _pendingMatch.collectLatest {
-                if (it != null) {
-                    Log.v("QUEUE_VIEW_MODEL", "Match found")
-                    lobby = Queue(QueueState.FULL, gameID = it.gameID, lobbyID = it.lobbyID)
+            isPolling = true
+            gameService
+                .pollLobbyInformation()
+                .collectLatest {
+                    if(it.gameID != null) {
+                        lobby = Queue(it.gameID, it.lobbyID)
+                    }
                 }
-            }
+            isPolling = false
         }
     }
 
-    fun enterLobby()  {
+    private fun enterLobby()  {
         viewModelScope.launch {
             lobbyInformationResult =  try{
                 Result.success(gameService.enqueue())
@@ -66,7 +60,18 @@ class QueueViewModel(private val gameService: GameService): ViewModel() {
             }
         }
     }
+
+    fun startGame(lobbyInfo: LobbyInformation) {
+        lobby = Queue(lobbyInfo.gameID, lobbyInfo.lobbyID)
+    }
 }
 
-data class Queue(val state: QueueState, val gameID: ID? = null, val lobbyID: ID? = null)
+class Queue(val gameID: ID? = null, val lobbyID: ID? = null){
+
+    val state = when(gameID){
+        null -> QueueState.SEARCHING_OPPONENT
+        else -> QueueState.FULL
+    }
+
+}
 
